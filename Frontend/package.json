@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "BASE_PATH=\"\" next dev --turbopack",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "build:gh-pages": "BASE_PATH=/Template_Next next build",
     "start": "next start",
