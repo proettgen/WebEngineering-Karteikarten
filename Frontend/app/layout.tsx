@@ -1,12 +1,13 @@
 import ThemeWrapper from "../src/components/templates/ThemeWrapper/ThemeWrapper";
+import type { ReactNode } from "react";
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="de">
+      <head />
       <body>
         <ThemeWrapper>{children}</ThemeWrapper>
       </body>
     </html>
   );
 }
-export default Layout;
