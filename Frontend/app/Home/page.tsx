@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+//Definiert die Seite unter der Route /Home
+
 function Home() {
   return (
     <>

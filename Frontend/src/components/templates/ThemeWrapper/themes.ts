@@ -1,5 +1,11 @@
 import { themeType } from "./types";
 
+/*Pass die Styled Components in den einzelnen Komponenten so an,
+dass sie auf die Theme-Eigenschaften zugreifen.
+Bsp: 
+background-color: ${({ theme }) => theme.primary};
+color: ${({ theme }) => theme.textPrimary};
+*/
 export const lightTheme: themeType = {
   primary: "#6A5ACD", // Soft lavender
   secondary: "#FFB6C1", // Light pink
