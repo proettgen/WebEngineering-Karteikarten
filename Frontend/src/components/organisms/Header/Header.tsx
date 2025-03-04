@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { availableThemes } from "../../templates/ThemeWrapper/types";
+import * as SC from "./styles";
 
 interface HeaderProps {
   setTheme: React.Dispatch<React.SetStateAction<availableThemes>>;
@@ -7,7 +8,7 @@ interface HeaderProps {
 
 const Header: FC<HeaderProps> = ({ setTheme }) => {
   return (
-    <header>
+    <SC.HeaderContainer>
       <h1>Header</h1>
       <button
         onClick={() =>
@@ -18,7 +19,7 @@ const Header: FC<HeaderProps> = ({ setTheme }) => {
       >
         Toggle Theme
       </button>
-    </header>
+    </SC.HeaderContainer>
   );
 };
 

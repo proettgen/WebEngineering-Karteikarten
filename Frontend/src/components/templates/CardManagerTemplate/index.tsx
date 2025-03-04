@@ -5,6 +5,7 @@ import CardManager from "../../organisms/CardManager";
 import * as SC from "./styles";
 import Link from "../../atoms/Link";
 
+
 export default function CardManagerTemplate() {
   return (
     <SC.Container>

@@ -1,9 +1,12 @@
+import * as SC from "./styles";
+
 function Footer() {
   return (
-    <footer>
+    <SC.FooterContainer>
       <strong>Footer</strong>
-    </footer>
+    </SC.FooterContainer>
   );
 }
 
 export default Footer;
+

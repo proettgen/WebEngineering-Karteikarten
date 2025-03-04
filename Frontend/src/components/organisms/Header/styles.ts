@@ -1,18 +1,10 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
-export const Container = styled.div`
+export const HeaderContainer = styled.header`
   background-color: ${({ theme }) => theme.background};
   color: ${({ theme }) => theme.textPrimary};
   padding: 20px;
-`;
-
-export const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-`;
-
-export const Title = styled.h1`
-  margin: 0;
 `;
