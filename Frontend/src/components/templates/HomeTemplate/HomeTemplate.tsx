@@ -7,7 +7,8 @@ function HomeTemplate() {
       <header>This is the Homepage</header>
       <main>
         Hello World <br />
-        explore our test page: <Link href="/Test">Test Page</Link>
+        explore our test page: <Link href="/Test">Test Page</Link> <br />
+        manage your cards: <Link href="/CardManagerPage">Card Manager</Link>
       </main>
       <footer>Lorem Ipsum</footer>
     </>
