@@ -4,7 +4,10 @@ import { ButtonProps } from "./types";
 
 export default function Button({ label, onClick }: ButtonProps) {
   return (
-    <SC.Button onClick={onClick}>
+    <SC.Button onClick={(e) => {
+      e.preventDefault();
+      onClick(e);
+    }}>
       {label}
     </SC.Button>
   );
