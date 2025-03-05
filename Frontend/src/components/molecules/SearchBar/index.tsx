@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import * as SC from "./styles";
 import { SearchBarProps } from "./types";
-import Button from "../../atoms/Button";
-import Input from "../../atoms/Input";
+import Button from "@/components/atoms/Button";
+import Input from "@/components/atoms/Input";
 
 export default function SearchBar({ placeholder, onSearch }: SearchBarProps) {
   const [searchValue, setSearchValue] = useState("");
@@ -19,7 +19,7 @@ export default function SearchBar({ placeholder, onSearch }: SearchBarProps) {
         value={searchValue}
         onChange={handleInputChange}
       />
-      <Button label="Search" onClick={onSearch} />
+      <Button onClick={onSearch}>Search</Button>
     </SC.SearchBarWrapper>
   );
 }

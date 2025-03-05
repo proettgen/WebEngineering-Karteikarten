@@ -1,13 +1,17 @@
 import React from "react";
 import * as SC from "./styles";
 import { NavigationBarProps } from "./types";
-import Logo from "../../atoms/Logo";
-import Link from "../../atoms/Link";
-import Button from "../../atoms/Button";
-import Icon from "../../atoms/Icon";
+import Logo from "@/components/atoms/Logo";
+import Link from "@/components/atoms/Link";
+import Button from "@/components/atoms/Button";
+import Icon from "@/components/atoms/Icon";
 import SearchBar from "../SearchBar";
 
-export default function NavigationBar({ logoSrc, links, onSearch }: NavigationBarProps) {
+export default function NavigationBar({
+  logoSrc,
+  links,
+  onSearch,
+}: NavigationBarProps) {
   return (
     <SC.NavBar>
       <Logo src={logoSrc} alt="Logo" />
@@ -19,7 +23,7 @@ export default function NavigationBar({ logoSrc, links, onSearch }: NavigationBa
         ))}
       </SC.NavLinks>
       <SearchBar placeholder="Search..." onSearch={onSearch} />
-      <Button label="Login" onClick={() => alert("Login clicked")} />
+      <Button onClick={() => alert("Login clicked")}>Login</Button>
       <Icon name="user" />
     </SC.NavBar>
   );
