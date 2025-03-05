@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import * as SC from "./styles";
+import Button from "@/components/atoms/Button";
 
 function TestTemplate() {
   return (
@@ -14,6 +15,10 @@ function TestTemplate() {
         manage your cards: <Link href="/CardManagerPage">Card Manager</Link>
       </main>
       <footer>Lorem Ipsum</footer>
+      <Button variant="primary">Primary </Button>
+      <Button variant="secondary">Secondary </Button>
+      <Button variant="accept">Accept </Button>
+      <Button variant="deny">Deny </Button>
     </SC.Container>
   );
 }
