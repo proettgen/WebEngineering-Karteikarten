@@ -3,8 +3,7 @@
 import React from "react";
 import CardManager from "../../organisms/CardManager";
 import * as SC from "./styles";
-import Link from "../../atoms/Link";
-
+import Link from "next/link";
 
 export default function CardManagerTemplate() {
   return (

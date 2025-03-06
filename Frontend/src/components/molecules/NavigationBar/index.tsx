@@ -2,7 +2,7 @@ import React from "react";
 import * as SC from "./styles";
 import { NavigationBarProps } from "./types";
 import Logo from "@/components/atoms/Logo";
-import Link from "@/components/atoms/Link";
+import Link from "next/link";
 import Button from "@/components/atoms/Button";
 import Icon from "@/components/atoms/Icon";
 import SearchBar from "../SearchBar";
