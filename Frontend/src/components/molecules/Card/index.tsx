@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import * as SC from "./styles";
 import { CardProps } from "./types";
-import Link from "../../atoms/Link";
+import Link from "next/link";
 
 export default function Card({ title, question, answer, tags }: CardProps) {
   const [showAnswer, setShowAnswer] = useState(false);

@@ -1,7 +1,7 @@
 import React from "react";
 import * as SC from "./styles";
 import { CardTemplateProps } from "./types";
-import Link from "../../atoms/Link";
+import Link from "next/link";
 
 export default function CardTemplate({ title, content }: CardTemplateProps) {
   return (
