@@ -1,3 +1,3 @@
 export interface CardListProps {
-    cards: { title: string; content: string }[];
-  }
+  cards: { title: string; question: string; answer: string; tags: string[] }[];
+}

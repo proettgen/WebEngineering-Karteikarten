@@ -8,12 +8,12 @@ import Notification from "../../molecules/Notification";
 import * as SC from "./styles";
 
 export default function CardManager() {
-  const [cards, setCards] = useState<{ title: string; content: string }[]>([]);
+  const [cards, setCards] = useState<{ title: string; question: string; answer: string; tags: string[] }[]>([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  const addCard = (title: string, content: string) => {
-    setCards([...cards, { title, content }]);
+  const addCard = (title: string, question: string, answer: string, tags: string[]) => {
+    setCards([...cards, { title, question, answer, tags }]);
     setNotification({ message: "Card added successfully!", type: "success" });
     setModalOpen(false);
   };

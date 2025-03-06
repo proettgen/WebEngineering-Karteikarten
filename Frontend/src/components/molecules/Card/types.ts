@@ -1,4 +1,6 @@
 export interface CardProps {
   title: string;
-  content: string;
+  question: string;
+  answer: string;
+  tags: string[];
 }

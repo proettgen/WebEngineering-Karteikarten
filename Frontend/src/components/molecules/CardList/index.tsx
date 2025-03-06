@@ -1,14 +1,20 @@
 import React from "react";
 import Card from "../Card";
+import * as SC from "./styles";
 import { CardListProps } from "./types";
-
 
 export default function CardList({ cards }: CardListProps) {
   return (
-    <div>
+    <SC.CardList>
       {cards.map((card, index) => (
-        <Card key={index} title={card.title} content={card.content} />
+        <Card
+          key={index}
+          title={card.title}
+          question={card.question}
+          answer={card.answer}
+          tags={card.tags}
+        />
       ))}
-    </div>
+    </SC.CardList>
   );
 }

@@ -9,17 +9,17 @@ import Textarea from "@/components/atoms/Textarea";
 
 export default function CardForm({ onSubmit }: CardFormProps) {
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-
-  const handleClick = (e?: React.FormEvent) => {
-    handleSubmit(e as React.FormEvent);
-  };
+  const [question, setQuestion] = useState("");
+  const [answer, setAnswer] = useState("");
+  const [tags, setTags] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(title, content);
+    onSubmit(title, question, answer, tags.split(",").map(tag => tag.trim()));
     setTitle("");
-    setContent("");
+    setQuestion("");
+    setAnswer("");
+    setTags("");
   };
 
   return (
@@ -31,11 +31,22 @@ export default function CardForm({ onSubmit }: CardFormProps) {
         onChange={(e) => setTitle(e.target.value)}
       />
       <Textarea
-        placeholder="Content"
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
+        placeholder="Question"
+        value={question}
+        onChange={(e) => setQuestion(e.target.value)}
       />
-      <Button type="submit" variant="accept" onClick={handleClick}>
+      <Textarea
+        placeholder="Answer"
+        value={answer}
+        onChange={(e) => setAnswer(e.target.value)}
+      />
+      <Input
+        type="text"
+        placeholder="Tags (comma separated)"
+        value={tags}
+        onChange={(e) => setTags(e.target.value)}
+      />
+      <Button type="submit" variant="accept">
         Add Card
       </Button>
     </SC.Form>

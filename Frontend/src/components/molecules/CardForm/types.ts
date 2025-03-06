@@ -1,3 +1,3 @@
 export interface CardFormProps {
-    onSubmit: (title: string, content: string) => void;
-  }
+  onSubmit: (title: string, question: string, answer: string, tags: string[]) => void;
+}
