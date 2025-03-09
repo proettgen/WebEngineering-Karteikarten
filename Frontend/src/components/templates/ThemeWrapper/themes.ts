@@ -17,6 +17,12 @@ export const lightTheme: themeType = {
   highlight: "#FAD02E", // Soft pastel yellow
   accept: "#77DD77", // Pastel green
   deny: "#FF6961", // Pastel red
+  fontSizes: {
+    small: "0.75rem", // entspricht ca. 12px bei einer Rootgröße von 16px
+    medium: "1rem", // entspricht ca. 16px
+    large: "1.25rem", // entspricht ca. 20px
+    xlarge: "1.5rem", // entspricht ca. 24px
+  },
 };
 
 export const darkTheme: themeType = {
@@ -30,4 +36,10 @@ export const darkTheme: themeType = {
   highlight: "#FFD166", // Warm soft yellow
   accept: "#55A899", // Muted teal green
   deny: "#D95F5F", // Muted red
+  fontSizes: {
+    small: "0.75rem", // entspricht ca. 12px bei einer Rootgröße von 16px
+    medium: "1rem", // entspricht ca. 16px
+    large: "1.25rem", // entspricht ca. 20px
+    xlarge: "1.5rem", // entspricht ca. 24px
+  },
 };
