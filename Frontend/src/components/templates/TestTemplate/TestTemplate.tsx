@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import * as SC from "./styles";
 import Button from "@/components/atoms/Button";
+import NavigationBar from "@/components/molecules/NavigationBar";
 
 function TestTemplate() {
   return (
@@ -19,6 +20,9 @@ function TestTemplate() {
       <Button variant="secondary">Secondary </Button>
       <Button variant="accept">Accept </Button>
       <Button variant="deny">Deny </Button>
+      <br />
+      <br />
+      <NavigationBar></NavigationBar>
     </SC.Container>
   );
 }
