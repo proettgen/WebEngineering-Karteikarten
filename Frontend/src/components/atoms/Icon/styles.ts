@@ -1,6 +1,17 @@
-import styled from 'styled-components';
+import styled from "styled-components";
+import { ThemeColors } from "./types";
 
-export const Icon = styled.i`
-  font-size: 24px;
-  margin: 0 10px;
+export const IconWrapper = styled.div<{
+  sizeValue: string;
+  colorKey: ThemeColors;
+}>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    height: ${({ sizeValue }) => sizeValue};
+    width: auto;
+    fill: ${({ theme, colorKey }) => theme[colorKey]};
+  }
 `;

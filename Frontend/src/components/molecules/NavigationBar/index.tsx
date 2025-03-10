@@ -1,30 +1,48 @@
-import React from "react";
-import * as SC from "./styles";
-import { NavigationBarProps } from "./types";
-import Logo from "@/components/atoms/Logo";
-import Link from "next/link";
-import Button from "@/components/atoms/Button";
-import Icon from "@/components/atoms/Icon";
-import SearchBar from "../SearchBar";
+"use client";
 
-export default function NavigationBar({
-  logoSrc,
-  links,
-  onSearch,
-}: NavigationBarProps) {
+import React from "react";
+import { usePathname } from "next/navigation";
+import Link from "@/components/atoms/Link";
+import * as SC from "./styles";
+import { NavBarProps } from "./types";
+
+const NavigationBar: React.FC<NavBarProps> = () => {
+  const pathname = usePathname();
+
+  const links = [
+    { href: "/", label: "Home" },
+    { href: "/Test", label: "Test" },
+    { href: "/services", label: "Dienstleistungen" },
+    { href: "/contact", label: "Kontakt" },
+  ];
+
+  const isActiveLink = (href: string): boolean => {
+    // Für Root-Pfad nur exakte Übereinstimmung verwenden
+    if (href === "/") {
+      return pathname === "/";
+    }
+    // Für andere Pfade prüfen, ob der aktuelle Pfad mit dem Link-Pfad beginnt
+    return pathname.startsWith(href);
+  };
+
   return (
     <SC.NavBar>
-      <Logo src={logoSrc} alt="Logo" />
-      <SC.NavLinks>
-        {links.map((link, index) => (
-          <Link key={index} href={link.href}>
-            {link.label}
+      {links.map((link) => {
+        const active = isActiveLink(link.href);
+
+        return (
+          <Link
+            href={link.href}
+            key={link.href}
+            color="textPrimary"
+            size="medium"
+          >
+            <SC.NavItem active={active}>{link.label}</SC.NavItem>
           </Link>
-        ))}
-      </SC.NavLinks>
-      <SearchBar placeholder="Search..." onSearch={onSearch} />
-      <Button onClick={() => alert("Login clicked")}>Login</Button>
-      <Icon name="user" />
+        );
+      })}
     </SC.NavBar>
   );
-}
+};
+
+export default NavigationBar;
