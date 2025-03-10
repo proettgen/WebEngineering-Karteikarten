@@ -37,7 +37,7 @@ const NavigationBar: React.FC<NavBarProps> = () => {
             color="textPrimary"
             size="medium"
           >
-            <SC.NavItem active={active}>{link.label}</SC.NavItem>
+            <SC.NavItem $active={active}>{link.label}</SC.NavItem>
           </Link>
         );
       })}

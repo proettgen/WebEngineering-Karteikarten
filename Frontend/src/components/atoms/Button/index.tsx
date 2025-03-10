@@ -3,21 +3,19 @@ import * as SC from "./styles";
 import { ButtonProps } from "./types";
 
 const Button: React.FC<ButtonProps> = ({
-  variant = "primary",
+  $variant = "primary",
   children,
   icon,
   disabled = false,
   onClick,
-  className,
   type = "button",
   ...rest
 }) => {
   return (
     <SC.Button
-      variant={variant}
+      $variant={$variant}
       disabled={disabled}
       onClick={onClick}
-      className={className}
       type={type}
       {...rest}
     >

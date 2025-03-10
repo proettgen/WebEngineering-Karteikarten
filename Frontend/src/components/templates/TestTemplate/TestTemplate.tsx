@@ -16,10 +16,10 @@ function TestTemplate() {
         manage your cards: <Link href="/CardManagerPage">Card Manager</Link>
       </main>
       <footer>Lorem Ipsum</footer>
-      <Button variant="primary">Primary </Button>
-      <Button variant="secondary">Secondary </Button>
-      <Button variant="accept">Accept </Button>
-      <Button variant="deny">Deny </Button>
+      <Button $variant="primary">Primary </Button>
+      <Button $variant="secondary">Secondary </Button>
+      <Button $variant="accept">Accept </Button>
+      <Button $variant="deny">Deny </Button>
       <br />
       <br />
       <NavigationBar></NavigationBar>
