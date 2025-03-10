@@ -5,13 +5,14 @@ export const NavBar = styled.nav`
   display: flex;
   align-items: center;
   height: 60px;
+  box-sizing: border-box;
   background-color: ${({ theme }) => theme.surface};
   overflow-x: auto;
+  overflow-y: hidden;
   white-space: nowrap;
   padding: 0 1rem;
   border-bottom: 1px solid ${({ theme }) => theme.border};
 
-  /* Scrollbar Styling */
   &::-webkit-scrollbar {
     height: 4px;
   }
@@ -24,12 +25,18 @@ export const NavBar = styled.nav`
     background-color: ${({ theme }) => theme.border};
     border-radius: 4px;
   }
+
+  > a {
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
 `;
 
 export const NavItem = styled.div<NavItemProps>`
   display: flex;
   align-items: center;
-  height: 60px;
+  height: 100%;
   padding: 0 1.5rem;
   color: ${({ theme, active }) => (active ? theme.primary : theme.textPrimary)};
   font-size: ${({ theme }) => theme.fontSizes.medium};
@@ -45,7 +52,6 @@ export const NavItem = styled.div<NavItemProps>`
     color: ${({ theme }) => theme.primary};
   }
 
-  /* Aktive Indikator-Linie am unteren Rand */
   ${({ active, theme }) =>
     active &&
     `
