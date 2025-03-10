@@ -11,7 +11,6 @@ export const NavBar = styled.nav`
   overflow-y: hidden;
   white-space: nowrap;
   padding: 0 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.border};
 
   &::-webkit-scrollbar {
     height: 4px;

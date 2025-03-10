@@ -11,9 +11,8 @@ const NavigationBar: React.FC<NavBarProps> = () => {
 
   const links = [
     { href: "/", label: "Home" },
+    { href: "/Cards", label: "Cards" },
     { href: "/Test", label: "Test" },
-    { href: "/services", label: "Dienstleistungen" },
-    { href: "/contact", label: "Kontakt" },
   ];
 
   const isActiveLink = (href: string): boolean => {
