@@ -11,7 +11,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="de">
       <head />
-      <body>
+      <body style={{ margin: 0 }}>
         <ThemeWrapper>{children}</ThemeWrapper>
       </body>
     </html>

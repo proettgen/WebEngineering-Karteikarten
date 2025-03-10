@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import { ThemeProvider } from "styled-components";
 import { lightTheme, darkTheme } from "./themes";
 import { themeType, availableThemes } from "./types";
-import Header from "../../organisms/Header/Header";
-import Footer from "../../organisms/Footer/Footer";
+import Header from "@/components/organisms/Header";
+import Footer from "@/components/organisms/Footer/Footer";
+import * as SC from "./styles";
 
 /*
 Der ThemeWrapper verwendet den ThemeProvider von styled-components,
@@ -23,11 +24,11 @@ const themeMap: Record<availableThemes, themeType> = {
 
 export function ThemeWrapper({ children }: { children: React.ReactNode }) {
   const [themeName, setThemeName] = useState<availableThemes>("darkTheme");
-  console.log(themeName);
   return (
     <ThemeProvider theme={themeMap[themeName]}>
-      <Header setTheme={setThemeName} />
-      {children}
+      <SC.GlobalStyle />
+      <Header themeName={themeName} setTheme={setThemeName} />
+      <SC.ContentWrapper>{children}</SC.ContentWrapper>
       <Footer />
     </ThemeProvider>
   );
