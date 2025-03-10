@@ -16,6 +16,8 @@ const NavigationBar: React.FC<NavBarProps> = () => {
   ];
 
   const isActiveLink = (href: string): boolean => {
+    if (!pathname) return false;
+    
     // Für Root-Pfad nur exakte Übereinstimmung verwenden
     if (href === "/") {
       return pathname === "/";
