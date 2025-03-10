@@ -10,4 +10,5 @@ export interface IconProps {
   size?: IconSize;
   color?: ThemeColors;
   className?: string;
+  onClick?: () => void;
 }
