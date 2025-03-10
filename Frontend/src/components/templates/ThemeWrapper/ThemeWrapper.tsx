@@ -4,7 +4,7 @@ import { ThemeProvider } from "styled-components";
 import { lightTheme, darkTheme } from "./themes";
 import { themeType, availableThemes } from "./types";
 import Header from "@/components/organisms/Header";
-import Footer from "@/components/organisms/Footer/Footer";
+import Footer from "@/components/organisms/Footer";
 import * as SC from "./styles";
 
 /*

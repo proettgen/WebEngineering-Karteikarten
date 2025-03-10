@@ -1,7 +1,6 @@
 "use client";
-
 import React from "react";
-import Link from "next/link";
+import Link from "@/components/atoms/Link";
 import * as SC from "./styles";
 
 function HomeTemplate() {
@@ -10,8 +9,11 @@ function HomeTemplate() {
       <header>This is the Homepage</header>
       <main>
         Hello World <br />
-        explore our test page: <Link href="/Test">Test Page</Link> <br />
-        manage your cards: <Link href="/CardManagerPage">Card Manager</Link>
+        explore our test page:{" "}
+        <Link href="/Test" color="secondary">
+          Test Page
+        </Link>{" "}
+        <br />
       </main>
       <footer>Lorem Ipsum</footer>
     </SC.Container>

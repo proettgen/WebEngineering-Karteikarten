@@ -1,3 +1,4 @@
+"use client";
 import ThemeWrapper from "../src/components/templates/ThemeWrapper/ThemeWrapper";
 import type { ReactNode } from "react";
 

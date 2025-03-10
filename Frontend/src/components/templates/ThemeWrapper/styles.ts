@@ -1,7 +1,7 @@
 import { styled, createGlobalStyle } from "styled-components";
 
 export const ContentWrapper = styled.main`
-  height: calc(100vh - 60px);
+  min-height: calc(100vh - 60px);
   background-color: ${({ theme }) => theme.background};
 `;
 
