@@ -1,25 +1,28 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as SC from "./styles";
 import { CardFormProps } from "./types";
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import Textarea from "@/components/atoms/Textarea";
 
-export default function CardForm({ onSubmit }: CardFormProps) {
-  const [title, setTitle] = useState("");
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
-  const [tags, setTags] = useState("");
+export default function CardForm({ onSubmit, onDelete, initialTitle = "", initialQuestion = "", initialAnswer = "", initialTags = "" }: CardFormProps) {
+  const [title, setTitle] = useState(initialTitle);
+  const [question, setQuestion] = useState(initialQuestion);
+  const [answer, setAnswer] = useState(initialAnswer);
+  const [tags, setTags] = useState(initialTags);
+
+  useEffect(() => {
+    setTitle(initialTitle);
+    setQuestion(initialQuestion);
+    setAnswer(initialAnswer);
+    setTags(initialTags);
+  }, [initialTitle, initialQuestion, initialAnswer, initialTags]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(title, question, answer, tags.split(",").map(tag => tag.trim()));
-    setTitle("");
-    setQuestion("");
-    setAnswer("");
-    setTags("");
   };
 
   return (
@@ -47,7 +50,10 @@ export default function CardForm({ onSubmit }: CardFormProps) {
         onChange={(e) => setTags(e.target.value)}
       />
       <Button type="submit" variant="accept">
-        Add Card
+        Save Card
+      </Button>
+      <Button type="button" variant="danger" onClick={onDelete}>
+        Delete Card
       </Button>
     </SC.Form>
   );

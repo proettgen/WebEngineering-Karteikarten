@@ -18,6 +18,12 @@ export default function CardManager() {
     setModalOpen(false);
   };
 
+  const deleteCard = (index: number) => {
+    const newCards = cards.filter((_, i) => i !== index);
+    setCards(newCards);
+    setNotification({ message: "Card deleted successfully!", type: "success" });
+  };
+
   return (
     <SC.Container>
       <SC.Header>
@@ -25,9 +31,9 @@ export default function CardManager() {
         <SC.AddButton onClick={() => setModalOpen(true)}>Add Card</SC.AddButton>
       </SC.Header>
       {notification && <Notification message={notification.message} type={notification.type} />}
-      <CardList cards={cards} />
+      <CardList cards={cards} onDelete={deleteCard} />
       <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)}>
-        <CardForm onSubmit={addCard} />
+        <CardForm onSubmit={addCard} onDelete={() => {}} />
       </Modal>
     </SC.Container>
   );

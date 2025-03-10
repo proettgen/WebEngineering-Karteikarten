@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-export type ButtonVariant = "primary" | "secondary" | "accept" | "deny";
+export type ButtonVariant = "primary" | "secondary" | "accept" | "deny" | "danger";
 
 export interface ButtonProps {
   variant?: ButtonVariant;
