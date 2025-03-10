@@ -3,5 +3,6 @@ export interface CardProps {
   question: string;
   answer: string;
   tags: string[];
-  onDelete?: () => void; 
+  onEdit?: (newTitle: string, newQuestion: string, newAnswer: string, newTags: string[]) => void;
+  onDelete?: () => void;
 }
