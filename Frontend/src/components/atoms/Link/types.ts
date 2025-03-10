@@ -1,16 +1,7 @@
 import { LinkProps as NextLinkProps } from "next/link";
 import { themeType } from "@/components/templates/ThemeWrapper/types";
 
-export type ColorOptions = keyof Pick<
-  themeType,
-  | "primary"
-  | "secondary"
-  | "textPrimary"
-  | "textSecondary"
-  | "highlight"
-  | "accept"
-  | "deny"
->;
+export type ColorOptions = Exclude<keyof themeType, "fontSizes">;
 
 export type SizeOptions = keyof themeType["fontSizes"];
 
