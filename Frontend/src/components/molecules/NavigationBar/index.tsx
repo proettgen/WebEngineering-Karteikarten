@@ -13,6 +13,7 @@ const NavigationBar: React.FC<NavBarProps> = () => {
     { href: "/", label: "Home" },
     { href: "/Cards", label: "Cards" },
     { href: "/Test", label: "Test" },
+    { href: "/learning-mode", label: "Learn" },
   ];
 
   const isActiveLink = (href: string): boolean => {
