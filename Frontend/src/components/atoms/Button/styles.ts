@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { ButtonVariant } from "./types";
 
 export const Button = styled.button<{
-  variant?: ButtonVariant;
+  $variant?: ButtonVariant;
 }>`
   display: inline-flex;
   align-items: center;
@@ -15,16 +15,16 @@ export const Button = styled.button<{
   transition: all 0.3s ease;
   cursor: pointer;
 
-  background-color: ${({ theme, variant }) => {
-    if (variant === "secondary") return theme.secondary;
-    else if (variant === "accept") return theme.accept;
-    else if (variant === "deny") return theme.deny;
-    else if (variant === "danger") return theme.danger;
+  background-color: ${({ theme, $variant }) => {
+    if ($variant === "secondary") return theme.secondary;
+    else if ($variant === "accept") return theme.accept;
+    else if ($variant === "deny") return theme.deny;
+    else if ($variant === "danger") return theme.danger;
     return theme.primary;
   }};
 
-  color: ${({ theme, variant }) => {
-    if (variant === "secondary") return theme.textPrimary;
+  color: ${({ theme, $variant }) => {
+    if ($variant === "secondary") return theme.textPrimary;
     return theme.surface;
   }};
 

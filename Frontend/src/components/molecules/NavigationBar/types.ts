@@ -5,7 +5,7 @@ export interface NavBarProps {
 }
 
 export interface NavItemProps {
-  active?: boolean;
+  $active?: boolean;
   children?: React.ReactNode;
 }
 

@@ -7,7 +7,14 @@ import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import Textarea from "@/components/atoms/Textarea";
 
-export default function CardForm({ onSubmit, onDelete, initialTitle = "", initialQuestion = "", initialAnswer = "", initialTags = "" }: CardFormProps) {
+export default function CardForm({
+  onSubmit,
+  onDelete,
+  initialTitle = "",
+  initialQuestion = "",
+  initialAnswer = "",
+  initialTags = "",
+}: CardFormProps) {
   const [title, setTitle] = useState(initialTitle);
   const [question, setQuestion] = useState(initialQuestion);
   const [answer, setAnswer] = useState(initialAnswer);
@@ -22,7 +29,12 @@ export default function CardForm({ onSubmit, onDelete, initialTitle = "", initia
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(title, question, answer, tags.split(",").map(tag => tag.trim()));
+    onSubmit(
+      title,
+      question,
+      answer,
+      tags.split(",").map((tag) => tag.trim())
+    );
   };
 
   return (
@@ -49,10 +61,10 @@ export default function CardForm({ onSubmit, onDelete, initialTitle = "", initia
         value={tags}
         onChange={(e) => setTags(e.target.value)}
       />
-      <Button type="submit" variant="accept">
+      <Button type="submit" $variant="accept">
         Save Card
       </Button>
-      <Button type="button" variant="danger" onClick={onDelete}>
+      <Button type="button" $variant="danger" onClick={onDelete}>
         Delete Card
       </Button>
     </SC.Form>

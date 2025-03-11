@@ -11,7 +11,6 @@ export const NavBar = styled.nav`
   overflow-y: hidden;
   white-space: nowrap;
   padding: 0 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.border};
 
   &::-webkit-scrollbar {
     height: 4px;
@@ -38,22 +37,23 @@ export const NavItem = styled.div<NavItemProps>`
   align-items: center;
   height: 100%;
   padding: 0 1.5rem;
-  color: ${({ theme, active }) => (active ? theme.primary : theme.textPrimary)};
+  color: ${({ theme, $active }) =>
+    $active ? theme.primary : theme.textPrimary};
   font-size: ${({ theme }) => theme.fontSizes.medium};
-  background-color: ${({ theme, active }) =>
-    active ? `${theme.primary}20` : "transparent"};
+  background-color: ${({ theme, $active }) =>
+    $active ? `${theme.primary}20` : "transparent"};
   transition: all 0.2s ease-in-out;
   position: relative;
   cursor: pointer;
 
   &:hover {
-    background-color: ${({ theme, active }) =>
-      active ? `${theme.primary}20` : `${theme.primary}10`};
+    background-color: ${({ theme, $active }) =>
+      $active ? `${theme.primary}20` : `${theme.primary}10`};
     color: ${({ theme }) => theme.primary};
   }
 
-  ${({ active, theme }) =>
-    active &&
+  ${({ $active, theme }) =>
+    $active &&
     `
     &::after {
       content: '';

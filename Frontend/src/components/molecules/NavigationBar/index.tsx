@@ -11,9 +11,8 @@ const NavigationBar: React.FC<NavBarProps> = () => {
 
   const links = [
     { href: "/", label: "Home" },
+    { href: "/Cards", label: "Cards" },
     { href: "/Test", label: "Test" },
-    { href: "/services", label: "Dienstleistungen" },
-    { href: "/contact", label: "Kontakt" },
   ];
 
   const isActiveLink = (href: string): boolean => {
@@ -39,7 +38,7 @@ const NavigationBar: React.FC<NavBarProps> = () => {
             color="textPrimary"
             size="medium"
           >
-            <SC.NavItem active={active}>{link.label}</SC.NavItem>
+            <SC.NavItem $active={active}>{link.label}</SC.NavItem>
           </Link>
         );
       })}

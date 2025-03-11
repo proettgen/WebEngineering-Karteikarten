@@ -32,7 +32,7 @@ const Icon: React.FC<IconProps> = ({
   const sizeValue = sizeMap[size];
 
   return (
-    <SC.IconWrapper sizeValue={sizeValue} colorKey={color} onClick={onClick}>
+    <SC.IconWrapper $sizeValue={sizeValue} $colorKey={color} onClick={onClick}>
       {children}
     </SC.IconWrapper>
   );
