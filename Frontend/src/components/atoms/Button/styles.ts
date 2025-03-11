@@ -19,7 +19,6 @@ export const Button = styled.button<{
     if ($variant === "secondary") return theme.secondary;
     else if ($variant === "accept") return theme.accept;
     else if ($variant === "deny") return theme.deny;
-    else if ($variant === "danger") return theme.danger;
     return theme.primary;
   }};
 

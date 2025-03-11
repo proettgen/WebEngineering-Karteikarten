@@ -64,7 +64,7 @@ export default function CardForm({
       <Button type="submit" $variant="accept">
         Save Card
       </Button>
-      <Button type="button" $variant="danger" onClick={onDelete}>
+      <Button type="button" $variant="deny" onClick={onDelete}>
         Delete Card
       </Button>
     </SC.Form>

@@ -3,8 +3,7 @@ export type ButtonVariant =
   | "primary"
   | "secondary"
   | "accept"
-  | "deny"
-  | "danger";
+  | "deny" ;
 
 export interface ButtonProps {
   $variant?: ButtonVariant;

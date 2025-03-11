@@ -63,15 +63,15 @@ export default function LearningMode() {
             </Button>
           ) : (
             <>
-              <Button variant="success" onClick={markCorrect}>
+              <Button $variant="accept" onClick={markCorrect}>
                 Richtig
               </Button>
-              <Button variant="danger" onClick={markWrong}>
+              <Button $variant="deny" onClick={markWrong}>
                 Falsch
               </Button>
             </>
           )}
-          <Button variant="secondary" onClick={getNextCard}>
+          <Button $variant="secondary" onClick={getNextCard}>
             Nächste Karte
           </Button>
         </>
