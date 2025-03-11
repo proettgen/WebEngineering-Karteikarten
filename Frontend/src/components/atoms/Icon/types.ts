@@ -9,6 +9,5 @@ export interface IconProps {
   children: ReactNode;
   size?: IconSize;
   color?: ThemeColors;
-  className?: string;
   onClick?: () => void;
 }
