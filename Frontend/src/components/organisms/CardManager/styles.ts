@@ -32,3 +32,10 @@ export const AddButton = styled.button`
     background-color: ${({ theme }) => theme.highlight};
   }
 `;
+
+export const CardList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+`;

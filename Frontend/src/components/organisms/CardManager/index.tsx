@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { storageService } from "../../../services/storageService";
 import { DatabaseData } from "../../../database/dbtypes";
-import FolderList from "../../molecules/FolderList";
+import Folder from "../../molecules/Folder";
 import Modal from "../../molecules/Modal";
 import Notification from "../../molecules/Notification";
 import * as SC from "./styles";
@@ -75,10 +75,18 @@ export default function CardManager() {
         <SC.AddButton onClick={() => setModalOpen(true)}>Add Folder</SC.AddButton>
       </SC.Header>
       {notification && <Notification message={notification.message} type={notification.type} />}
-      <FolderList folders={folders} onAddCard={addCard} onEditCard={editCard} onDeleteCard={deleteCard} />
+      {folders.map((folder, index) => (
+        <Folder
+          key={index}
+          name={folder.name}
+          cards={folder.cards}
+          onAddCard={addCard}
+          onEditCard={editCard}
+          onDeleteCard={deleteCard}
+        />
+      ))}
       <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)}>
         <div>
-          {/* Add Folder Form */}
           <h2>Add Folder</h2>
           <form onSubmit={(e) => {
             e.preventDefault();

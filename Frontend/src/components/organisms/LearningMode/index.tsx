@@ -5,15 +5,15 @@ import { storageService } from "../../../services/storageService";
 import { DatabaseData } from "../../../database/dbtypes";
 import * as SC from "./styles";
 import Button from "@/components/atoms/Button";
+import Card from "@/components/molecules/Card";
 
 export default function LearningMode() {
   const [cardPool, setCardPool] = useState<DatabaseData["folders"][number]["cards"]>([]);
   const [currentCard, setCurrentCard] = useState<DatabaseData["folders"][number]["cards"][number] | null>(null);
-  const [isAnswerShown, setIsAnswerShown] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
 
   useEffect(() => {
     const data = storageService.getData();
-    // Alle Karteikarten aus allen Ordnern zusammenführen
     const allCards = data.folders.flatMap((folder) => folder.cards);
     setCardPool(allCards);
     if (allCards.length > 0) {
@@ -25,7 +25,7 @@ export default function LearningMode() {
     if (cardPool.length > 0) {
       const next = cardPool[Math.floor(Math.random() * cardPool.length)];
       setCurrentCard(next);
-      setIsAnswerShown(false);
+      setIsFlipped(false); // Reset flip state for new card
     } else {
       setCurrentCard(null);
     }
@@ -33,7 +33,6 @@ export default function LearningMode() {
 
   const markCorrect = () => {
     if (currentCard) {
-      // Entferne die aktuelle Karte aus dem Pool
       const updatedPool = cardPool.filter(card => card !== currentCard);
       setCardPool(updatedPool);
       if (updatedPool.length > 0) {
@@ -41,40 +40,43 @@ export default function LearningMode() {
       } else {
         setCurrentCard(null);
       }
-      setIsAnswerShown(false);
+      setIsFlipped(false); // Reset flip state for new card
     }
   };
 
   const markWrong = () => {
-    // Bei Falsch bleibt die Karte im Pool und es wird einfach die nächste Karte geladen.
     getNextCard();
+  };
+
+  const handleFlip = () => {
+    setIsFlipped(!isFlipped);
   };
 
   return (
     <SC.Container>
       {currentCard ? (
-        <>
-          <SC.Title>{currentCard.title}</SC.Title>
-          <SC.Question>{currentCard.question}</SC.Question>
-          {isAnswerShown && <SC.Answer>{currentCard.answer}</SC.Answer>}
-          {!isAnswerShown ? (
-            <Button onClick={() => setIsAnswerShown(true)}>
-              Antwort anzeigen
+        <SC.LearningContainer>
+          <Card
+            title={currentCard.title}
+            question={currentCard.question}
+            answer={currentCard.answer}
+            tags={currentCard.tags}
+            showEditButton={false}
+            isFlipped={isFlipped}
+            onFlip={handleFlip}
+          />
+          <SC.ButtonContainer>
+            <Button $variant="accept" onClick={markCorrect}>
+              Richtig
             </Button>
-          ) : (
-            <>
-              <Button $variant="accept" onClick={markCorrect}>
-                Richtig
-              </Button>
-              <Button $variant="deny" onClick={markWrong}>
-                Falsch
-              </Button>
-            </>
-          )}
-          <Button $variant="secondary" onClick={getNextCard}>
-            Nächste Karte
-          </Button>
-        </>
+            <Button $variant="deny" onClick={markWrong}>
+              Falsch
+            </Button>
+            <Button $variant="secondary" onClick={getNextCard}>
+              Nächste Karte
+            </Button>
+          </SC.ButtonContainer>
+        </SC.LearningContainer>
       ) : (
         <div>Keine Karteikarten verfügbar.</div>
       )}

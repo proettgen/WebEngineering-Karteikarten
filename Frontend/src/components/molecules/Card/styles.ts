@@ -2,13 +2,14 @@ import styled from 'styled-components';
 
 export const CardContainer = styled.div`
   perspective: 1000px;
-  width: 30%;
+  width: 100%;
+  max-width: 28vw; // Relative maximale Breite
   margin-bottom: 20px;
 `;
 
 export const Card = styled.div<{ $isFlipped: boolean }>`
   width: 100%;
-  height: 300px;
+  height: 30vh; // Relative Höhe
   position: relative;
   transform-style: preserve-3d;
   transition: transform 0.6s;
@@ -30,6 +31,7 @@ export const CardSide = styled.div`
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  overflow: hidden; // Verhindert das Herausfallen von Inhalten
 `;
 
 export const CardFront = styled(CardSide)``;
@@ -40,6 +42,8 @@ export const CardBack = styled(CardSide)`
 
 export const Title = styled.h2`
   margin: 0 0 10px 0;
+  font-size: 1.2em; // Kleinere Schriftgröße für den Titel
+  text-align: center; // Zentriert den Titel
 `;
 
 export const SmallText = styled.span`
@@ -50,16 +54,21 @@ export const SmallText = styled.span`
 export const Question = styled.p`
   margin: 0 0 10px 0;
   font-weight: bold;
+  font-size: 1.5em; // Größere Schriftgröße für die Frage
+  text-align: center; // Zentriert die Frage
 `;
 
 export const Answer = styled.p`
   margin: 0 0 10px 0;
+  font-size: 1.5em; // Größere Schriftgröße für die Antwort
+  text-align: center; // Zentriert die Antwort
 `;
 
 export const Tags = styled.div`
   margin-top: 10px;
   font-size: 0.9em;
   color: ${({ theme }) => theme.textSecondary};
+  text-align: center; // Zentriert die Tags
 `;
 
 export const ToggleButton = styled.button`

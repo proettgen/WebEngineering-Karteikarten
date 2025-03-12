@@ -5,4 +5,7 @@ export interface CardProps {
   tags: string[];
   onEdit?: (newTitle: string, newQuestion: string, newAnswer: string, newTags: string[]) => void;
   onDelete?: () => void;
+  isFlipped?: boolean;
+  onFlip?: () => void;
+  showEditButton?: boolean;
 }
