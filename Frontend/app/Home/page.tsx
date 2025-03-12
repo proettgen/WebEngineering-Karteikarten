@@ -1,5 +1,5 @@
+"use client";
 import HomeTemplate from "../../src/components/templates/HomeTemplate/HomeTemplate";
-
 
 //Definiert die Seite unter der Route /Home
 
