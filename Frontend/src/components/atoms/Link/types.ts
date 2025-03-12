@@ -9,7 +9,6 @@ export interface LinkProps extends Omit<NextLinkProps, "as"> {
   children: React.ReactNode;
   color?: ColorOptions;
   size?: SizeOptions;
-  className?: string;
 }
 
 export interface StyledLinkProps {

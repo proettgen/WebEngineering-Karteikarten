@@ -7,17 +7,10 @@ const Link: React.FC<LinkProps> = ({
   children,
   color = "textPrimary",
   size = "medium",
-  className,
   ...props
 }) => {
   return (
-    <SC.StyledLink
-      color={color}
-      size={size}
-      className={className}
-      href={href}
-      {...props}
-    >
+    <SC.StyledLink color={color} size={size} href={href} {...props}>
       {children}
     </SC.StyledLink>
   );
