@@ -25,7 +25,7 @@ export default function LearningMode() {
     if (cardPool.length > 0) {
       const next = cardPool[Math.floor(Math.random() * cardPool.length)];
       setCurrentCard(next);
-      setIsFlipped(false); // Reset flip state for new card
+      setIsFlipped(false); 
     } else {
       setCurrentCard(null);
     }
@@ -40,7 +40,7 @@ export default function LearningMode() {
       } else {
         setCurrentCard(null);
       }
-      setIsFlipped(false); // Reset flip state for new card
+      setIsFlipped(false);
     }
   };
 
