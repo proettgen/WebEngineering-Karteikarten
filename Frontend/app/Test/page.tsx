@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import TestTemplate from "../../src/components/templates/TestTemplate/TestTemplate";
 

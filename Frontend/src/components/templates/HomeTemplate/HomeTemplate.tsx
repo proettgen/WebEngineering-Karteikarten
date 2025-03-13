@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import Link from "@/components/atoms/Link";
 import * as SC from "./styles";

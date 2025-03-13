@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import { storageService } from "../../../services/storageService";
 import { DatabaseData } from "../../../database/dbtypes";
@@ -8,8 +6,12 @@ import Button from "@/components/atoms/Button";
 import Card from "@/components/molecules/Card";
 
 export default function LearningMode() {
-  const [cardPool, setCardPool] = useState<DatabaseData["folders"][number]["cards"]>([]);
-  const [currentCard, setCurrentCard] = useState<DatabaseData["folders"][number]["cards"][number] | null>(null);
+  const [cardPool, setCardPool] = useState<
+    DatabaseData["folders"][number]["cards"]
+  >([]);
+  const [currentCard, setCurrentCard] = useState<
+    DatabaseData["folders"][number]["cards"][number] | null
+  >(null);
   const [isFlipped, setIsFlipped] = useState(false);
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export default function LearningMode() {
     if (cardPool.length > 0) {
       const next = cardPool[Math.floor(Math.random() * cardPool.length)];
       setCurrentCard(next);
-      setIsFlipped(false); 
+      setIsFlipped(false);
     } else {
       setCurrentCard(null);
     }
@@ -33,10 +35,12 @@ export default function LearningMode() {
 
   const markCorrect = () => {
     if (currentCard) {
-      const updatedPool = cardPool.filter(card => card !== currentCard);
+      const updatedPool = cardPool.filter((card) => card !== currentCard);
       setCardPool(updatedPool);
       if (updatedPool.length > 0) {
-        setCurrentCard(updatedPool[Math.floor(Math.random() * updatedPool.length)]);
+        setCurrentCard(
+          updatedPool[Math.floor(Math.random() * updatedPool.length)]
+        );
       } else {
         setCurrentCard(null);
       }
