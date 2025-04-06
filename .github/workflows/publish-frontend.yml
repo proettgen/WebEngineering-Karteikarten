@@ -34,6 +34,7 @@ jobs:
           node-version: "22"
       - name: Build
         run: |
+          export BASE_PATH=gh-pages
           npm ci --force
           npm run build:gh-pages
       - name: Setup Pages
