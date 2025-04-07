@@ -1,19 +1,15 @@
 import type { NextConfig } from "next";
 
-type NodeEnvType = { BASE_PATH?: string };
+type NodeEnvType = { BASE_PATH?: "gh-pages" | string };
 declare global {
   namespace NodeJS {
     interface ProcessEnv extends NodeEnvType {}
   }
 }
 
-const basePathValue = process.env.BASE_PATH ? `/${process.env.BASE_PATH}` : "";
-
 const nextConfig: NextConfig = {
-  basePath: basePathValue,
-  assetPrefix: basePathValue ? `${basePathValue}/` : "",
+  basePath: process.env.BASE_PATH,
   output: "export",
-  trailingSlash: true,
   reactStrictMode: true,
   images: { unoptimized: true },
 };
