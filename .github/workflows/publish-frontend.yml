@@ -34,8 +34,6 @@ jobs:
           node-version: "22"
       - name: Build
         run: |
-          npm i
-          npm run build
           npm ci --force
           npm run build:gh-pages
       - name: Setup Pages
