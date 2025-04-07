@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 /*
 Root-Layout für die Anwendung. 
 Dieses Layout wird auf alle Seiten und Routen angewendet, 
-die sich unter dem app Verzeichnis befinden
+die sich unter dem app Verzeichnis befinden.
 */
 
 export default function RootLayout({ children }: { children: ReactNode }) {
