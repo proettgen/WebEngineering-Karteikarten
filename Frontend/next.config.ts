@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
   output: "export",
   reactStrictMode: true,
   images: { unoptimized: true },
+  compiler: {
+    styledComponents: true,
+  },
 };
 
 export default nextConfig;
