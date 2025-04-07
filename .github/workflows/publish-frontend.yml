@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "main"
+      - "gh-pages-deploy"
     paths: "Frontend/**"
   workflow_dispatch:
 
