@@ -36,7 +36,7 @@ jobs:
       - name: Build
         run: |
           npm ci --force
-          npm run build:gh-pages
+          npm run build
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
