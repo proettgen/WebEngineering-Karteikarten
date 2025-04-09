@@ -1,18 +1,22 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
-export const Container = styled.div`
-  background-color: ${({ theme }) => theme.background};
-  color: ${({ theme }) => theme.textPrimary};
-  padding: 20px;
-`;
-
-export const Header = styled.div`
+export const SectionWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
+  justify-content: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 2rem;
 `;
 
-export const Title = styled.h1`
-  margin: 0;
+export const LoginWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.highlight};
+  text-align: center;
+  gap: 1rem;
+  padding: 2rem;
 `;

@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const HeaderWrapper = styled.header`
   background-color: ${({ theme }) => theme.surface};
   color: ${({ theme }) => theme.textPrimary};
-  padding: 0 1rem;
+  padding: 0 1rem 0 0;
   height: 60px;
   display: grid;
   grid-template-columns: auto 1fr auto;
