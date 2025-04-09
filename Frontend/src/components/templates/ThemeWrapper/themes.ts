@@ -14,14 +14,14 @@ export const lightTheme: themeType = {
   textPrimary: "#2C3E50", // Deep blue-gray
   textSecondary: "#7F8C8D", // Muted gray-blue
   border: "#D3D3D3", // Light gray
-  highlight: "#FAD02E", // Soft pastel yellow
+  highlight: "#ffc954", // Soft pastel yellow
   accept: "#77DD77", // Pastel green
   deny: "#FF6961", // Pastel red
   fontSizes: {
-    small: "0.75rem", // entspricht ca. 12px bei einer Rootgröße von 16px
-    medium: "1rem", // entspricht ca. 16px
-    large: "1.25rem", // entspricht ca. 20px
-    xlarge: "1.5rem", // entspricht ca. 24px
+    small: "0.875rem",
+    medium: "1.25rem",
+    large: "1.5rem",
+    xlarge: "1.875rem",
   },
 };
 
@@ -33,13 +33,13 @@ export const darkTheme: themeType = {
   textPrimary: "#EAEAEA", // Light gray
   textSecondary: "#B0B0B0", // Muted gray
   border: "#4E4E6A", // Desaturated blue-gray
-  highlight: "#FFD166", // Warm soft yellow
+  highlight: "#d380ea", // Soft pastel purple
   accept: "#55A899", // Muted teal green
   deny: "#D95F5F", // Muted red
   fontSizes: {
-    small: "0.75rem", // entspricht ca. 12px bei einer Rootgröße von 16px
-    medium: "1rem", // entspricht ca. 16px
-    large: "1.25rem", // entspricht ca. 20px
-    xlarge: "1.5rem", // entspricht ca. 24px
+    small: "0.875rem",
+    medium: "1.25rem",
+    large: "1.5rem",
+    xlarge: "1.875rem",
   },
 };
