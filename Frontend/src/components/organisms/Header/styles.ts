@@ -11,12 +11,6 @@ export const HeaderWrapper = styled.header`
   border-bottom: 1px solid ${({ theme }) => theme.border};
 `;
 
-export const LogoText = styled.h1`
-  font-size: ${({ theme }) => theme.fontSizes.large};
-  font-weight: bold;
-  margin: 0px;
-`;
-
 export const LogoWrapper = styled.div`
   a {
     display: flex;
