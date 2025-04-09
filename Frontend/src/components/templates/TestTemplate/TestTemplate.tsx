@@ -1,19 +1,12 @@
 import React from "react";
-import Link from "next/link";
 import * as SC from "./styles";
 import Button from "@/components/atoms/Button";
 import NavigationBar from "@/components/molecules/NavigationBar";
+import { Headline } from "@/components/atoms/Headline";
 
 function TestTemplate() {
   return (
     <SC.Container>
-      <header>This is the Test</header>
-      <main>
-        Welcome. exiting here! <br />
-        now go back: <Link href="/">Home Page</Link> <br />
-        manage your cards: <Link href="/CardManagerPage">Card Manager</Link>
-      </main>
-      <footer>Lorem Ipsum</footer>
       <Button $variant="primary">Primary </Button>
       <Button $variant="secondary">Secondary </Button>
       <Button $variant="accept">Accept </Button>
@@ -21,6 +14,11 @@ function TestTemplate() {
       <br />
       <br />
       <NavigationBar></NavigationBar>
+      <br />
+      <Headline>This is a Headline</Headline>
+      <Headline compact={true}>This is a Headline</Headline>
+      <Headline color="secondary">This is a Headline</Headline>
+      <Headline weight="bold">This is a Headline</Headline>
     </SC.Container>
   );
 }
