@@ -4,22 +4,22 @@ import { fontSizes } from "@/components/templates/ThemeWrapper/types";
 import { ThemeColors } from "../Icon/types";
 
 const sm = () => css`
-  font-size: 0.875rem;
+  font-size: ${({ theme }) => theme.fontSizes.small};
   line-height: 1rem;
 `;
 
 const md = () => css`
-  font-size: 1.25rem;
+  font-size: ${({ theme }) => theme.fontSizes.medium};
   line-height: 1.375rem;
 `;
 
 const lg = () => css`
-  font-size: 1.5rem;
+  font-size: ${({ theme }) => theme.fontSizes.large};
   line-height: 1.625rem;
 `;
 
 const xl = () => css`
-  font-size: 1.875rem;
+  font-size: ${({ theme }) => theme.fontSizes.xlarge};
   line-height: 2.2rem;
 `;
 

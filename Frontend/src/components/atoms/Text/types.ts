@@ -8,9 +8,8 @@ export type textWeight = "regular" | "bold";
 type themeColors = Exclude<keyof themeType, "fontSizes">;
 
 export interface IProps {
-  children: string;
+  children: string | string[];
   size?: fontSizes;
   color?: themeColors;
   weight?: textWeight;
-  compact?: boolean;
 }

@@ -6,6 +6,8 @@ export const ContentWrapper = styled.main`
 `;
 
 export const GlobalStyle = createGlobalStyle`
+  * {font-family: sans-serif;}
+
   ::-webkit-scrollbar {
     width: 12px;
   }
@@ -20,6 +22,6 @@ export const GlobalStyle = createGlobalStyle`
     border: 3px solid ${({ theme }) => theme.background}; 
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: ${({ theme }) => theme.highlight};
+    background: ${({ theme }) => theme.textPrimary};
   }
 `;
