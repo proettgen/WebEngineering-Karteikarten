@@ -1,5 +1,4 @@
 "use client";
-
 import React from "react";
 import { usePathname } from "next/navigation";
 import Link from "@/components/atoms/Link";
@@ -10,10 +9,10 @@ const NavigationBar: React.FC<NavBarProps> = () => {
   const pathname = usePathname();
 
   const links = [
-    { href: "/Home", label: "Home" },
-    { href: "/Cards", label: "Cards" },
-    { href: "/Test", label: "Test" },
-    { href: "/learning-mode", label: "Learn" },
+    { href: "/home", label: "Home" },
+    { href: "/cards", label: "Cards" },
+    { href: "/test", label: "Test" },
+    { href: "/learn", label: "Learn" },
   ];
 
   const isActiveLink = (href: string): boolean => {
@@ -21,7 +20,7 @@ const NavigationBar: React.FC<NavBarProps> = () => {
 
     // Für Root-Pfad nur exakte Übereinstimmung verwenden
     if (href === "/") {
-      return pathname === "/Home" || pathname === "/";
+      return pathname === "/home" || pathname === "/";
     }
     // Für andere Pfade prüfen, ob der aktuelle Pfad mit dem Link-Pfad beginnt
     return pathname.startsWith(href);

@@ -27,11 +27,13 @@ function HomeTemplate() {
           </Text>
         </Button>
         <Text color="background">or</Text>
-        <Button $variant="secondary">
-          <Text size="medium" color="background">
-            Guest
-          </Text>
-        </Button>
+        <Link href={"/cards"}>
+          <Button $variant="secondary">
+            <Text size="medium" color="background">
+              Guest
+            </Text>
+          </Button>
+        </Link>
       </SC.LoginWrapper>
       <SC.SectionWrapper>
         <Headline size="xl" color="textPrimary">
