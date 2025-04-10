@@ -1,6 +1,5 @@
-"use client";
 import React from "react";
-import Home from "./Home/page";
+import Home from "./home/page";
 
 //Hauptseite der Anwendung
 function App() {

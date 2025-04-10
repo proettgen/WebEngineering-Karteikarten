@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import * as SC from "./styles";
 import { CardFormProps } from "./types";

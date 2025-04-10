@@ -1,4 +1,4 @@
-"use client";
+import StyledComponentsRegistry from "../lib/registry";
 import ThemeWrapper from "../src/components/templates/ThemeWrapper/ThemeWrapper";
 import type { ReactNode } from "react";
 
@@ -11,9 +11,10 @@ die sich unter dem app Verzeichnis befinden.
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="de">
-      <head />
       <body style={{ margin: 0 }}>
-        <ThemeWrapper>{children}</ThemeWrapper>
+        <StyledComponentsRegistry>
+          <ThemeWrapper>{children}</ThemeWrapper>
+        </StyledComponentsRegistry>
       </body>
     </html>
   );

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { ThemeProvider } from "styled-components";
 import { lightTheme, darkTheme } from "./themes";
