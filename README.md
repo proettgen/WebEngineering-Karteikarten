@@ -2,6 +2,8 @@
 
 This is a modern web application for creating, organizing, and reviewing flashcards online. The application is built with Next.js, React, TypeScript, and Styled Components, and is optimized for both performance and developer experience.
 
+Please visit our [wiki](https://github.com/proettgen/WebEngineering-Karteikarten/wiki) if you are employed by DHBW Karlsruhe and evaluating this project. 
+
 ## Live Demo
 
 You can access the live version of the app here:  
