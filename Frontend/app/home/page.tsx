@@ -1,10 +1,10 @@
 "use client";
 import HomeTemplate from "../../src/components/templates/HomeTemplate/HomeTemplate";
 
-//Definiert die Seite unter der Route /Home
+// Defines the page under the route /Home
 
 /*
-Verzeichnisstruktur:
+Directory structure:
 
 app/
 ├── layout.tsx
@@ -18,14 +18,14 @@ templates/
 ├── TestTemplate.tsx
 */
 
-/*Warum so eine Struktur?:
-1. Wiederverwendbarkeit -> Templates können für mehrere Seiten genutzt werden
-2. Skalierbarkeit -> einfaches Hinzufügen von neuen Seiten
-3. Testbarkeit,Übersichtlichkeit -> Logik und Darstellung, Routing sind getrennt
-4. Wartbarkeit -> einfache Anpassung von Templates
-5. Erweiterbarkeit -> einfaches Hinzufügen von neuen Templates
-6. Konsistenz -> einheitliche Struktur für alle Seiten
-7. Performance -> nur benötigte Templates werden geladen
+/*Why such a structure?:
+1. Reusability -> Templates can be used for multiple pages
+2. Scalability -> Easy addition of new pages
+3. Testability, clarity -> Logic, presentation, and routing are separated
+4. Maintainability -> Easy adjustment of templates
+5. Extensibility -> Simple addition of new templates
+6. Consistency -> Uniform structure for all pages
+7. Performance -> Only required templates are loaded
 */
 
 function Home() {

@@ -1,7 +1,7 @@
 import React from "react";
 import Home from "./home/page";
 
-//Hauptseite der Anwendung
+// Main page of the application
 function App() {
   return <Home />;
 }

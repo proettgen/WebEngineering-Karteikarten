@@ -1,11 +1,10 @@
 import StyledComponentsRegistry from "../lib/registry";
 import ThemeWrapper from "../src/components/templates/ThemeWrapper/ThemeWrapper";
 import type { ReactNode } from "react";
-
 /*
-Root-Layout für die Anwendung. 
-Dieses Layout wird auf alle Seiten und Routen angewendet, 
-die sich unter dem app Verzeichnis befinden.
+Root layout for the application. 
+This layout is applied to all pages and routes 
+that are located under the app directory.
 */
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -19,6 +18,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     </html>
   );
 }
-/*der ThemeWrapper wird um alle Seiten und Komponenten der Anwendung gelegt.
- Das bedeutet, dass das Theme auf alle Seiten angewendet wird.
+/*The ThemeWrapper is applied to all pages and components of the application.
+ This means that the theme is applied to all pages.
 */

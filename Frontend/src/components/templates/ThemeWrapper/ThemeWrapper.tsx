@@ -8,13 +8,13 @@ import Footer from "@/components/organisms/Footer";
 import * as SC from "./styles";
 
 /*
-Der ThemeWrapper verwendet den ThemeProvider von styled-components,
- um das aktuelle Theme (entweder lightTheme oder darkTheme) 
- an alle untergeordneten Komponenten weiterzugeben. 
- Der ThemeProvider stellt das Theme über den React-Kontext zur Verfügung, 
- sodass alle Styled Components auf die Theme-Eigenschaften zugreifen können.
+The ThemeWrapper uses the ThemeProvider from styled-components
+to pass the current theme (either lightTheme or darkTheme)
+to all child components.
+The ThemeProvider provides the theme via the React context,
+allowing all styled components to access the theme properties.
 
- Für Beispiel siehe: themes.ts
+For example, see: themes.ts
 */
 
 const themeMap: Record<availableThemes, themeType> = {
