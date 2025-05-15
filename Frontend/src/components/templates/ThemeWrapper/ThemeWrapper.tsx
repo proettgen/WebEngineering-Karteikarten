@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ThemeProvider } from "styled-components";
 import { lightTheme, darkTheme } from "./themes";
 import { themeType, availableThemes } from "./types";
@@ -24,6 +24,24 @@ const themeMap: Record<availableThemes, themeType> = {
 
 export function ThemeWrapper({ children }: { children: React.ReactNode }) {
   const [themeName, setThemeName] = useState<availableThemes>("darkTheme");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("themeName");
+    if (saved === "lightTheme" || saved === "darkTheme") {
+      setThemeName(saved);
+    }
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem("themeName", themeName);
+    }
+  }, [themeName, mounted]);
+
+  if (!mounted) return null; // Prevents hydration mismatch
+
   return (
     <ThemeProvider theme={themeMap[themeName]}>
       <SC.GlobalStyle />

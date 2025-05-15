@@ -7,16 +7,16 @@ background-color: ${({ theme }) => theme.primary};
 color: ${({ theme }) => theme.textPrimary};
 */
 export const lightTheme: themeType = {
-  primary: "#6A5ACD", // Soft lavender
-  secondary: "#FFB6C1", // Light pink
-  background: "#FAF3E0", // Warm pastel cream
-  surface: "#FFFFFF", // Pure white for contrast
-  textPrimary: "#2C3E50", // Deep blue-gray
-  textSecondary: "#7F8C8D", // Muted gray-blue
-  border: "#D3D3D3", // Light gray
-  highlight: "#ffc954", // Soft pastel yellow
-  accept: "#77DD77", // Pastel green
-  deny: "#FF6961", // Pastel red
+  primary: "#2563eb",        // Blue-600
+  secondary: "#fbbf24",      // Amber-400
+  background: "#f9fafb",     // Gray-50
+  surface: "#ffffff",        // White
+  textPrimary: "#1e293b",    // Slate-800
+  textSecondary: "#64748b",  // Slate-400
+  border: "#e5e7eb",         // Gray-200
+  highlight: "#bae6fd",      // Sky-200
+  accept: "#22c55e",         // Green-500
+  deny: "#ef4444",           // Red-500
   fontSizes: {
     small: "0.875rem",
     medium: "1.25rem",
@@ -26,16 +26,16 @@ export const lightTheme: themeType = {
 };
 
 export const darkTheme: themeType = {
-  primary: "#A29BFE", // Soft purple
-  secondary: "#E67E99", // Muted pink
-  background: "#1E1E2E", // Deep blue-gray
-  surface: "#2C2C3A", // Soft dark background
-  textPrimary: "#EAEAEA", // Light gray
-  textSecondary: "#B0B0B0", // Muted gray
-  border: "#4E4E6A", // Desaturated blue-gray
-  highlight: "#d380ea", // Soft pastel purple
-  accept: "#55A899", // Muted teal green
-  deny: "#D95F5F", // Muted red
+  primary: "#3b82f6",        // Blue-500
+  secondary: "#fbbf24",      // Amber-400
+  background: "#18181b",     // Zinc-900
+  surface: "#23232a",        // Slightly lighter than background
+  textPrimary: "#f4f4f5",    // Zinc-100
+  textSecondary: "#a1a1aa",  // Zinc-400
+  border: "#27272a",         // Zinc-800
+  highlight: "#2563eb",      // Blue-600
+  accept: "#22d3ee",         // Cyan-400
+  deny: "#ef4444",           // Red-500
   fontSizes: {
     small: "0.875rem",
     medium: "1.25rem",

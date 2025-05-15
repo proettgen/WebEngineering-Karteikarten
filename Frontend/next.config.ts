@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
+const isProd = process.env.NODE_ENV === "production";
+
 const nextConfig: NextConfig = {
-  basePath: "/WebEngineering-Karteikarten",
+  basePath: isProd ? "/WebEngineering-Karteikarten" : "",
   output: "export",
   reactStrictMode: true,
   images: { unoptimized: true },
