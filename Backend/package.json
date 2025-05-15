@@ -1,0 +1,29 @@
+{
+  "name": "Template_Bun_Elysia",
+  "version": "1.0.50",
+  "scripts": {
+    "test": "vitest --ui",
+    "test:once": "vitest run",
+    "dev": "nodemon --ext ts --exec 'tsc && node dist/index.js'",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "format": "prettier --write src/**/*.ts"
+  },
+  "dependencies": {
+    "express": "latest"
+  },
+  "devDependencies": {
+    "@types/express": "latest",
+    "@types/node": "latest",
+    "@vitest/ui": "latest",
+    "eslint": "latest",
+    "eslint-config-prettier": "latest",
+    "nodemon": "latest",
+    "prettier": "latest",
+    "typescript": "latest",
+    "typescript-eslint": "latest",
+    "vitest": "latest"
+  }
+}
