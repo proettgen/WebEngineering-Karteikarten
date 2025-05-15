@@ -1,5 +1,5 @@
 {
-  "name": "SuperNicesBackend",
+  "name": "super-nices-backend",
   "version": "1.0.50",
   "scripts": {
     "test": "vitest --ui",
