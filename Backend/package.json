@@ -1,5 +1,5 @@
 {
-  "name": "Template_Bun_Elysia",
+  "name": "SuperNicesBackend",
   "version": "1.0.50",
   "scripts": {
     "test": "vitest --ui",
