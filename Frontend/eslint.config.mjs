@@ -1,16 +1,36 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
+import { defineConfig } from "eslint/config";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import js from "@eslint/js";
 import { FlatCompat } from "@eslint/eslintrc";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
+const __dirname = path.dirname(__filename);
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+    baseDirectory: __dirname,
+    recommendedConfig: js.configs.recommended,
+    allConfig: js.configs.all
 });
 
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-];
+export default defineConfig([{
+    extends: compat.extends("next/core-web-vitals", "eslint:recommended"),
 
-export default eslintConfig;
+    languageOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+    },
+
+    rules: {
+        "no-var": "error",
+        "prefer-const": "error",
+        "prefer-arrow-callback": "error",
+        "arrow-body-style": ["error", "as-needed"],
+        "func-style": ["error", "expression"],
+
+        "no-unused-vars": ["warn", {
+            argsIgnorePattern: "^_",
+        }],
+
+        "no-console": "warn",
+    },
+}]);

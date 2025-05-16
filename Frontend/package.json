@@ -16,12 +16,13 @@
     "styled-components": "^6.1.15"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.27.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-styled-components": "^2.1.4",
-    "eslint": "^9",
+    "eslint": "^9.26.0",
     "eslint-config-next": "^15.2.0",
     "gh-pages": "^6.3.0",
     "typescript": "^5"

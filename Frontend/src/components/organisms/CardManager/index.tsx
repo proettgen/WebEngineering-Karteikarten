@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { storageService } from "../../../services/storageService";
-import { DatabaseData } from "../../../database/dbtypes";
+import { storageService } from "@/services/storageService";
+import { DatabaseData } from "@/database/dbtypes";
 import Folder from "../../molecules/Folder";
 import Modal from "../../molecules/Modal";
 import Notification from "../../molecules/Notification";
