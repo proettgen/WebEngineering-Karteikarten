@@ -14,13 +14,13 @@ export default function CardManager() {
     type: "success" | "error" | "info";
   } | null>(null);
 
-  // Laden der Daten beim Start
+    // Load data on startup
   useEffect(() => {
     const data = storageService.getData();
     setFolders(data.folders);
   }, []);
 
-  // Speicherfunktion
+    // Save function
   const saveFolders = (newFolders: DatabaseData["folders"]) => {
     try {
       storageService.setData({ folders: newFolders });

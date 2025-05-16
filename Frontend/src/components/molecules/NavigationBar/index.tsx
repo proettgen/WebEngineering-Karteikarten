@@ -8,7 +8,7 @@ const NavigationBar: React.FC<NavBarProps> = () => {
   const pathname = usePathname();
 
   const links = [
-    { href: "/home", label: "Home" },
+    { href: "/", label: "Home" },
     { href: "/cards", label: "Cards" },
     { href: "/test", label: "Test" },
     { href: "/learn", label: "Learn" },
@@ -16,13 +16,8 @@ const NavigationBar: React.FC<NavBarProps> = () => {
 
   const isActiveLink = (href: string): boolean => {
     if (!pathname) return false;
-
-    // Für Root-Pfad nur exakte Übereinstimmung verwenden
-    if (href === "/") {
-      return pathname === "/home" || pathname === "/";
-    }
-    // Für andere Pfade prüfen, ob der aktuelle Pfad mit dem Link-Pfad beginnt
-    return pathname.startsWith(href);
+    // Use exact match for all links
+    return pathname === href;
   };
 
   return (
