@@ -7,13 +7,18 @@ const Link: React.FC<LinkProps> = ({
   children,
   color = "textPrimary",
   size = "medium",
+  openNewTab = false,
   ...props
-}) => {
-  return (
-    <SC.StyledLink color={color} size={size} href={href} {...props}>
-      {children}
-    </SC.StyledLink>
-  );
-};
+}) => (
+  <SC.StyledLink 
+    color={color} 
+    size={size} 
+    href={href} 
+    {...props}
+    {...(openNewTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+  >
+    {children}
+  </SC.StyledLink>
+);
 
 export default Link;
