@@ -1,5 +1,10 @@
 export interface CardFormProps {
-  onSubmit: (title: string, question: string, answer: string, tags: string[]) => void;
+  onSubmit: (
+    _title: string,
+    _question: string,
+    _answer: string,
+    _tags: string[],
+  ) => void;
   onDelete: () => void;
   initialTitle?: string;
   initialQuestion?: string;

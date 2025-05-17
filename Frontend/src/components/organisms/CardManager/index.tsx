@@ -6,7 +6,7 @@ import Modal from "../../molecules/Modal";
 import Notification from "../../molecules/Notification";
 import * as SC from "./styles";
 
-export default function CardManager() {
+const CardManager = () => {
   const [folders, setFolders] = useState<DatabaseData["folders"]>([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [notification, setNotification] = useState<{
@@ -25,7 +25,10 @@ export default function CardManager() {
     try {
       storageService.setData({ folders: newFolders });
       setFolders(newFolders);
-      setNotification({ message: "Saved successfully!", type: "success" });
+      setNotification({
+        message: "Saved successfully!",
+        type: "success",
+      });
     } catch (error) {
       console.error("Error saving folders:", error);
       setNotification({ message: "Error saving folders", type: "error" });
@@ -37,7 +40,7 @@ export default function CardManager() {
     title: string,
     question: string,
     answer: string,
-    tags: string[]
+    tags: string[],
   ) => {
     const newFolders = folders.map((folder) =>
       folder.name === folderName
@@ -45,7 +48,7 @@ export default function CardManager() {
             ...folder,
             cards: [...folder.cards, { title, question, answer, tags }],
           }
-        : folder
+        : folder,
     );
     saveFolders(newFolders);
   };
@@ -56,7 +59,7 @@ export default function CardManager() {
     newTitle: string,
     newQuestion: string,
     newAnswer: string,
-    newTags: string[]
+    newTags: string[],
   ) => {
     const newFolders = folders.map((folder) =>
       folder.name === folderName
@@ -70,10 +73,10 @@ export default function CardManager() {
                     answer: newAnswer,
                     tags: newTags,
                   }
-                : card
+                : card,
             ),
           }
-        : folder
+        : folder,
     );
     saveFolders(newFolders);
   };
@@ -85,7 +88,7 @@ export default function CardManager() {
             ...folder,
             cards: folder.cards.filter((_, index) => index !== cardIndex),
           }
-        : folder
+        : folder,
     );
     saveFolders(newFolders);
   };
@@ -99,13 +102,17 @@ export default function CardManager() {
   return (
     <SC.Container>
       <SC.Header>
+          {/* This should not be a header, a website should only have one header */}
         <SC.Title>Card Manager</SC.Title>
         <SC.AddButton onClick={() => setModalOpen(true)}>
           Add Folder
         </SC.AddButton>
       </SC.Header>
       {notification && (
-        <Notification message={notification.message} type={notification.type} />
+          <Notification
+            message={notification.message}
+            type={notification.type}
+          />
       )}
       {folders.map((folder, index) => (
         <Folder
@@ -140,4 +147,5 @@ export default function CardManager() {
       </Modal>
     </SC.Container>
   );
-}
+};
+export default CardManager;

@@ -1,4 +1,5 @@
 import { themeType } from "@/components/templates/ThemeWrapper/types";
+import React from "react";
 
 export type HeadlineSize = "xs" | "sm" | "md" | "lg" | "xl" | "xxl";
 export type HeadlineWeight = "regular" | "bold";

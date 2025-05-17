@@ -2,7 +2,7 @@ import React from "react";
 import * as SC from "./styles";
 import { ModalProps } from "./types";
 
-export default function Modal({ isOpen, onClose, children }: ModalProps) {
+const Modal = ({ isOpen, onClose, children }: ModalProps) => {
   if (!isOpen) return null;
 
   return (
@@ -13,4 +13,5 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
       </SC.Modal>
     </SC.Overlay>
   );
-}
+};
+export default Modal;

@@ -5,14 +5,14 @@ import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import Textarea from "@/components/atoms/Textarea";
 
-export default function CardForm({
+const CardForm = ({
   onSubmit,
   onDelete,
   initialTitle = "",
   initialQuestion = "",
   initialAnswer = "",
   initialTags = "",
-}: CardFormProps) {
+}: CardFormProps) => {
   const [title, setTitle] = useState(initialTitle);
   const [question, setQuestion] = useState(initialQuestion);
   const [answer, setAnswer] = useState(initialAnswer);
@@ -31,7 +31,7 @@ export default function CardForm({
       title,
       question,
       answer,
-      tags.split(",").map((tag) => tag.trim())
+      tags.split(",").map((tag) => tag.trim()),
     );
   };
 
@@ -67,4 +67,5 @@ export default function CardForm({
       </Button>
     </SC.Form>
   );
-}
+};
+export default CardForm;

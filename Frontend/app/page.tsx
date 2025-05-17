@@ -1,8 +1,6 @@
-"use client"
+"use client";
 import React from "react";
 import HomeTemplate from "@/components/templates/HomeTemplate/HomeTemplate";
-
-
 /*
 Directory structure:
 
@@ -27,8 +25,5 @@ templates/
 */
 
 // Main page of the application
-function App() {
-  return <HomeTemplate />;
-}
-
+const App = () => <HomeTemplate />;
 export default App;

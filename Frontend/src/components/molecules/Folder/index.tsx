@@ -5,17 +5,32 @@ import CardForm from "../CardForm";
 import * as SC from "./styles";
 import { FolderProps } from "./types";
 
-export default function Folder({ name, cards, onAddCard, onEditCard, onDeleteCard }: FolderProps) {
+const Folder = ({
+  name,
+  cards,
+  onAddCard,
+  onEditCard,
+  onDeleteCard,
+}: FolderProps) => {
   const [isAdding, setIsAdding] = useState(false);
-  const [flippedCards, setFlippedCards] = useState<boolean[]>(cards.map(() => false));
+  const [flippedCards, setFlippedCards] = useState<boolean[]>(
+    cards.map(() => false),
+  );
 
-  const handleAddCard = (title: string, question: string, answer: string, tags: string[]) => {
+  const handleAddCard = (
+    title: string,
+    question: string,
+    answer: string,
+    tags: string[],
+  ) => {
     onAddCard(name, title, question, answer, tags);
     setIsAdding(false);
   };
 
   const handleFlip = (index: number) => {
-    setFlippedCards(flippedCards.map((flipped, i) => (i === index ? !flipped : flipped)));
+    setFlippedCards(
+      flippedCards.map((flipped, i) => (i === index ? !flipped : flipped)),
+    );
   };
 
   return (
@@ -32,7 +47,7 @@ export default function Folder({ name, cards, onAddCard, onEditCard, onDeleteCar
             question={card.question}
             answer={card.answer}
             tags={card.tags}
-            onEdit={(newTitle, newQuestion, newAnswer, newTags) => 
+            onEdit={(newTitle, newQuestion, newAnswer, newTags) =>
               onEditCard(name, index, newTitle, newQuestion, newAnswer, newTags)
             }
             onDelete={() => onDeleteCard(name, index)}
@@ -48,4 +63,5 @@ export default function Folder({ name, cards, onAddCard, onEditCard, onDeleteCar
       )}
     </SC.FolderContainer>
   );
-}
+};
+export default Folder;

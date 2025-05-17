@@ -10,19 +10,16 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
   type = "button",
   ...rest
-}) => {
-  return (
-    <SC.Button
-      $variant={$variant}
-      disabled={disabled}
-      onClick={onClick}
-      type={type}
-      {...rest}
-    >
-      {icon && icon}
-      {children}
-    </SC.Button>
-  );
-};
-
+}) => (
+  <SC.Button
+    $variant={$variant}
+    disabled={disabled}
+    onClick={onClick}
+    type={type}
+    {...rest}
+  >
+    {icon && icon}
+    {children}
+  </SC.Button>
+);
 export default Button;

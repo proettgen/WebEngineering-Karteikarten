@@ -25,3 +25,4 @@ export const Headline: React.FC<IProps> = (props) => {
     </SC.Headline>
   );
 };
+export default Headline;

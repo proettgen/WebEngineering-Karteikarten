@@ -2,8 +2,5 @@
 import React from "react";
 import CardManagerTemplate from "@/components/templates/CardManagerTemplate/index";
 
-function Cards() {
-  return <CardManagerTemplate />;
-}
-
+const Cards = () => <CardManagerTemplate />;
 export default Cards;

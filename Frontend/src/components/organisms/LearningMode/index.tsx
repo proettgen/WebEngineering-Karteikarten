@@ -5,7 +5,7 @@ import * as SC from "./styles";
 import Button from "@/components/atoms/Button";
 import Card from "@/components/molecules/Card";
 
-export default function LearningMode() {
+const LearningMode = () => {
   const [cardPool, setCardPool] = useState<
     DatabaseData["folders"][number]["cards"]
   >([]);
@@ -39,7 +39,7 @@ export default function LearningMode() {
       setCardPool(updatedPool);
       if (updatedPool.length > 0) {
         setCurrentCard(
-          updatedPool[Math.floor(Math.random() * updatedPool.length)]
+          updatedPool[Math.floor(Math.random() * updatedPool.length)],
         );
       } else {
         setCurrentCard(null);
@@ -86,4 +86,5 @@ export default function LearningMode() {
       )}
     </SC.Container>
   );
-}
+};
+export default LearningMode;

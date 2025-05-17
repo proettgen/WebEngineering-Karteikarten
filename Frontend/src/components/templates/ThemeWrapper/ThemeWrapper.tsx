@@ -22,7 +22,7 @@ const themeMap: Record<availableThemes, themeType> = {
   darkTheme,
 };
 
-export function ThemeWrapper({ children }: { children: React.ReactNode }) {
+const ThemeWrapper = ({ children }: { children: React.ReactNode }) => {
   const [themeName, setThemeName] = useState<availableThemes>("darkTheme");
   const [mounted, setMounted] = useState(false);
 
@@ -50,5 +50,5 @@ export function ThemeWrapper({ children }: { children: React.ReactNode }) {
       <Footer />
     </ThemeProvider>
   );
-}
+};
 export default ThemeWrapper;

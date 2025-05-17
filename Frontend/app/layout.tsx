@@ -7,17 +7,16 @@ This layout is applied to all pages and routes
 that are located under the app directory.
 */
 
-export default function RootLayout({ children }: { children: ReactNode }) {
-  return (
-    <html lang="de">
-      <body style={{ margin: 0 }}>
-        <StyledComponentsRegistry>
-          <ThemeWrapper>{children}</ThemeWrapper>
-        </StyledComponentsRegistry>
-      </body>
-    </html>
-  );
-}
+const RootLayout = ({ children }: { children: ReactNode }) => (
+  <html lang="de">
+    <body style={{ margin: 0 }}>
+      <StyledComponentsRegistry>
+        <ThemeWrapper>{children}</ThemeWrapper>
+      </StyledComponentsRegistry>
+    </body>
+  </html>
+);
+export default RootLayout;
 /*The ThemeWrapper is applied to all pages and components of the application.
  This means that the theme is applied to all pages.
 */

@@ -4,7 +4,7 @@ import { SearchBarProps } from "./types";
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 
-export default function SearchBar({ placeholder, onSearch }: SearchBarProps) {
+const SearchBar = ({ placeholder, onSearch }: SearchBarProps) => {
   const [searchValue, setSearchValue] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,4 +22,5 @@ export default function SearchBar({ placeholder, onSearch }: SearchBarProps) {
       <Button onClick={onSearch}>Search</Button>
     </SC.SearchBarWrapper>
   );
-}
+};
+export default SearchBar;
