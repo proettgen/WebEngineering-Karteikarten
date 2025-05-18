@@ -1,7 +1,13 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
-export const Container = styled.div`
-  padding: 20px;
+export const ContentWrapper = styled.div`
+  display: grid;
+  grid-template-columns: auto 1fr;
+  padding: 0;
+`;
+
+export const CardsWrapper = styled.div`
+  padding: 22px;
 `;
 
 export const Header = styled.div`

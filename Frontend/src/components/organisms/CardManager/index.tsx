@@ -5,6 +5,7 @@ import Folder from "../../molecules/Folder";
 import Modal from "../../molecules/Modal";
 import Notification from "../../molecules/Notification";
 import * as SC from "./styles";
+import Aside from "@/components/molecules/Aside";
 
 const CardManager = () => {
   const [folders, setFolders] = useState<DatabaseData["folders"]>([]);
@@ -14,13 +15,13 @@ const CardManager = () => {
     type: "success" | "error" | "info";
   } | null>(null);
 
-    // Load data on startup
+  // Load data on startup
   useEffect(() => {
     const data = storageService.getData();
     setFolders(data.folders);
   }, []);
 
-    // Save function
+  // Save function
   const saveFolders = (newFolders: DatabaseData["folders"]) => {
     try {
       storageService.setData({ folders: newFolders });
@@ -29,9 +30,8 @@ const CardManager = () => {
         message: "Saved successfully!",
         type: "success",
       });
-    } catch (error) {
-      console.error("Error saving folders:", error);
-      setNotification({ message: "Error saving folders", type: "error" });
+    } catch {
+      setNotification({ message: "Error saving folders:", type: "error" });
     }
   };
 
@@ -100,52 +100,55 @@ const CardManager = () => {
   };
 
   return (
-    <SC.Container>
-      <SC.Header>
+    <SC.ContentWrapper>
+      <Aside />
+      <SC.CardsWrapper>
+        <SC.Header>
           {/* This should not be a header, a website should only have one header */}
-        <SC.Title>Card Manager</SC.Title>
-        <SC.AddButton onClick={() => setModalOpen(true)}>
-          Add Folder
-        </SC.AddButton>
-      </SC.Header>
-      {notification && (
+          <SC.Title>Card Manager</SC.Title>
+          <SC.AddButton onClick={() => setModalOpen(true)}>
+            Add Folder
+          </SC.AddButton>
+        </SC.Header>
+        {notification && (
           <Notification
             message={notification.message}
             type={notification.type}
           />
-      )}
-      {folders.map((folder, index) => (
-        <Folder
-          key={index}
-          name={folder.name}
-          cards={folder.cards}
-          onAddCard={addCard}
-          onEditCard={editCard}
-          onDeleteCard={deleteCard}
-        />
-      ))}
-      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)}>
-        <div>
-          <h2>Add Folder</h2>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const formData = new FormData(e.target as HTMLFormElement);
-              const folderName = formData.get("folderName") as string;
-              addFolder(folderName);
-            }}
-          >
-            <input
-              type="text"
-              name="folderName"
-              placeholder="Folder Name"
-              required
-            />
-            <button type="submit">Add Folder</button>
-          </form>
-        </div>
-      </Modal>
-    </SC.Container>
+        )}
+        {folders.map((folder, index) => (
+          <Folder
+            key={index}
+            name={folder.name}
+            cards={folder.cards}
+            onAddCard={addCard}
+            onEditCard={editCard}
+            onDeleteCard={deleteCard}
+          />
+        ))}
+        <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)}>
+          <div>
+            <h2>Add Folder</h2>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target as HTMLFormElement);
+                const folderName = formData.get("folderName") as string;
+                addFolder(folderName);
+              }}
+            >
+              <input
+                type="text"
+                name="folderName"
+                placeholder="Folder Name"
+                required
+              />
+              <button type="submit">Add Folder</button>
+            </form>
+          </div>
+        </Modal>
+      </SC.CardsWrapper>
+    </SC.ContentWrapper>
   );
 };
 export default CardManager;

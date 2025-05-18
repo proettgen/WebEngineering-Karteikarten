@@ -6,8 +6,6 @@ import TestTemplate from "../../src/components/templates/TestTemplate/TestTempla
 
 //siehe auch Home/page.tsx für erweiterte Erklärung
 
-function Test() {
-  return <TestTemplate />;
-}
+const Test = () => <TestTemplate />;
 
 export default Test;

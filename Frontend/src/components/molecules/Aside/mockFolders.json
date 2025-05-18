@@ -1,0 +1,58 @@
+{
+  "folders": [
+    {
+      "id": "a3f1c8b2-4d5e-4a6f-9b1c-2e3d4f5a6b7c",
+      "name": "Documents",
+      "parentId": null,
+      "createdAt": "2025-05-17T10:00:00Z"
+    },
+    {
+      "id": "b4e2d9a3-5f6b-4c7d-8e2f-3f4g5h6i7j8k",
+      "name": "Work",
+      "parentId": "a3f1c8b2-4d5e-4a6f-9b1c-2e3d4f5a6b7c",
+      "createdAt": "2025-05-17T10:01:00Z"
+    },
+    {
+      "id": "c5f3e0b4-6g7c-5d8e-9f3g-4h5i6j7k8l9m",
+      "name": "Reports",
+      "parentId": "b4e2d9a3-5f6b-4c7d-8e2f-3f4g5h6i7j8k",
+      "createdAt": "2025-05-17T10:02:00Z"
+    },
+    {
+      "id": "d6g4f1c5-7h8d-6e9f-0g4h-5i6j7k8l9m0n",
+      "name": "Presentations",
+      "parentId": "b4e2d9a3-5f6b-4c7d-8e2f-3f4g5h6i7j8k",
+      "createdAt": "2025-05-17T10:03:00Z"
+    },
+    {
+      "id": "e7h5g2d6-8i9e-7f0g-1h5i-6j7k8l9m0n1o",
+      "name": "Personal",
+      "parentId": "a3f1c8b2-4d5e-4a6f-9b1c-2e3d4f5a6b7c",
+      "createdAt": "2025-05-17T10:04:00Z"
+    },
+    {
+      "id": "f8i6h3e7-9j0f-8g1h-2i6j-7k8l9m0n1o2p",
+      "name": "Photos",
+      "parentId": "e7h5g2d6-8i9e-7f0g-1h5i-6j7k8l9m0n1o",
+      "createdAt": "2025-05-17T10:05:00Z"
+    },
+    {
+      "id": "g9j7i4f8-0k1g-9h2i-3j7k-8l9m0n1o2p3q",
+      "name": "Music",
+      "parentId": null,
+      "createdAt": "2025-05-17T10:06:00Z"
+    },
+    {
+      "id": "h0k8j5g9-1l2h-0i3j-4k8l-9m0n1o2p3q4r",
+      "name": "Rock",
+      "parentId": "g9j7i4f8-0k1g-9h2i-3j7k-8l9m0n1o2p3q",
+      "createdAt": "2025-05-17T10:07:00Z"
+    },
+    {
+      "id": "i1l9k6h0-2m3i-1j4k-5l9m-0n1o2p3q4r5s",
+      "name": "Classic",
+      "parentId": "h0k8j5g9-1l2h-0i3j-4k8l-9m0n1o2p3q4r",
+      "createdAt": "2025-05-17T10:08:00Z"
+    }
+  ]
+}
