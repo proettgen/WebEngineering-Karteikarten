@@ -23,8 +23,7 @@ export const Button = styled.button<{
   }};
 
   color: ${({ theme, $variant }) => {
-    if ($variant === "secondary") return theme.textPrimary;
-    return theme.surface;
+    return theme.textPrimary;
   }};
 
   &:hover:not(:disabled) {
