@@ -22,7 +22,11 @@ export const Button = styled.button<{
     return theme.primary;
   }};
 
+/*maybe $variant is not needed here, because all buttons have the same color (the same color looks better imo at least)*/
   color: ${({ theme, $variant }) => {
+    if ($variant === "secondary") return theme.textPrimary;
+    else if ($variant === "accept") return theme.textPrimary;
+    else if ($variant === "deny") return theme.textPrimary;
     return theme.textPrimary;
   }};
 
