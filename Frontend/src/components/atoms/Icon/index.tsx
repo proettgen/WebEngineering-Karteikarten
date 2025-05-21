@@ -23,16 +23,22 @@ const sizeMap: Record<IconSize, string> = {
   xl: "48px",
 };
 
-const Icon: React.FC<IconProps> = ({
-  children,
-  size = "m",
-  color = "textPrimary",
-  onClick,
+const Icon: React.FC<IconProps> = ({ 
+  children, 
+  size, 
+  color, 
+  onClick, 
+  cursorStyle = "default" // Add default value for cursorStyle
 }) => {
   const sizeValue = sizeMap[size];
 
   return (
-    <SC.IconWrapper $sizeValue={sizeValue} $colorKey={color} onClick={onClick}>
+    <SC.IconWrapper 
+      $sizeValue={sizeValue} 
+      $colorKey={color} 
+      onClick={onClick}
+      $cursorStyle={cursorStyle} // Pass cursorStyle to IconWrapper
+    >
       {children}
     </SC.IconWrapper>
   );

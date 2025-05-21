@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import HomeTemplate from "@/components/templates/HomeTemplate/HomeTemplate";
+import HomeTemplate from "@/components/templates/HomeTemplate";
 /*
 Directory structure:
 
@@ -10,8 +10,8 @@ app/
 ├── Test/
 │   └── page.tsx
 templates/
-├── HomeTemplate.tsx
-├── TestTemplate.tsx
+├── index.tsx
+├── index.tsx
 */
 
 /*Why such a structure?:

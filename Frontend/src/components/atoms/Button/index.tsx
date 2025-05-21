@@ -5,7 +5,6 @@ import { ButtonProps } from "./types";
 const Button: React.FC<ButtonProps> = ({
   $variant = "primary",
   children,
-  icon,
   disabled = false,
   onClick,
   type = "button",
@@ -18,7 +17,6 @@ const Button: React.FC<ButtonProps> = ({
     type={type}
     {...rest}
   >
-    {icon && icon}
     {children}
   </SC.Button>
 );

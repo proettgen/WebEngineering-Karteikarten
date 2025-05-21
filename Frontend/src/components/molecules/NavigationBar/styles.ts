@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { NavItemProps } from "./types";
 
 export const NavBar = styled.nav`
@@ -13,7 +13,8 @@ export const NavBar = styled.nav`
   border-left: 1px solid ${({ theme }) => theme.border};
 
   &::-webkit-scrollbar {
-    height: 4px;
+    height: 3px;
+    color: ${({ theme }) => theme.textPrimary};
   }
 
   &::-webkit-scrollbar-track {
@@ -21,8 +22,9 @@ export const NavBar = styled.nav`
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: ${({ theme }) => theme.border};
-    border-radius: 4px;
+    background: ${({ theme }) => theme.border};
+    border-radius: 3px;
+    border: ${({ theme }) => theme.border};
   }
 
   > a {
@@ -48,13 +50,14 @@ export const NavItem = styled.div<NavItemProps>`
 
   &:hover {
     background-color: ${({ theme, $active }) =>
-      $active ? `${theme.primary}20` : `${theme.primary}10`};
-    color: ${({ theme }) => theme.primary};
+      $active ? `${theme.primary}33` : `${theme.background}`};
+    color: ${({ theme, $active }) =>
+      $active ? `${theme.primary}` : `${theme.textPrimary}`};
   }
 
   ${({ $active, theme }) =>
     $active &&
-    `
+    css`
     &::after {
       content: '';
       position: absolute;

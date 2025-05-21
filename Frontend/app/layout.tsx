@@ -1,5 +1,5 @@
 import StyledComponentsRegistry from "../lib/registry";
-import ThemeWrapper from "../src/components/templates/ThemeWrapper/ThemeWrapper";
+import ThemeWrapper from "@/components/templates/ThemeWrapper";
 import type { ReactNode } from "react";
 /*
 Root layout for the application. 

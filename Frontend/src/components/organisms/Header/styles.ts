@@ -9,10 +9,15 @@ export const HeaderWrapper = styled.header`
   grid-template-columns: auto 1fr auto;
   align-items: center;
   border-bottom: 1px solid ${({ theme }) => theme.border};
+  position: sticky;
+  top: 0;
+  z-index: 2;
 `;
 
 export const LogoWrapper = styled.div`
   a {
+    box-sizing: border-box;
+    width: 290px;
     display: flex;
     flex-direction: row;
     gap: 0.5rem;

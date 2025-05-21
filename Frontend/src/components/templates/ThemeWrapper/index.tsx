@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { ThemeProvider } from "styled-components";
 import { lightTheme, darkTheme } from "./themes";
-import { themeType, availableThemes } from "./types";
+import { ThemeType, availableThemes } from "./types";
 import Header from "@/components/organisms/Header";
 import Footer from "@/components/organisms/Footer";
 import * as SC from "./styles";
@@ -17,7 +17,7 @@ allowing all styled components to access the theme properties.
 For example, see: themes.ts
 */
 
-const themeMap: Record<availableThemes, themeType> = {
+const themeMap: Record<availableThemes, ThemeType> = {
   lightTheme,
   darkTheme,
 };

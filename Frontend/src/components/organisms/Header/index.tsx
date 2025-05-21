@@ -25,6 +25,7 @@ const Header: FC<HeaderProps> = ({ themeName, setTheme }) => (
     <Icon
       size="m"
       color="textPrimary"
+      cursorStyle="pointer"
       onClick={() =>
         setTheme((prev) => (prev === "lightTheme" ? "darkTheme" : "lightTheme"))
       }

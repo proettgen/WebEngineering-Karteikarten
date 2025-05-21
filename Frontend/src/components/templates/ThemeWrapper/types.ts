@@ -1,4 +1,4 @@
-export type themeType = {
+export type ThemeType = {
   primary: string;
   secondary: string;
   background: string;
@@ -17,6 +17,6 @@ export type themeType = {
   };
 };
 
-export type fontSizes = keyof themeType["fontSizes"];
+export type fontSizes = keyof ThemeType["fontSizes"];
 
 export type availableThemes = "lightTheme" | "darkTheme";

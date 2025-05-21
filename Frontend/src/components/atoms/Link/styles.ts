@@ -7,4 +7,8 @@ export const StyledLink = styled(Link)<StyledLinkProps>`
   color: ${({ theme, color }) => theme[color]};
   font-size: ${({ theme, size }) => theme.fontSizes[size]};
   text-decoration: none;
+
+  &:hover {
+    text-decoration: ${({ $underlineOnHover }) => $underlineOnHover ? 'underline' : 'none'};
+  }
 `;

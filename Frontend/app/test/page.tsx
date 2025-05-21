@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import TestTemplate from "../../src/components/templates/TestTemplate/TestTemplate";
+import TestTemplate from "@/components/templates/TestTemplate";
 
 //Definiert die Seite unter der Route /Test
 

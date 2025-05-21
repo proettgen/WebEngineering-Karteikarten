@@ -8,12 +8,14 @@ const Link: React.FC<LinkProps> = ({
   color = "textPrimary",
   size = "medium",
   openNewTab = false,
+  underlineOnHover = false,
   ...props
 }) => (
   <SC.StyledLink 
     color={color} 
     size={size} 
     href={href} 
+    $underlineOnHover={underlineOnHover}
     {...props}
     {...(openNewTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
   >

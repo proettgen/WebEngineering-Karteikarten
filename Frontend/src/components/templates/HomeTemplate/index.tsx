@@ -20,12 +20,16 @@ const HomeTemplate = () => (
       </Text>
     </SC.SectionWrapper>
     <SC.LoginWrapper>
-      <Button disabled={true}>
-        <Text size="medium" color="background">
-          Login
-        </Text>
-      </Button>
-      <Text color="background">or</Text>
+      <Link href={"/login"}>
+        <Button>
+          <Text size="medium" color="background">
+            Login
+          </Text>
+        </Button>
+      </Link>
+      <Text color="background" size="medium">
+        or
+      </Text>
       <Link href={"/cards"}>
         <Button $variant="secondary">
           <Text size="medium" color="background">
@@ -38,14 +42,14 @@ const HomeTemplate = () => (
       <Headline size="xl" color="textPrimary">
         Getting started is easy
       </Headline>
-      <div>
+      <>
         <Text size="medium" color="textPrimary">
           Dont have an account yet?{" "}
         </Text>
-        <Link href={"/Register"} color="secondary">
+        <Link href={"/signup"} color="secondary">
           Register here!
         </Link>
-      </div>
+      </>
       <Text size="medium" color="textPrimary">
         Create your own decks in seconds and start reviewing right away.
       </Text>

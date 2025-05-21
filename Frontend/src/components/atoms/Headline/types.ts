@@ -1,10 +1,10 @@
-import { themeType } from "@/components/templates/ThemeWrapper/types";
+import { ThemeType } from "@/components/templates/ThemeWrapper/types";
 import React from "react";
 
 export type HeadlineSize = "xs" | "sm" | "md" | "lg" | "xl" | "xxl";
 export type HeadlineWeight = "regular" | "bold";
 
-type ThemeColors = Exclude<keyof themeType, "fontSizes">;
+type ThemeColors = Exclude<keyof ThemeType, "fontSizes">;
 
 export interface IProps {
   children: React.ReactNode;
