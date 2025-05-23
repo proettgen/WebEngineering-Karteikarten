@@ -3,13 +3,13 @@ import styled from 'styled-components';
 export const CardContainer = styled.div`
   perspective: 1000px;
   width: 100%;
-  max-width: 28vw; 
+  max-width: 28vw;
   margin-bottom: 20px;
 `;
 
 export const Card = styled.div<{ $isFlipped: boolean }>`
   width: 100%;
-  height: 30vh; 
+  height: 30vh;
   position: relative;
   transform-style: preserve-3d;
   transition: transform 0.6s;
@@ -21,15 +21,15 @@ export const CardSide = styled.div`
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
-  border: 1px solid ${({ theme }) => theme.border};
-  border-radius: 5px;
-  padding: 20px;
+  border: 3px solid ${({ theme }) => theme.border};
+  border-radius: 16px;
+  padding: 24px 20px 56px 20px; 
   background-color: ${({ theme }) => theme.surface};
   color: ${({ theme }) => theme.textPrimary};
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   box-sizing: border-box;
   overflow: hidden;
 `;
@@ -40,61 +40,59 @@ export const CardBack = styled(CardSide)`
   transform: rotateY(180deg);
 `;
 
-export const Title = styled.h2`
-  margin: 0 0 10px 0;
-  font-size: 1.2em; 
-  text-align: center; 
+export const FlipButtonWrapper = styled.div`
+  position: absolute;
+  top: 16px;
+  right: 16px;
 `;
 
-export const SmallText = styled.span`
-  font-size: 0.8em;
-  color: ${({ theme }) => theme.textSecondary};
+export const EditButtonWrapper = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  display: flex;
+  justify-content: center;
 `;
 
-export const Question = styled.p`
-  margin: 0 0 10px 0;
-  font-weight: bold;
-  font-size: 1.5em; 
-  text-align: center; 
+export const TitleWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
 `;
 
-export const Answer = styled.p`
-  margin: 0 0 10px 0;
-  font-size: 1.5em; 
-  text-align: center; 
+export const MainTextWrapper = styled.div`
+  width: 100%;
+  margin-top: 12px;
+  text-align: center;
+  /* Kein Flex-Layout mehr nötig */
 `;
 
-export const Tags = styled.div`
-  margin-top: 10px;
-  font-size: 0.9em;
-  color: ${({ theme }) => theme.textSecondary};
-  text-align: center; 
-`;
-
-export const ToggleButton = styled.button`
-  margin-top: 10px;
-  padding: 5px 10px;
-  background-color: ${({ theme }) => theme.primary};
+export const FlipButton = styled.button`
+  background-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border:1px solid ${({ theme }) => theme.border};
   color: ${({ theme }) => theme.onPrimary};
-  border: none;
-  border-radius: 3px;
+  padding: 8px;
+  border-radius: 50%;
   cursor: pointer;
+  position: relative;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
 
   &:hover {
-    background-color: ${({ theme }) => theme.primaryHover};
+    background-color: ${({ theme }) => theme.background};
+    border-color: ${({ theme }) => theme.textSecondary};
   }
-`;
 
-export const EditButton = styled.button`
-  margin-top: 10px;
-  padding: 5px 10px;
-  background-color: ${({ theme }) => theme.secondary};
-  color: ${({ theme }) => theme.onSecondary};
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.secondaryHover};
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: ${({ theme }) => theme.onPrimary};
+    pointer-events: none;
   }
 `;
