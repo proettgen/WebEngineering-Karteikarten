@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
 import LearningModeTemplate from "@/components/templates/LearningModeTemplate";
-import LearningMode from "@/components/organisms/LearningMode";
+import LearningModeSelection from "@/components/organisms/LearningModeSelection";
 
 const LearningModePage = () => (
   <LearningModeTemplate>
-    <LearningMode />
+    <LearningModeSelection />
   </LearningModeTemplate>
 );
 

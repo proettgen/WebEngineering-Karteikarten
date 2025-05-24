@@ -10,9 +10,9 @@ export const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
 `;
 
 export const Title = styled.h1`
-  margin: 0;
+  margin-top: 32px;
+  margin-left: 32px;
 `;

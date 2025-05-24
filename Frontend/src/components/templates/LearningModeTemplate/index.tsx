@@ -7,7 +7,9 @@ type LearningModeTemplateProps = {
 
 const LearningModeTemplate = ({ children }: LearningModeTemplateProps) => (
   <SC.Container>
-    <SC.Title>Lernmodus</SC.Title>
+    <SC.Header>
+      <SC.Title>Learning Mode</SC.Title>
+    </SC.Header>
     {children}
   </SC.Container>
 );
