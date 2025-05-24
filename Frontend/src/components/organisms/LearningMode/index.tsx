@@ -14,6 +14,15 @@ const LearningMode = () => {
   >(null);
   const [isFlipped, setIsFlipped] = useState(false);
 
+  // Zustand für den Hinweis, ob die Karte umgedreht werden muss
+  const [showFlipHint, setShowFlipHint] = useState(false);
+  const handleHint = () => {
+    if (!isFlipped) {
+      setShowFlipHint(true);
+      setTimeout(() => setShowFlipHint(false), 2000); // Hinweis verschwindet nach 2 Sekunden
+    }
+  };
+
   useEffect(() => {
     const data = storageService.getData();
     const allCards = data.folders.flatMap((folder) => folder.cards);
@@ -70,19 +79,44 @@ const LearningMode = () => {
             onFlip={handleFlip}
           />
           <SC.ButtonContainer>
-            <Button $variant="accept" onClick={markCorrect}>
-              Richtig
-            </Button>
-            <Button $variant="deny" onClick={markWrong}>
-              Falsch
-            </Button>
+            <span
+              style={{ display: "inline-block" }}
+              onMouseDown={handleHint}
+              onMouseEnter={handleHint}
+              tabIndex={-1}
+            >
+              <Button
+                $variant="accept"
+                onClick={markCorrect}
+                disabled={!isFlipped}
+              >
+                Correct
+              </Button>
+            </span>
+            <span
+              style={{ display: "inline-block" }}
+              onMouseDown={handleHint}
+              onMouseEnter={handleHint}
+              tabIndex={-1}
+            >
+              <Button $variant="deny" onClick={markWrong} disabled={!isFlipped}>
+                Incorrect
+              </Button>
+            </span>
             <Button $variant="secondary" onClick={getNextCard}>
-              Nächste Karte
+              Next Card
             </Button>
           </SC.ButtonContainer>
+          <div style={{ minHeight: 24, marginTop: 8 }}>
+            {showFlipHint && (
+              <span style={{ color: "red" }}>
+                Please flip the card first to evaluate it!
+              </span>
+            )}
+          </div>
         </SC.LearningContainer>
       ) : (
-        <div>Keine Karteikarten verfügbar.</div>
+        <div>No flashcards available.</div>
       )}
     </SC.Container>
   );

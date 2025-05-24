@@ -51,19 +51,28 @@ const Card = ({
           <SC.FlipButtonWrapper>
             <SC.FlipButton onClick={handleFlip} aria-label="Flip card">
               <Icon size="s" color="textPrimary">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 -960 960 960"
+                  fill="currentColor"
+                >
                   <path d="M496-182 183-496q-11-11-17-25t-6-29q0-15 6-29t17-25l173-173q11-11 25-16.5t29-5.5q15 0 29 5.5t25 16.5l313 313q11 11 17 25t6 29q0 15-6 29t-17 25L604-182q-11 11-25 16.5t-29 5.5q-15 0-29-5.5T496-182Zm54-58 170-170-310-310-170 170 310 310ZM480 0q-99 0-186.5-37.5t-153-103Q75-206 37.5-293.5T0-480h80q0 71 24 136t66.5 117Q213-175 272-138.5T401-87L296-192l56-56L588-12q-26 6-53.5 9T480 0Zm400-480q0-71-24-136t-66.5-117Q747-785 688-821.5T559-873l105 105-56 56-236-236q26-6 53.5-9t54.5-3q99 0 186.5 37.5t153 103q65.5 65.5 103 153T960-480h-80Zm-400 0Zm-107-76q13 0 21.5-9t8.5-21q0-13-8.5-21.5T373-616q-12 0-21 8.5t-9 21.5q0 12 9 21t21 9Z" />
                 </svg>
               </Icon>
             </SC.FlipButton>
           </SC.FlipButtonWrapper>
           <SC.TitleWrapper>
-            <Text size="medium" color="textPrimary" >
+            <Text size="medium" color="textPrimary">
               {title}
             </Text>
           </SC.TitleWrapper>
+          <SC.SectionTitleWrapper>
+            <Text size="small" color="textSecondary" weight="bold">
+              Question
+            </Text>
+          </SC.SectionTitleWrapper>
           <SC.MainTextWrapper>
-            <Text size="xlarge" weight="bold" color="textPrimary" >
+            <Text size="xlarge" weight="bold" color="textPrimary">
               {question}
             </Text>
           </SC.MainTextWrapper>
@@ -79,19 +88,28 @@ const Card = ({
           <SC.FlipButtonWrapper>
             <SC.FlipButton onClick={handleFlip} aria-label="Flip card">
               <Icon size="s" color="textPrimary">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
-                    <path d="M496-182 183-496q-11-11-17-25t-6-29q0-15 6-29t17-25l173-173q11-11 25-16.5t29-5.5q15 0 29 5.5t25 16.5l313 313q11 11 17 25t6 29q0 15-6 29t-17 25L604-182q-11 11-25 16.5t-29 5.5q-15 0-29-5.5T496-182Zm54-58 170-170-310-310-170 170 310 310ZM480 0q-99 0-186.5-37.5t-153-103Q75-206 37.5-293.5T0-480h80q0 71 24 136t66.5 117Q213-175 272-138.5T401-87L296-192l56-56L588-12q-26 6-53.5 9T480 0Zm400-480q0-71-24-136t-66.5-117Q747-785 688-821.5T559-873l105 105-56 56-236-236q26-6 53.5-9t54.5-3q99 0 186.5 37.5t153 103q65.5 65.5 103 153T960-480h-80Zm-400 0Zm-107-76q13 0 21.5-9t8.5-21q0-13-8.5-21.5T373-616q-12 0-21 8.5t-9 21.5q0 12 9 21t21 9Z" />
-                  </svg>
-                </Icon>
-              </SC.FlipButton>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 -960 960 960"
+                  fill="currentColor"
+                >
+                  <path d="M496-182 183-496q-11-11-17-25t-6-29q0-15 6-29t17-25l173-173q11-11 25-16.5t29-5.5q15 0 29 5.5t25 16.5l313 313q11 11 17 25t6 29q0 15-6 29t-17 25L604-182q-11 11-25 16.5t-29 5.5q-15 0-29-5.5T496-182Zm54-58 170-170-310-310-170 170 310 310ZM480 0q-99 0-186.5-37.5t-153-103Q75-206 37.5-293.5T0-480h80q0 71 24 136t66.5 117Q213-175 272-138.5T401-87L296-192l56-56L588-12q-26 6-53.5 9T480 0Zm400-480q0-71-24-136t-66.5-117Q747-785 688-821.5T559-873l105 105-56 56-236-236q26-6 53.5-9t54.5-3q99 0 186.5 37.5t153 103q65.5 65.5 103 153T960-480h-80Zm-400 0Zm-107-76q13 0 21.5-9t8.5-21q0-13-8.5-21.5T373-616q-12 0-21 8.5t-9 21.5q0 12 9 21t21 9Z" />
+                </svg>
+              </Icon>
+            </SC.FlipButton>
           </SC.FlipButtonWrapper>
           <SC.TitleWrapper>
-            <Text size="medium" color="textPrimary" >
+            <Text size="medium" color="textPrimary">
               {title}
             </Text>
           </SC.TitleWrapper>
+          <SC.SectionTitleWrapper>
+            <Text size="small" color="textSecondary" weight="bold">
+              Answer
+            </Text>
+          </SC.SectionTitleWrapper>
           <SC.MainTextWrapper>
-            <Text size="xlarge" weight="bold" color="textPrimary" >
+            <Text size="xlarge" weight="bold" color="textPrimary">
               {answer}
             </Text>
           </SC.MainTextWrapper>

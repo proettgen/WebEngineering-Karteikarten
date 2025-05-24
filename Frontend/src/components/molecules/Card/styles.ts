@@ -62,6 +62,11 @@ export const TitleWrapper = styled.div`
   margin-bottom: 24px;
 `;
 
+// für die Frage- und Antwort-Anzeigeüberschrift
+export const SectionTitleWrapper = styled.div` 
+  margin-bottom: 8px;
+`;
+
 export const MainTextWrapper = styled.div`
   width: 100%;
   margin-top: 12px;
