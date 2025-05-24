@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { storageService } from "../../../services/storageService";
 import { DatabaseData } from "../../../database/dbtypes";
 import * as SC from "./styles";
 import Button from "@/components/atoms/Button";
@@ -8,15 +7,14 @@ import LearningModeTemplate from "@/components/templates/LearningModeTemplate";
 
 type LearningModeProps = {
   elapsedSeconds: number;
+  cards: DatabaseData["folders"][number]["cards"]; // NEU
 };
 
-const LearningMode = ({ elapsedSeconds }: LearningModeProps) => {
-  const [cardPool, setCardPool] = useState<
-    DatabaseData["folders"][number]["cards"]
-  >([]);
-  const [currentCard, setCurrentCard] = useState<
-    DatabaseData["folders"][number]["cards"][number] | null
-  >(null);
+const LearningMode = ({ elapsedSeconds, cards }: LearningModeProps) => {
+  const [cardPool, setCardPool] = useState(cards); // Initialisiere mit cards
+  const [currentCard, setCurrentCard] = useState(
+    cards.length > 0 ? cards[Math.floor(Math.random() * cards.length)] : null
+  );
   const [isFlipped, setIsFlipped] = useState(false);
 
   // Zustand für den Hinweis, ob die Karte umgedreht werden muss
@@ -28,14 +26,6 @@ const LearningMode = ({ elapsedSeconds }: LearningModeProps) => {
     }
   };
 
-  useEffect(() => {
-    const data = storageService.getData();
-    const allCards = data.folders.flatMap((folder) => folder.cards);
-    setCardPool(allCards);
-    if (allCards.length > 0) {
-      setCurrentCard(allCards[Math.floor(Math.random() * allCards.length)]);
-    }
-  }, []);
 
   const getNextCard = () => {
     if (cardPool.length > 0) {
