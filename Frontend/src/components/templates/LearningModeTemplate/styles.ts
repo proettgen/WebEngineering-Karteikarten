@@ -16,3 +16,10 @@ export const Title = styled.h1`
   margin-top: 32px;
   margin-left: 32px;
 `;
+
+export const Timer = styled.span`
+  font-size: 1.2rem;
+  margin-right: 32px;
+  color: ${({ theme }) => theme.primary};
+  font-variant-numeric: tabular-nums;
+`;

@@ -4,8 +4,13 @@ import { DatabaseData } from "../../../database/dbtypes";
 import * as SC from "./styles";
 import Button from "@/components/atoms/Button";
 import Card from "@/components/molecules/Card";
+import LearningModeTemplate from "@/components/templates/LearningModeTemplate";
 
-const LearningMode = () => {
+type LearningModeProps = {
+  elapsedSeconds: number;
+};
+
+const LearningMode = ({ elapsedSeconds }: LearningModeProps) => {
   const [cardPool, setCardPool] = useState<
     DatabaseData["folders"][number]["cards"]
   >([]);
@@ -66,59 +71,61 @@ const LearningMode = () => {
   };
 
   return (
-    <SC.Container>
-      {currentCard ? (
-        <SC.LearningContainer>
-          <Card
-            title={currentCard.title}
-            question={currentCard.question}
-            answer={currentCard.answer}
-            tags={currentCard.tags}
-            showEditButton={false}
-            isFlipped={isFlipped}
-            onFlip={handleFlip}
-          />
-          <SC.ButtonContainer>
-            <span
-              style={{ display: "inline-block" }}
-              onMouseDown={handleHint}
-              onMouseEnter={handleHint}
-              tabIndex={-1}
-            >
-              <Button
-                $variant="accept"
-                onClick={markCorrect}
-                disabled={!isFlipped}
+    <LearningModeTemplate elapsedSeconds={elapsedSeconds}>
+      <SC.Container>
+        {currentCard ? (
+          <SC.LearningContainer>
+            <Card
+              title={currentCard.title}
+              question={currentCard.question}
+              answer={currentCard.answer}
+              tags={currentCard.tags}
+              showEditButton={false}
+              isFlipped={isFlipped}
+              onFlip={handleFlip}
+            />
+            <SC.ButtonContainer>
+              <span
+                style={{ display: "inline-block" }}
+                onMouseDown={handleHint}
+                onMouseEnter={handleHint}
+                tabIndex={-1}
               >
-                Correct
-              </Button>
-            </span>
-            <span
-              style={{ display: "inline-block" }}
-              onMouseDown={handleHint}
-              onMouseEnter={handleHint}
-              tabIndex={-1}
-            >
-              <Button $variant="deny" onClick={markWrong} disabled={!isFlipped}>
-                Incorrect
-              </Button>
-            </span>
-            <Button $variant="secondary" onClick={getNextCard}>
-              Next Card
-            </Button>
-          </SC.ButtonContainer>
-          <div style={{ minHeight: 24, marginTop: 8 }}>
-            {showFlipHint && (
-              <span style={{ color: "red" }}>
-                Please flip the card first to evaluate it!
+                <Button
+                  $variant="accept"
+                  onClick={markCorrect}
+                  disabled={!isFlipped}
+                >
+                  Correct
+                </Button>
               </span>
-            )}
-          </div>
-        </SC.LearningContainer>
-      ) : (
-        <div>No flashcards available.</div>
-      )}
-    </SC.Container>
+              <span
+                style={{ display: "inline-block" }}
+                onMouseDown={handleHint}
+                onMouseEnter={handleHint}
+                tabIndex={-1}
+              >
+                <Button $variant="deny" onClick={markWrong} disabled={!isFlipped}>
+                  Incorrect
+                </Button>
+              </span>
+              <Button $variant="secondary" onClick={getNextCard}>
+                Next Card
+              </Button>
+            </SC.ButtonContainer>
+            <div style={{ minHeight: 24, marginTop: 8 }}>
+              {showFlipHint && (
+                <span style={{ color: "red" }}>
+                  Please flip the card first to evaluate it!
+                </span>
+              )}
+            </div>
+          </SC.LearningContainer>
+        ) : (
+          <div>No flashcards available.</div>
+        )}
+      </SC.Container>
+    </LearningModeTemplate>
   );
 };
 export default LearningMode;
