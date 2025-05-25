@@ -55,6 +55,7 @@ export const AddButton = styled.button`
     pointer-events: none;
   }
 `;
+
 export const AddButtonWrapper = styled.div`
   position: absolute;
   top: 70px;

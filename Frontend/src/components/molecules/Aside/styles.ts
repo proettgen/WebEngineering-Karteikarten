@@ -35,6 +35,7 @@ export const AsideContainer = styled.aside`
     background: ${({ theme }) => theme.border};
     border-radius: 3px;
     border: ${({ theme }) => theme.border};
+  }
 `;
 
 /**
@@ -141,5 +142,33 @@ export const TopControlsContainer = styled.div`
   & > :first-child {
     flex-grow: 1;
     min-width: 0;
+  }
+`;
+
+export const EditButton = styled.button`
+  background-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border:1px solid ${({ theme }) => theme.border};
+  color: ${({ theme }) => theme.onPrimary};
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.background};
+    border-color: ${({ theme }) => theme.textSecondary};
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: ${({ theme }) => theme.onPrimary};
+    pointer-events: none;
   }
 `;
