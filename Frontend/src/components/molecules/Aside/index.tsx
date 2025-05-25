@@ -210,8 +210,8 @@ const FolderNavigationAside: React.FC = () => {
     // The new parent ID will be the parent of the current folder being viewed
     const newParentId = currentParentFolderObject.parentId;
     setCurrentParentId(newParentId);
-    // Set the selected folder to the new parent (if exists), otherwise null (root)
-  setSelectedFolderId(currentParentFolderObject.parentId ?? null);
+     // When going back, the folder we were just "in" (currentParentFolderObject) remains selected
+    setSelectedFolderId(currentParentFolderObject.id);
   };
 
   const backButtonText = useMemo((): string => {
