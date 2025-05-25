@@ -4,6 +4,7 @@ import Modal from "../Modal";
 import CardForm from "../CardForm";
 import * as SC from "./styles";
 import { FolderProps } from "./types";
+import Icon from "../../atoms/Icon";
 
 const Folder = ({
   name,
@@ -37,7 +38,17 @@ const Folder = ({
     <SC.FolderContainer>
       <SC.FolderHeader>
         <SC.FolderTitle>{name}</SC.FolderTitle>
-        <SC.AddButton onClick={() => setIsAdding(true)}>Add Card</SC.AddButton>
+        <SC.AddButton onClick={() => setIsAdding(true)}>
+          <Icon size="s" color="textPrimary">
+              <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 -960 960 960"
+                  fill="currentColor"
+              >
+              <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+              </svg>
+            </Icon>
+        </SC.AddButton>
       </SC.FolderHeader>
       <SC.CardList>
         {cards.map((card, index) => (

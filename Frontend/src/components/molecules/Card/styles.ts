@@ -9,7 +9,7 @@ export const CardContainer = styled.div`
 
 export const Card = styled.div<{ $isFlipped: boolean }>`
   width: 100%;
-  height: 30vh;
+  height: 40vh;
   position: relative;
   transform-style: preserve-3d;
   transition: transform 0.6s;
@@ -75,6 +75,34 @@ export const MainTextWrapper = styled.div`
 `;
 
 export const FlipButton = styled.button`
+  background-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border:1px solid ${({ theme }) => theme.border};
+  color: ${({ theme }) => theme.onPrimary};
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.background};
+    border-color: ${({ theme }) => theme.textSecondary};
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: ${({ theme }) => theme.onPrimary};
+    pointer-events: none;
+  }
+`;
+
+export const EditButton = styled.button`
   background-color: transparent;
   display: inline-flex;
   align-items: center;

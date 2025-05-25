@@ -21,27 +21,42 @@ export const Title = styled.h1`
   margin: 0;
 `;
 
-export const AddButton = styled.button`
-  padding: 10px 20px;
-  background-color: ${({ theme }) => theme.primary};
-  color: ${({ theme }) => theme.textPrimary};
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.secondary};
-  }
-
-  &:active {
-    background-color: ${({ theme }) => theme.highlight};
-  }
-`;
-
 export const CardList = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   justify-content: space-between;
+`;
+
+export const AddButton = styled.button`
+  background-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border:1px solid ${({ theme }) => theme.border};
+  color: ${({ theme }) => theme.onPrimary};
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.background};
+    border-color: ${({ theme }) => theme.textSecondary};
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: ${({ theme }) => theme.onPrimary};
+    pointer-events: none;
+  }
+`;
+export const AddButtonWrapper = styled.div`
+  position: absolute;
+  top: 70px;
+  right: 43px;
 `;

@@ -3,6 +3,7 @@ import { storageService } from "@/services/storageService";
 import { DatabaseData } from "@/database/dbtypes";
 import Folder from "../../molecules/Folder";
 import Modal from "../../molecules/Modal";
+import Icon from "../../atoms/Icon";
 import Notification from "../../molecules/Notification";
 import * as SC from "./styles";
 import Aside from "@/components/molecules/Aside";
@@ -103,13 +104,20 @@ const CardManager = () => {
     <SC.ContentWrapper>
       <Aside />
       <SC.CardsWrapper>
-        <SC.Header>
-          {/* This should not be a header, a website should only have one header */}
-          <SC.Title>Card Manager</SC.Title>
-          <SC.AddButton onClick={() => setModalOpen(true)}>
-            Add Folder
-          </SC.AddButton>
-        </SC.Header>
+          <SC.Title>Folder Aside</SC.Title>
+            <SC.AddButtonWrapper>
+              <SC.AddButton onClick={() => setModalOpen(true)}>
+                <Icon size="s" color="textPrimary">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 -960 960 960"
+                      fill="currentColor"
+                    >
+                      <path d="M720-160v-120H600v-80h120v-120h80v120h120v80H800v120h-80Zm-600 40q-33 0-56.5-23.5T40-200v-560q0-33 23.5-56.5T120-840h560q33 0 56.5 23.5T760-760v200h-80v-80H120v440h520v80H120Zm0-600h560v-40H120v40Zm0 0v-40 40Z" />
+                    </svg>
+                  </Icon>
+              </SC.AddButton>
+            </SC.AddButtonWrapper>
         {notification && (
           <Notification
             message={notification.message}

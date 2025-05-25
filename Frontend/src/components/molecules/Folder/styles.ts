@@ -21,21 +21,36 @@ export const FolderTitle = styled.h2`
   color: ${({ theme }) => theme.textPrimary};
 `;
 
-export const AddButton = styled.button`
-  padding: 5px 10px;
-  background-color: ${({ theme }) => theme.primary};
-  color: ${({ theme }) => theme.onPrimary};
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.primaryHover};
-  }
-`;
-
 export const CardList = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
+`;
+
+export const AddButton = styled.button`
+  background-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border:1px solid ${({ theme }) => theme.border};
+  color: ${({ theme }) => theme.onPrimary};
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.background};
+    border-color: ${({ theme }) => theme.textSecondary};
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: ${({ theme }) => theme.onPrimary};
+    pointer-events: none;
+  }
 `;
