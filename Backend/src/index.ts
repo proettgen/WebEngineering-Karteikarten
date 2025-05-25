@@ -1,10 +1,13 @@
-import express from "express";
+import express from 'express';
 
 const app = express();
 
-app.get("/", (_, res) => { 
-  res.send("Hello express");
+app.get("/", (_, res) => {
+    res.send("Hello express");
 });
 
-app.listen(80);
-console.log("Server started at http://localhost:80");
+const PORT = process.env.PORT || 3001; // Port 80 requires admin rights on Windows
+
+app.listen(PORT, () => {
+    console.log(`Server started at http://localhost:${PORT}`);
+});

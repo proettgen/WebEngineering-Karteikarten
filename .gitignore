@@ -1,0 +1,33 @@
+# Node modules (für alle Unterordner)
+node_modules/
+**/node_modules/
+
+# Build-Ordner
+dist/
+**/dist/
+out/
+**/out/
+.next/
+**/.next/
+
+# Logfiles
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# VSCode settings
+.vscode/
+
+# Mac/Windows system files
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Sonstige temporäre Dateien
+*.local

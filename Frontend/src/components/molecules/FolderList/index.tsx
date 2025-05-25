@@ -10,7 +10,7 @@ const FolderList = ({
   onDeleteCard,
   onFolderClick,
   showOnlyNames = false, // NEU
-}: FolderListProps & { onFolderClick?: (folder: any) => void; showOnlyNames?: boolean }) => (
+}: FolderListProps & { onFolderClick?: (_folder: any) => void; showOnlyNames?: boolean }) => (
   <SC.FolderList>
     {folders.map((folder, index) =>
       showOnlyNames ? (

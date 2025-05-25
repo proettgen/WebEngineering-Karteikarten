@@ -58,5 +58,5 @@ export const AddButton = styled.button`
 export const AddButtonWrapper = styled.div`
   position: absolute;
   top: 70px;
-  right: 43px;
+  right: 42px;
 `;

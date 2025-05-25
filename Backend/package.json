@@ -4,7 +4,7 @@
   "scripts": {
     "test": "vitest --ui",
     "test:once": "vitest run",
-    "dev": "nodemon --ext ts --exec 'tsc && node dist/index.js'",
+    "dev": "nodemon --ext ts --exec \"npm run build && node dist/index.js\"",
     "build": "tsc",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
