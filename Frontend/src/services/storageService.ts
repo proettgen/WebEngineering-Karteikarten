@@ -12,5 +12,15 @@ export const storageService = {
   setData: (data: DatabaseData): void => {
     if (typeof window === 'undefined') return;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  },
+
+  updateCardBoxLevel: (folderId: string, updatedCards: any[]) => {
+    const data = storageService.getData();
+    const newFolders = data.folders.map((folder: any) =>
+      folder.id === folderId // <-- Korrektur: id statt folderId
+        ? { ...folder, cards: updatedCards }
+        : folder
+    );
+    storageService.setData({ ...data, folders: newFolders });
   }
 };

@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
 import { storageService } from "../../../services/storageService";
 import FolderList from "@/components/molecules/FolderList";
-import LearningMode from "@/components/organisms/LearningMode";
+import LearningModeManager from "../LearningModeManager";
 import LearningModeTemplate from "@/components/templates/LearningModeTemplate";
 import Button from "@/components/atoms/Button";
+import { Folder } from "@/database/dbtypes";
 
 const LearningModeSelection = () => {
-  const [step, setStep] = useState<"start" | "select-folder" | "learn">("start");
-  const [selectedFolderCards, setSelectedFolderCards] = useState<any[]>([]);
+  const [step, setStep] = useState<"start" | "select-folder" | "select-box" | "learn">("start");
+  const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
+  const [selectedBox, setSelectedBox] = useState<number | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const folders = storageService.getData().folders;
+  const folders: Folder[] = storageService.getData().folders;
 
   // Timer-Logik: Start/Stop je nach Schritt
   useEffect(() => {
@@ -35,19 +37,46 @@ const LearningModeSelection = () => {
     };
   }, [step]);
 
-  if (step === "learn") {
+  if (step === "learn" && selectedFolder && selectedBox !== null) {
     return (
-      <LearningMode
+      <LearningModeManager
+        folder={selectedFolder}
+        boxLevel={selectedBox}
         elapsedSeconds={elapsedSeconds}
-        cards={selectedFolderCards}
+        onBack={() => setStep("select-box")}
       />
+    );
+  }
+
+  if (step === "select-box" && selectedFolder) {
+    return (
+      <LearningModeTemplate>
+        <h2>Select a box in the flashcard box</h2>
+        <div style={{ display: "flex", gap: 16, marginBottom: 32 }}>
+          {[0, 1, 2, 3].map((box) => (
+            <Button
+              key={box}
+              $variant="primary"
+              onClick={() => {
+                setSelectedBox(box);
+                setStep("learn");
+              }}
+            >
+              {`Fach ${box + 1}`}
+            </Button>
+          ))}
+        </div>
+        <Button $variant="secondary" onClick={() => setStep("select-folder")}>
+          Zurück
+        </Button>
+      </LearningModeTemplate>
     );
   }
 
   if (step === "select-folder") {
     return (
       <LearningModeTemplate>
-        <h2>Wähle einen Ordner</h2>
+        <h2>Select a folder</h2>
         <FolderList
           folders={folders}
           showOnlyNames={true}
@@ -55,8 +84,10 @@ const LearningModeSelection = () => {
           onEditCard={() => {}}
           onDeleteCard={() => {}}
           onFolderClick={(folder) => {
-            setSelectedFolderCards(folder.cards);
-            setStep("learn");
+            // Typisiere folder als Folder
+            const fullFolder = folders.find((f) => f.id === folder.id) || folders.find((f) => f.name === folder.name);
+            setSelectedFolder(fullFolder ?? folder);
+            setStep("select-box");
           }}
         />
         <Button $variant="secondary" onClick={() => setStep("start")}>

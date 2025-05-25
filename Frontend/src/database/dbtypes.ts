@@ -6,6 +6,7 @@ export interface Card {
 }
 
 export interface Folder {
+  id: string;
   name: string;
   cards: Card[];
 }

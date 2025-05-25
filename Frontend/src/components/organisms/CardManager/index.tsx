@@ -47,7 +47,7 @@ const CardManager = () => {
       folder.name === folderName
         ? {
             ...folder,
-            cards: [...folder.cards, { title, question, answer, tags }],
+            cards: [...folder.cards, { title, question, answer, tags, boxLevel: 0 }],
           }
         : folder,
     );
@@ -95,7 +95,8 @@ const CardManager = () => {
   };
 
   const addFolder = (folderName: string) => {
-    const newFolders = [...folders, { name: folderName, cards: [] }];
+    const newFolder = { id: crypto.randomUUID(), name: folderName, cards: [] };
+    const newFolders = [...folders, newFolder];
     saveFolders(newFolders);
     setModalOpen(false);
   };
