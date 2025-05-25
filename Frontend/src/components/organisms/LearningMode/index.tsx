@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { DatabaseData } from "../../../database/dbtypes";
 import * as SC from "./styles";
 import Button from "@/components/atoms/Button";
