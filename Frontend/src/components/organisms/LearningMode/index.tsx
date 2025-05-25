@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { DatabaseData } from "../../../database/dbtypes";
 import * as SC from "./styles";
 import Button from "@/components/atoms/Button";
 import Card from "@/components/molecules/Card";
@@ -20,21 +19,25 @@ type LearningModeProps = {
   elapsedSeconds: number;
   cards: CardType[];
   onEvaluate?: (cardId: string, correct: boolean) => void;
+  onNextCard?: () => void;
   onBack?: () => void;
 };
 
-const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onBack }: LearningModeProps) => {
-  const [cardPool, setCardPool] = useState<CardType[]>(cards);
+const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack }: LearningModeProps) => {
   const [currentCard, setCurrentCard] = useState<CardType | null>(
     cards.length > 0 ? cards[Math.floor(Math.random() * cards.length)] : null
   );
   const [isFlipped, setIsFlipped] = useState(false);
 
-  // Reset cardPool und currentCard, wenn cards-Prop sich ändert (z.B. bei Fachwechsel)
+  // Immer wenn sich cards ändert (Referenz!), neue Karte ziehen
   useEffect(() => {
-    setCardPool(cards);
-    setCurrentCard(cards.length > 0 ? cards[Math.floor(Math.random() * cards.length)] : null);
-    setIsFlipped(false);
+    if (cards.length === 0) {
+      setCurrentCard(null);
+      setIsFlipped(false);
+    } else {
+      setCurrentCard(cards[Math.floor(Math.random() * cards.length)]);
+      setIsFlipped(false);
+    }
   }, [cards]);
 
   // Zustand für den Hinweis, ob die Karte umgedreht werden muss
@@ -46,39 +49,39 @@ const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onBack }: LearningMod
     }
   };
 
-  const getNextCard = () => {
-    if (cardPool.length > 0) {
-      const next = cardPool[Math.floor(Math.random() * cardPool.length)];
-      setCurrentCard(next);
-      setIsFlipped(false);
-    } else {
-      setCurrentCard(null);
-    }
-  };
-
   const markCorrect = () => {
-    if (currentCard) {
-      if (onEvaluate) onEvaluate(currentCard.id, true);
-      const updatedPool = cardPool.filter((card) => card !== currentCard);
-      setCardPool(updatedPool);
-      if (updatedPool.length > 0) {
-        setCurrentCard(
-          updatedPool[Math.floor(Math.random() * updatedPool.length)],
-        );
-      } else {
-        setCurrentCard(null);
-      }
-      setIsFlipped(false);
+    if (currentCard && onEvaluate) {
+      onEvaluate(currentCard.id, true);
     }
   };
 
   const markWrong = () => {
-    if (currentCard && onEvaluate) onEvaluate(currentCard.id, false);
-    getNextCard();
+    if (currentCard && onEvaluate) {
+      onEvaluate(currentCard.id, false);
+    }
   };
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
+  };
+
+  const handleNextCard = () => {
+    if (cards.length > 1) {
+      // Ziehe eine andere Karte als die aktuelle
+      let nextCard: CardType | null = null;
+      const otherCards = cards.filter(card => card.id !== currentCard?.id);
+      if (otherCards.length > 0) {
+        nextCard = otherCards[Math.floor(Math.random() * otherCards.length)];
+      } else {
+        nextCard = cards[Math.floor(Math.random() * cards.length)];
+      }
+      setCurrentCard(nextCard);
+      setIsFlipped(false);
+    } else if (cards.length === 1) {
+      setCurrentCard(cards[0]);
+      setIsFlipped(false);
+    }
+    if (onNextCard) onNextCard();
   };
 
   return (
@@ -127,7 +130,7 @@ const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onBack }: LearningMod
                   Incorrect
                 </Button>
               </span>
-              <Button $variant="secondary" onClick={getNextCard}>
+              <Button $variant="secondary" onClick={handleNextCard}>
                 Next Card
               </Button>
             </SC.ButtonContainer>

@@ -22,5 +22,19 @@ export const storageService = {
         : folder
     );
     storageService.setData({ ...data, folders: newFolders });
-  }
+  },
+
+  updateSingleCardBoxLevel: (folderId: string, cardId: string, newBoxLevel: number) => {
+    const data = storageService.getData();
+    const newFolders = data.folders.map((folder) => {
+      if (folder.id !== folderId) return folder;
+      return {
+        ...folder,
+        cards: folder.cards.map((card) =>
+          card.id === cardId ? { ...card, boxLevel: newBoxLevel } : card
+        ),
+      };
+    });
+    storageService.setData({ ...data, folders: newFolders });
+  },
 };
