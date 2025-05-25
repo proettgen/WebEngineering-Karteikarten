@@ -7,6 +7,7 @@ import Icon from "../../atoms/Icon";
 import Notification from "../../molecules/Notification";
 import * as SC from "./styles";
 import Aside from "@/components/molecules/Aside";
+import FolderForm from "@/components/molecules/FolderForm";
 
 const CardManager = () => {
   const [folders, setFolders] = useState<DatabaseData["folders"]>([]);
@@ -15,6 +16,7 @@ const CardManager = () => {
     message: string;
     type: "success" | "error" | "info";
   } | null>(null);
+  const [editingFolder, setEditingFolder] = useState<{ name: string; index: number } | null>(null);
 
   // Load data on startup
   useEffect(() => {
@@ -94,19 +96,45 @@ const CardManager = () => {
     saveFolders(newFolders);
   };
 
-  const addFolder = (folderName: string) => {
-    const newFolders = [...folders, { name: folderName, cards: [] }];
-    saveFolders(newFolders);
+  // Add this function for editing
+  const handleEditFolder = (index: number) => {
+    setEditingFolder({ name: folders[index].name, index });
+    setModalOpen(true);
+  };
+
+  // Update addFolder to handle both add and edit
+  const handleSaveFolder = (name: string) => {
+    if (editingFolder) {
+      // Edit existing folder
+      const newFolders = folders.map((folder, idx) =>
+        idx === editingFolder.index ? { ...folder, name } : folder
+      );
+      saveFolders(newFolders);
+      setEditingFolder(null);
+    } else {
+      // Add new folder
+      const newFolders = [...folders, { name, cards: [] }];
+      saveFolders(newFolders);
+    }
     setModalOpen(false);
+  };
+
+  const handleDeleteFolder = () => {
+    if (editingFolder) {
+      const newFolders = folders.filter((_, idx) => idx !== editingFolder.index);
+      saveFolders(newFolders);
+      setEditingFolder(null);
+      setModalOpen(false);
+    }
   };
 
   return (
     <SC.ContentWrapper>
-      <Aside />
+      <Aside/>
       <SC.CardsWrapper>
           <SC.Title>Folder Aside</SC.Title>
             <SC.AddButtonWrapper>
-              <SC.AddButton onClick={() => setModalOpen(true)}>
+              <SC.AddButton onClick={() => { setEditingFolder(null); setModalOpen(true); }}>
                 <Icon size="s" color="textPrimary">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -132,28 +160,17 @@ const CardManager = () => {
             onAddCard={addCard}
             onEditCard={editCard}
             onDeleteCard={deleteCard}
+            onEditFolder={() => handleEditFolder(index)} // Pass handler here
           />
         ))}
-        <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)}>
-          <div>
-            <h2>Add Folder</h2>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target as HTMLFormElement);
-                const folderName = formData.get("folderName") as string;
-                addFolder(folderName);
-              }}
-            >
-              <input
-                type="text"
-                name="folderName"
-                placeholder="Folder Name"
-                required
-              />
-              <button type="submit">Add Folder</button>
-            </form>
-          </div>
+        <Modal isOpen={isModalOpen} onClose={() => { setModalOpen(false); setEditingFolder(null); }}>
+          <FolderForm
+            initialName={editingFolder?.name}
+            onSave={handleSaveFolder}
+            onDelete={editingFolder ? handleDeleteFolder : undefined}
+            onCancel={() => { setModalOpen(false); setEditingFolder(null); }}
+            isEdit={!!editingFolder}
+          />
         </Modal>
       </SC.CardsWrapper>
     </SC.ContentWrapper>

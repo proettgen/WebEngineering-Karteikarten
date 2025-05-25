@@ -54,3 +54,31 @@ export const AddButton = styled.button`
     pointer-events: none;
   }
 `;
+
+export const EditButton = styled.button`
+  background-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border:1px solid ${({ theme }) => theme.border};
+  color: ${({ theme }) => theme.onPrimary};
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.background};
+    border-color: ${({ theme }) => theme.textSecondary};
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: ${({ theme }) => theme.onPrimary};
+    pointer-events: none;
+  }
+`;
