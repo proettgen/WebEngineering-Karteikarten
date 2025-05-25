@@ -172,3 +172,14 @@ export const EditButton = styled.button`
     pointer-events: none;
   }
 `;
+
+export const SelectedFolderItem = styled(FolderItem)`
+  margin: 12px 0;
+  justify-content: center;
+  pointer-events: none;
+  cursor: default;
+
+  & > button {
+    pointer-events: auto;
+  }
+`;

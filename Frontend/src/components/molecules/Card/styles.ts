@@ -3,13 +3,13 @@ import styled from 'styled-components';
 export const CardContainer = styled.div`
   perspective: 1000px;
   width: 100%;
-  max-width: 28vw;
+  max-width: 24vw;
   margin-bottom: 20px;
 `;
 
 export const Card = styled.div<{ $isFlipped: boolean }>`
   width: 100%;
-  height: 40vh;
+  height: 45vh;
   position: relative;
   transform-style: preserve-3d;
   transition: transform 0.6s;
