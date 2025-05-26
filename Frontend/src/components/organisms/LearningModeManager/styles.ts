@@ -1,5 +1,6 @@
 import styled from "styled-components";
 
+// Wrapper für die Glückwunsch-Anzeige nach Abschluss des Lernens
 export const CongratsWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -9,6 +10,7 @@ export const CongratsWrapper = styled.div`
   gap: 24px;
 `;
 
+// Zeile für Buttons (z.B. Neustart, Zurück)
 export const ButtonRow = styled.div`
   display: flex;
   gap: 16px;

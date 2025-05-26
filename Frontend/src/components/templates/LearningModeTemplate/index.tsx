@@ -3,6 +3,16 @@ import * as SC from "./styles";
 import Headline from "@/components/atoms/Headline";
 import { LearningModeTemplateProps } from "./types";
 
+/**
+ * Template-Komponente für den Lernmodus.
+ * Stellt das Layout, die Kopfzeile mit Timer und Box-Anzeige sowie einen Container für die jeweiligen Inhalte bereit.
+ *
+ * Props:
+ * - children: Die eigentlichen Inhalte (z.B. Karte, Auswahl, Buttons)
+ * - elapsedSeconds: Bisher vergangene Zeit im Lernmodus (optional)
+ * - boxLevel: Aktuelle Box-Stufe (optional, für Anzeige)
+ * - boxCount: Anzahl der Karten in der aktuellen Box (optional)
+ */
 const formatTime = (seconds: number) => {
   const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
   const ss = String(seconds % 60).padStart(2, "0");
@@ -13,11 +23,13 @@ const LearningModeTemplate = ({ children, elapsedSeconds, boxLevel, boxCount }: 
   <SC.Container>
     <SC.Header>
       <Headline size="md">Learning Mode</Headline>
+      {/* Anzeige der aktuellen Box und Kartenanzahl */}
       {typeof boxLevel === "number" && (
         <SC.BoxLevel>
           {`Box ${boxLevel + 1}${typeof boxCount === "number" ? ` (${boxCount})` : ""}`}
         </SC.BoxLevel>
       )}
+      {/* Timer-Anzeige */}
       {typeof elapsedSeconds === "number" && (
         <SC.TimerRow>
           <svg
@@ -34,6 +46,7 @@ const LearningModeTemplate = ({ children, elapsedSeconds, boxLevel, boxCount }: 
         </SC.TimerRow>
       )}
     </SC.Header>
+    {/* Platz für die eigentlichen Inhalte */}
     {children}
   </SC.Container>
 );
