@@ -15,6 +15,7 @@ const LearningModeSelection = () => {
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
   const [selectedBox, setSelectedBox] = useState<number | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [resetTrigger, setResetTrigger] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const router = useRouter();
 
@@ -53,6 +54,16 @@ const LearningModeSelection = () => {
         boxLevel={selectedBox}
         elapsedSeconds={elapsedSeconds}
         onBack={() => setStep("select-box")}
+        onRestart={() => {
+          setSelectedBox(0); // Box 1 (Index 0)
+          setElapsedSeconds(0);
+          setResetTrigger((t) => t + 1); // erzwinge Remount
+        }}
+        onBackToFolders={() => {
+          setStep("select-folder");
+          setElapsedSeconds(0);
+        }}
+        key={resetTrigger + ":" + selectedFolder.id + ":" + selectedBox}
       />
     );
   }

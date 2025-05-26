@@ -10,4 +10,13 @@ export type LearningModeManagerProps = {
   boxLevel: number;
   elapsedSeconds: number;
   onBack: () => void;
+  onRestart?: () => void;
+  onBackToFolders?: () => void;
 };
+
+export interface LearningModeManagerState {
+  cards: any[];
+  isCompleted: boolean;
+  completedTime: number | null;
+  resetKey: number;
+}
