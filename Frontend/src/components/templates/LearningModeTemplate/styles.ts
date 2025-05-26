@@ -23,3 +23,9 @@ export const Timer = styled.span`
   color: ${({ theme }) => theme.primary};
   font-variant-numeric: tabular-nums;
 `;
+
+export const TimerRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;

@@ -1,19 +1,7 @@
 import React, { useState, useEffect } from "react";
 import LearningMode from "@/components/organisms/LearningMode";
 import { storageService } from "@/services/storageService";
-
-type Folder = {
-  id: string;
-  cards: any[];
-  // Füge hier weitere Eigenschaften hinzu, falls benötigt
-};
-
-type LearningModeManagerProps = {
-  folder: Folder;
-  boxLevel: number;
-  elapsedSeconds: number;
-  onBack: () => void;
-};
+import { LearningModeManagerProps } from "./types";
 
 const clampBox = (level: number) => Math.max(0, Math.min(3, level));
 

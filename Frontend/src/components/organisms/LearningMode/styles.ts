@@ -38,3 +38,25 @@ export const ButtonContainer = styled.div`
   gap: 10px;
   margin-top: 20px;
 `;
+
+export const TopRow = styled.div`
+  margin-bottom: 16px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+`;
+
+export const ButtonRow = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+`;
+
+export const HintWrapper = styled.span`
+  display: inline-block;
+`;
+
+export const HintArea = styled.div`
+  min-height: 24px;
+  margin-top: 8px;
+`;

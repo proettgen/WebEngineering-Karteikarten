@@ -4,11 +4,14 @@ import FolderList from "@/components/molecules/FolderList";
 import LearningModeManager from "../LearningModeManager";
 import LearningModeTemplate from "@/components/templates/LearningModeTemplate";
 import Button from "@/components/atoms/Button";
-import { Folder } from "@/database/dbtypes";
 import { useRouter } from "next/navigation";
+import Headline from "@/components/atoms/Headline";
+import * as SC from "./styles";
+import { LearningModeSelectionStep } from "./types";
+import { Folder } from "@/database/dbtypes";
 
 const LearningModeSelection = () => {
-  const [step, setStep] = useState<"start" | "select-folder" | "select-box" | "learn">("start");
+  const [step, setStep] = useState<LearningModeSelectionStep>("start");
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
   const [selectedBox, setSelectedBox] = useState<number | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -53,24 +56,26 @@ const LearningModeSelection = () => {
   if (step === "select-box" && selectedFolder) {
     return (
       <LearningModeTemplate>
-        <h2>Select a box in the flashcard box</h2>
-        <div style={{ display: "flex", gap: 16, marginBottom: 32 }}>
-          {[0, 1, 2, 3].map((box) => (
-            <Button
-              key={box}
-              $variant="primary"
-              onClick={() => {
-                setSelectedBox(box);
-                setStep("learn");
-              }}
-            >
-              {`Box ${box + 1}`}
-            </Button>
-          ))}
-        </div>
-        <Button $variant="secondary" onClick={() => setStep("select-folder")}>
-          Zurück
-        </Button>
+        <SC.CenteredColumn>
+          <Headline size="md">Wähle eine Box</Headline>
+          <SC.BoxButtonRow>
+            {[0, 1, 2, 3].map((box) => (
+              <Button
+                key={box}
+                $variant="primary"
+                onClick={() => {
+                  setSelectedBox(box);
+                  setStep("learn");
+                }}
+              >
+                {`Box ${box + 1}`}
+              </Button>
+            ))}
+          </SC.BoxButtonRow>
+          <Button $variant="secondary" onClick={() => setStep("select-folder")}>
+            Zurück
+          </Button>
+        </SC.CenteredColumn>
       </LearningModeTemplate>
     );
   }
@@ -78,23 +83,26 @@ const LearningModeSelection = () => {
   if (step === "select-folder") {
     return (
       <LearningModeTemplate>
-        <h2>Select a folder</h2>
-        <FolderList
-          folders={folders}
-          showOnlyNames={true}
-          onAddCard={() => {}}
-          onEditCard={() => {}}
-          onDeleteCard={() => {}}
-          onFolderClick={(folder) => {
-            // Typisiere folder als Folder
-            const fullFolder = folders.find((f) => f.id === folder.id) || folders.find((f) => f.name === folder.name);
-            setSelectedFolder(fullFolder ?? folder);
-            setStep("select-box");
-          }}
-        />
-        <Button $variant="secondary" onClick={() => setStep("start")}>
-          Zurück
-        </Button>
+        <SC.CenteredColumn>
+          <Headline size="md">Wähle einen Ordner</Headline>
+          <FolderList
+            folders={folders}
+            showOnlyNames={true}
+            onAddCard={() => {}}
+            onEditCard={() => {}}
+            onDeleteCard={() => {}}
+            onFolderClick={(folder) => {
+              const fullFolder =
+                folders.find((f) => f.id === folder.id) ||
+                folders.find((f) => f.name === folder.name);
+              setSelectedFolder(fullFolder ?? folder);
+              setStep("select-box");
+            }}
+          />
+          <Button $variant="secondary" onClick={() => setStep("start")}>
+            Zurück
+          </Button>
+        </SC.CenteredColumn>
       </LearningModeTemplate>
     );
   }
@@ -102,16 +110,14 @@ const LearningModeSelection = () => {
   // Schritt "start"
   return (
     <LearningModeTemplate>
-      <div style={{ display: "flex", flexDirection: "column", gap: 24, alignItems: "center", marginTop: 64 }}>
+      <SC.CenteredColumn>
         <Button $variant="primary" onClick={() => setStep("select-folder")}>
-          Start Learning Mode
+          Learning Mode starten
         </Button>
-        <Button $variant="secondary" onClick={() => {
-          router.push("/cards");
-        }}>
-          Customize Flashcards before Learning
+        <Button $variant="secondary" onClick={() => router.push("/cards")}>
+          Karteikarten vor dem Lernen anpassen
         </Button>
-      </div>
+      </SC.CenteredColumn>
     </LearningModeTemplate>
   );
 };

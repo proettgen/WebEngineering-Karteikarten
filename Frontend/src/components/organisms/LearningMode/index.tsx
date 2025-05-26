@@ -2,34 +2,18 @@ import React, { useState, useEffect } from "react";
 import * as SC from "./styles";
 import Button from "@/components/atoms/Button";
 import Card from "@/components/molecules/Card";
+import Headline from "@/components/atoms/Headline";
+import Text from "@/components/atoms/Text";
 import LearningModeTemplate from "@/components/templates/LearningModeTemplate";
-
-// Ergänze einen lokalen Card-Typ mit id
-type CardType = {
-  id: string;
-  title: string;
-  question: string;
-  answer: string;
-  tags?: string[] | null;
-  boxLevel?: number;
-  // ggf. weitere Felder
-};
-
-type LearningModeProps = {
-  elapsedSeconds: number;
-  cards: CardType[];
-  onEvaluate?: (_cardId: string, _correct: boolean) => void;
-  onNextCard?: () => void;
-  onBack?: () => void;
-};
+import { CardType, LearningModeProps } from "./types";
 
 const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack }: LearningModeProps) => {
   const [currentCard, setCurrentCard] = useState<CardType | null>(
     cards.length > 0 ? cards[Math.floor(Math.random() * cards.length)] : null
   );
   const [isFlipped, setIsFlipped] = useState(false);
+  const [showFlipHint, setShowFlipHint] = useState(false);
 
-  // Immer wenn sich cards ändert (Referenz!), neue Karte ziehen
   useEffect(() => {
     if (cards.length === 0) {
       setCurrentCard(null);
@@ -40,8 +24,6 @@ const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack }:
     }
   }, [cards]);
 
-  // Zustand für den Hinweis, ob die Karte umgedreht werden muss
-  const [showFlipHint, setShowFlipHint] = useState(false);
   const handleHint = () => {
     if (!isFlipped) {
       setShowFlipHint(true);
@@ -88,11 +70,11 @@ const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack }:
     <LearningModeTemplate elapsedSeconds={elapsedSeconds}>
       <SC.Container>
         {onBack && (
-          <div style={{ marginBottom: 16 }}>
+          <SC.TopRow>
             <Button $variant="secondary" onClick={onBack}>
               Zurück
             </Button>
-          </div>
+          </SC.TopRow>
         )}
         {currentCard ? (
           <SC.LearningContainer>
@@ -105,45 +87,29 @@ const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack }:
               isFlipped={isFlipped}
               onFlip={handleFlip}
             />
-            <SC.ButtonContainer>
-              <span
-                style={{ display: "inline-block" }}
-                onMouseDown={handleHint}
-                onMouseEnter={handleHint}
-                tabIndex={-1}
-              >
-                <Button
-                  $variant="accept"
-                  onClick={markCorrect}
-                  disabled={!isFlipped}
-                >
+            <SC.ButtonRow>
+              <SC.HintWrapper onMouseDown={handleHint} onMouseEnter={handleHint} tabIndex={-1}>
+                <Button $variant="accept" onClick={markCorrect} disabled={!isFlipped}>
                   Correct
                 </Button>
-              </span>
-              <span
-                style={{ display: "inline-block" }}
-                onMouseDown={handleHint}
-                onMouseEnter={handleHint}
-                tabIndex={-1}
-              >
+              </SC.HintWrapper>
+              <SC.HintWrapper onMouseDown={handleHint} onMouseEnter={handleHint} tabIndex={-1}>
                 <Button $variant="deny" onClick={markWrong} disabled={!isFlipped}>
                   Incorrect
                 </Button>
-              </span>
+              </SC.HintWrapper>
               <Button $variant="secondary" onClick={handleNextCard}>
                 Next Card
               </Button>
-            </SC.ButtonContainer>
-            <div style={{ minHeight: 24, marginTop: 8 }}>
+            </SC.ButtonRow>
+            <SC.HintArea>
               {showFlipHint && (
-                <span style={{ color: "red" }}>
-                  Please flip the card first to evaluate it!
-                </span>
+                <Text color="deny">Please flip the card first to evaluate it!</Text>
               )}
-            </div>
+            </SC.HintArea>
           </SC.LearningContainer>
         ) : (
-          <div>No flashcards available.</div>
+          <Headline size="md">No more flashcards in current box available.</Headline>
         )}
       </SC.Container>
     </LearningModeTemplate>
