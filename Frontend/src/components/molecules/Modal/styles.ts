@@ -15,7 +15,7 @@ export const Overlay = styled.div`
 export const Modal = styled.div`
   background-color: ${({ theme }) => theme.surface};
   padding: 20px;
-  border-radius: 5px;
+  border-radius: 16px;
   position: relative;
   max-width: 500px;
   width: 100%;

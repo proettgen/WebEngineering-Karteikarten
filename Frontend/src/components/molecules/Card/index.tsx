@@ -146,6 +146,7 @@ const Card = ({
             initialAnswer={answer}
             initialTags={tags.join(", ")}
             onDelete={handleDelete}
+            onCancel={() => setIsEditing(false)}
           />
         </Modal>
       )}

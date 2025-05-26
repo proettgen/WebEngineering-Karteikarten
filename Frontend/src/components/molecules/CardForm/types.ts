@@ -10,4 +10,5 @@ export interface CardFormProps {
   initialQuestion?: string;
   initialAnswer?: string;
   initialTags?: string;
+  onCancel: () => void;
 }

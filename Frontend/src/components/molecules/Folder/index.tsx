@@ -87,7 +87,11 @@ const Folder = ({
       </SC.CardList>
       {isAdding && (
         <Modal isOpen={isAdding} onClose={() => setIsAdding(false)}>
-          <CardForm onSubmit={handleAddCard} onDelete={() => {}} />
+          <CardForm
+            onSubmit={handleAddCard}
+            onDelete={() => {}}
+            onCancel={() => setIsAdding(false)}
+            />
         </Modal>
       )}
     </SC.FolderContainer>
