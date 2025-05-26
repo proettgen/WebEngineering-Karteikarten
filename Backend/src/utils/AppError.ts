@@ -5,12 +5,12 @@ export class AppError extends Error {
 
     constructor(message: string, statusCode: number) {
         super(message);
-
+        
         this.statusCode = statusCode;
         this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
-        this.isOperational = true; // To distinguish operational errors from programming errors
+        this.isOperational = true;
 
-        Object.setPrototypeOf(this, new.target.prototype); // Restore prototype chain
+        // Maintains proper stack trace for where error was thrown
         Error.captureStackTrace(this, this.constructor);
     }
 }

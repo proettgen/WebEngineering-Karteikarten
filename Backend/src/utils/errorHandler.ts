@@ -1,5 +1,5 @@
 import { Response, ErrorRequestHandler } from 'express';
-import { AppError } from './AppError.js';
+import { AppError } from './AppError';
 
 // Helper function to send operational error responses
 const handleOperationalError = (err: AppError, res: Response): void => {

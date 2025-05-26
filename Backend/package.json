@@ -27,6 +27,7 @@
     "nodemon": "latest",
     "prettier": "latest",
     "rimraf": "latest",
+    "ts-node": "^10.9.2",
     "typescript": "latest",
     "typescript-eslint": "latest",
     "vitest": "latest"

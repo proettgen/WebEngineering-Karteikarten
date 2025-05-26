@@ -1,31 +1,49 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { AppError } from '../utils/AppError.js';
-import { FolderData } from '../types/folderTypes.js';
-
+import { AppError } from '../utils/AppError';
+import { FolderData } from '../types/folderTypes';
 
 export const getMockFolders = async (): Promise<FolderData> => {
-    // Use an absolute path to the data directory
-    // This assumes your project structure is consistent
-    const projectRoot = path.resolve(process.cwd());
-    const filePath = path.join(projectRoot, 'src', 'data', 'mockFolders.json');
-    
-    console.log('Attempting to read mockFolders.json from:', filePath);
-    
     try {
+        const filePath = getDataFilePath('mockFolders.json');
+        console.log('📁 Reading mockFolders.json from:', filePath);
+        
         const fileContent = await fs.readFile(filePath, 'utf-8');
-        const jsonData: FolderData = JSON.parse(fileContent) as FolderData; 
+        const jsonData = JSON.parse(fileContent) as FolderData;
+        
+        // Validate the data structure
+        if (!jsonData.folders || !Array.isArray(jsonData.folders)) {
+            throw new AppError('Invalid data structure in folders source.', 500);
+        }
+        
         return jsonData;
     } catch (error) {
         if (error instanceof SyntaxError) {
-            console.error("SyntaxError parsing mockFolders.json:", error);
-            throw new AppError('Invalid data format in folders source.', 500);
+            console.error("❌ SyntaxError parsing mockFolders.json:", error.message);
+            throw new AppError('Invalid JSON format in folders source.', 500);
         }
-        if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
-            console.error("mockFolders.json not found at path:", filePath, error);
+        
+        if (isNodeError(error) && error.code === 'ENOENT') {
+            console.error("❌ mockFolders.json not found at expected path");
             throw new AppError('Folders data source not found.', 404);
         }
-        console.error("Error reading or parsing mockFolders.json:", error);
+        
+        console.error("❌ Error reading or parsing mockFolders.json:", error);
         throw new AppError('Could not retrieve folder data.', 500);
     }
+};
+
+const getDataFilePath = (filename: string): string => {
+    // Try different possible paths
+    const possiblePaths = [
+        path.join(process.cwd(), 'src', 'data', filename),
+        path.join(process.cwd(), 'dist', 'data', filename),
+    ];
+    
+    return possiblePaths[0];
+};
+
+// Type guard for Node.js errors
+const isNodeError = (error: unknown): error is NodeJS.ErrnoException => {
+    return typeof error === 'object' && error !== null && 'code' in error;
 };

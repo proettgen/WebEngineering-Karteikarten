@@ -1,31 +1,36 @@
 import express from 'express';
-import folderRoutes from './api/routes/folderRoutes.js'; // Import the folder router
-import { globalErrorHandler } from './utils/errorHandler.js'; // Import the global error handler
-import { AppError } from './utils/AppError.js'; // Import AppError for handling 404
+import folderRoutes from './api/routes/folderRoutes';
+import { globalErrorHandler } from './utils/errorHandler';
+import { AppError } from './utils/AppError';
 
 const app = express();
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
+// Health check endpoint
 app.get("/", (_, res) => {
-    res.send("Hello express from a modular backend!");
+    res.status(200).json({
+        status: 'success',
+        message: 'Backend is running successfully!',
+        timestamp: new Date().toISOString()
+    });
 });
 
+// API routes
 app.use('/api/folders', folderRoutes);
 
 // Catch-all route for 404 Not Found errors
-// This should be after all your specific routes
 app.all('*', (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
 // Global error handling middleware
-// Express identifies this as an error handler because it has 4 parameters
 app.use(globalErrorHandler);
 
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
-    console.log(`Server started at http://localhost:${PORT}`);
+    console.log(`🚀 Server started at http://localhost:${PORT}`);
+    console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
