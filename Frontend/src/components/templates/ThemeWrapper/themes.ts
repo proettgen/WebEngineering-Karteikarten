@@ -35,7 +35,7 @@ export const darkTheme: ThemeType = {
   textSecondary: "#a1a1aa", // Zinc-400
   border: "#27272a", // Zinc-800
   highlight: "#2563eb", // Blue-600
-  accept: "#22d3ee", // Cyan-400
+  accept: "#22c55e", // Green-500
   deny: "#ef4444", // Red-500
   fontSizes: {
     small: "0.875rem",

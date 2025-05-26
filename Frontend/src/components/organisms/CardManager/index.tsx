@@ -49,7 +49,14 @@ const CardManager = () => {
       folder.name === folderName
         ? {
             ...folder,
-            cards: [...folder.cards, { title, question, answer, tags, boxLevel: 0 }],
+            cards: [...folder.cards, { 
+              id: crypto.randomUUID(), //this should be removed, this is a temporary fix no?
+              title, 
+              question, 
+              answer, 
+              tags, 
+              boxLevel: 0 
+            }],
           }
         : folder,
     );
@@ -71,6 +78,7 @@ const CardManager = () => {
             cards: folder.cards.map((card, index) =>
               index === cardIndex
                 ? {
+                    ...card, // Preserve existing properties including id
                     title: newTitle,
                     question: newQuestion,
                     answer: newAnswer,
@@ -110,7 +118,7 @@ const CardManager = () => {
       const newFolders = [
         ...folders,
         {
-          id: crypto.randomUUID(), // <-- ensure id is present
+          id: crypto.randomUUID(),
           name: folderName,
           cards: [],
         },

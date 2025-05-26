@@ -10,11 +10,11 @@ const HomeTemplate = () => (
       <Headline size="xl" color="textPrimary">
         The easy way to make and study flashcards
       </Headline>
-      <Text size="medium" color="textPrimary">
+      <Text size="medium">
         A fun and simple app to help you learn faster with custom flashcards.
         Create your own decks in seconds and start reviewing right away.
       </Text>
-      <Text size="medium" color="textPrimary">
+      <Text size="medium">
         Stay focused with a clean interface, smart card flipping, and seamless
         studying — wherever you are.
       </Text>
@@ -22,17 +22,17 @@ const HomeTemplate = () => (
     <SC.LoginWrapper>
       <Link href={"/login"}>
         <Button>
-          <Text size="medium" color="background">
+          <Text size="medium">
             Login
           </Text>
         </Button>
       </Link>
-      <Text color="background" size="medium">
+      <Text color="textPrimary" size="medium">
         or
       </Text>
       <Link href={"/cards"}>
         <Button $variant="secondary">
-          <Text size="medium" color="background">
+          <Text size="medium">
             Guest
           </Text>
         </Button>
@@ -43,14 +43,14 @@ const HomeTemplate = () => (
         Getting started is easy
       </Headline>
       <>
-        <Text size="medium" color="textPrimary">
+        <Text size="medium">
           Dont have an account yet?{" "}
         </Text>
         <Link href={"/signup"} color="secondary">
           Register here!
         </Link>
       </>
-      <Text size="medium" color="textPrimary">
+      <Text size="medium" >
         Create your own decks in seconds and start reviewing right away.
       </Text>
     </SC.SectionWrapper>

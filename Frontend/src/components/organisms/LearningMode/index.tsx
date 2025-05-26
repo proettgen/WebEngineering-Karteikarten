@@ -18,7 +18,7 @@ type CardType = {
 type LearningModeProps = {
   elapsedSeconds: number;
   cards: CardType[];
-  onEvaluate?: (cardId: string, correct: boolean) => void;
+  onEvaluate?: (_cardId: string, _correct: boolean) => void;
   onNextCard?: () => void;
   onBack?: () => void;
 };
