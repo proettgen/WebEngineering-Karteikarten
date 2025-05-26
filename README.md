@@ -31,8 +31,12 @@ cd WebEngineering-Karteikarten
 2. Install dependencies:
 
 ```bash
+npm i
 cd Frontend
 npm i
+cd ..
+cd Backend
+nmp i
 ```
 
 ## Scripts
@@ -41,6 +45,7 @@ The following scripts are available for frontend-development and production work
 
 - `npm run dev`  
   Starts the development server using Next.js with Turbopack enabled at [http://localhost:3000](http://localhost:3000).
+  Starts the Backend express.js at [http://localhost:3001](http://localhost:3001).
 
 - `npm run build`  
   Builds the application for production.
