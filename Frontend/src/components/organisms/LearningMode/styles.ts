@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const Container = styled.div`
   padding: 20px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   min-height: calc(100vh - 100px);
 `;
@@ -29,8 +29,9 @@ export const LearningContainer = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  max-width: 800px;
   width: 100%;
-  max-width: 800px; // Neue maximale Breite
+  margin: 0 auto;
 `;
 
 export const ButtonContainer = styled.div`

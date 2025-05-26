@@ -10,11 +10,14 @@ export const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 20px 0 12px 0;
+  margin-bottom: 32px;
+  border-bottom: 1px solid ${({ theme }) => theme.border || '#e0e0e0'};
+  background: transparent;
 `;
 
 export const Title = styled.h1`
-  margin-top: 32px;
-  margin-left: 32px;
+  margin: 0 0 0 16px;
 `;
 
 export const Timer = styled.span`
