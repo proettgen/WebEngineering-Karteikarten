@@ -114,6 +114,7 @@ const LearningModeManager = ({ folder, boxLevel, elapsedSeconds, onBack, onResta
       onEvaluate={handleEvaluate}
       onNextCard={handleNextCard}
       onBack={handleBack}
+      boxLevel={boxLevel}
     />
   );
 };

@@ -14,4 +14,5 @@ export type LearningModeProps = {
   onEvaluate?: (cardId: string, correct: boolean) => void;
   onNextCard?: () => void;
   onBack?: () => void;
+  boxLevel?: number;
 };

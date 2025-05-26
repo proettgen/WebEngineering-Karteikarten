@@ -32,3 +32,11 @@ export const TimerRow = styled.div`
   align-items: center;
   gap: 8px;
 `;
+
+export const BoxLevel = styled.div`
+  font-size: 1.1rem;
+  color: ${({ theme }) => theme.primary};
+  margin: 0 16px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+`;

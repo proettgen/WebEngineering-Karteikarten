@@ -7,7 +7,7 @@ import Text from "@/components/atoms/Text";
 import LearningModeTemplate from "@/components/templates/LearningModeTemplate";
 import { CardType, LearningModeProps } from "./types";
 
-const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack }: LearningModeProps) => {
+const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack, boxLevel }: LearningModeProps) => {
   const [currentCard, setCurrentCard] = useState<CardType | null>(
     cards.length > 0 ? cards[Math.floor(Math.random() * cards.length)] : null
   );
@@ -67,7 +67,7 @@ const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack }:
   };
 
   return (
-    <LearningModeTemplate elapsedSeconds={elapsedSeconds}>
+    <LearningModeTemplate elapsedSeconds={elapsedSeconds} boxLevel={boxLevel}>
       <SC.Container>
         {onBack && (
           <SC.TopRow>

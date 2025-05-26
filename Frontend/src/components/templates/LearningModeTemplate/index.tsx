@@ -9,10 +9,15 @@ const formatTime = (seconds: number) => {
   return `${mm}:${ss}`;
 };
 
-const LearningModeTemplate = ({ children, elapsedSeconds }: LearningModeTemplateProps) => (
+const LearningModeTemplate = ({ children, elapsedSeconds, boxLevel }: LearningModeTemplateProps & { boxLevel?: number }) => (
   <SC.Container>
     <SC.Header>
       <Headline size="md">Learning Mode</Headline>
+      {typeof boxLevel === "number" && (
+        <SC.BoxLevel>
+          {`Box ${boxLevel + 1}`}
+        </SC.BoxLevel>
+      )}
       {typeof elapsedSeconds === "number" && (
         <SC.TimerRow>
           <svg
