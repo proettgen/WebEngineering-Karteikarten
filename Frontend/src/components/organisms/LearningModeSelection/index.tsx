@@ -5,6 +5,7 @@ import LearningModeManager from "../LearningModeManager";
 import LearningModeTemplate from "@/components/templates/LearningModeTemplate";
 import Button from "@/components/atoms/Button";
 import { Folder } from "@/database/dbtypes";
+import { useRouter } from "next/navigation";
 
 const LearningModeSelection = () => {
   const [step, setStep] = useState<"start" | "select-folder" | "select-box" | "learn">("start");
@@ -12,6 +13,7 @@ const LearningModeSelection = () => {
   const [selectedBox, setSelectedBox] = useState<number | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const router = useRouter();
 
   const folders: Folder[] = storageService.getData().folders;
 
@@ -62,7 +64,7 @@ const LearningModeSelection = () => {
                 setStep("learn");
               }}
             >
-              {`Fach ${box + 1}`}
+              {`Box ${box + 1}`}
             </Button>
           ))}
         </div>
@@ -104,8 +106,10 @@ const LearningModeSelection = () => {
         <Button $variant="primary" onClick={() => setStep("select-folder")}>
           Start Learning Mode
         </Button>
-        <Button $variant="secondary" onClick={() => {/* ... */}}>
-          Customize Flashcards
+        <Button $variant="secondary" onClick={() => {
+          router.push("/cards");
+        }}>
+          Customize Flashcards before Learning
         </Button>
       </div>
     </LearningModeTemplate>
