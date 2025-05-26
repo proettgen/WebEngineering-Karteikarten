@@ -6,8 +6,8 @@ import { useTheme } from "styled-components"; // Import useTheme hook
 import { Folder } from "./types"; // Ensure ThemeType is imported if not already via styled.d.ts
 import { ThemeType } from "@/components/templates/ThemeWrapper/types";
 import * as SC from "./styles";
-import mockData from "./mockFolders.json";
-import Icon from "@/components/atoms/Icon"; // Assuming mockFolders.json is in the same directory
+import mockData from "./mockFolders.json";// Assuming mockFolders.json is in the same directory
+import Icon from "@/components/atoms/Icon";
 import SortButton from "@/components/atoms/SortButton"; // Import SortOption
 import { SortOption } from "@/components/atoms/SortButton/types";
 import SearchBar from "../SearchBar";

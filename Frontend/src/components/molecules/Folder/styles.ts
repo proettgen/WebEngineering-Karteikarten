@@ -82,3 +82,9 @@ export const EditButton = styled.button`
     pointer-events: none;
   }
 `;
+
+export const EditButtonWrapper = styled.div`
+  display: "flex";
+  align-items: center;
+  gap: 8;
+`;

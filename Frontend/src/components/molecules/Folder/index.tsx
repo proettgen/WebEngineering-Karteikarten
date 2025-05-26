@@ -12,7 +12,7 @@ const Folder = ({
   onAddCard,
   onEditCard,
   onDeleteCard,
-  onEditFolder, // NEW PROP
+  onEditFolder,
 }: FolderProps & { onEditFolder?: () => void }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [flippedCards, setFlippedCards] = useState<boolean[]>(
@@ -38,8 +38,7 @@ const Folder = ({
   return (
     <SC.FolderContainer>
       <SC.FolderHeader>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {/* Edit Folder Button (left) */}
+        <SC.EditButtonWrapper>
           {onEditFolder && (
             <SC.EditButton onClick={onEditFolder} aria-label="Edit folder">
               <Icon size="s" color="textPrimary">
@@ -54,8 +53,7 @@ const Folder = ({
             </SC.EditButton>
           )}
           <SC.FolderTitle>{name}</SC.FolderTitle>
-        </div>
-        {/* Add Card Button (right) */}
+        </SC.EditButtonWrapper>
         <SC.AddButton onClick={() => setIsAdding(true)}>
           <Icon size="s" color="textPrimary">
             <svg
