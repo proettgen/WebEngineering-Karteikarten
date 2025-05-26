@@ -22,16 +22,20 @@ const LearningModeSelection = () => {
 
   // Timer-Logik: Start/Stop je nach Schritt
   useEffect(() => {
-    if (step === "learn") {
-      setElapsedSeconds(0); // Reset beim Start
-      timerRef.current = setInterval(() => {
-        setElapsedSeconds((prev) => prev + 1);
-      }, 1000);
+    if (step === "select-box" || step === "learn") {
+      // Timer nur starten, wenn er nicht schon läuft
+      if (!timerRef.current) {
+        timerRef.current = setInterval(() => {
+          setElapsedSeconds((prev) => prev + 1);
+        }, 1000);
+      }
     } else {
+      // Timer stoppen und zurücksetzen, wenn Folder verlassen wird
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
+      setElapsedSeconds(0);
     }
     // Cleanup beim Unmount
     return () => {
@@ -55,7 +59,7 @@ const LearningModeSelection = () => {
 
   if (step === "select-box" && selectedFolder) {
     return (
-      <LearningModeTemplate>
+      <LearningModeTemplate elapsedSeconds={elapsedSeconds}>
         <SC.CenteredColumn>
           <Headline size="md">Select a box</Headline>
           <SC.BoxButtonRow>
