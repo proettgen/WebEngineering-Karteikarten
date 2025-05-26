@@ -84,7 +84,7 @@ export const EditButton = styled.button`
 `;
 
 export const EditButtonWrapper = styled.div`
-  display: "flex";
+  display: flex;
   align-items: center;
-  gap: 8;
+  gap: 8px;
 `;
