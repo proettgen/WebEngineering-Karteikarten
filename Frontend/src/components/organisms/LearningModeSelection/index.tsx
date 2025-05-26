@@ -53,7 +53,13 @@ const LearningModeSelection = () => {
         folder={selectedFolder}
         boxLevel={selectedBox}
         elapsedSeconds={elapsedSeconds}
-        onBack={() => setStep("select-box")}
+        onBack={() => {
+          // Folder aus Storage neu laden, damit Kartenanzahl aktuell ist
+          const freshFolders = storageService.getData().folders;
+          const freshFolder = freshFolders.find((f) => f.id === selectedFolder.id);
+          setSelectedFolder(freshFolder ?? selectedFolder);
+          setStep("select-box");
+        }}
         onRestart={() => {
           setSelectedBox(0); // Box 1 (Index 0)
           setElapsedSeconds(0);
@@ -69,6 +75,10 @@ const LearningModeSelection = () => {
   }
 
   if (step === "select-box" && selectedFolder) {
+    // Kartenanzahl pro Box berechnen
+    const boxCounts = [0, 1, 2, 3].map(
+      (box) => selectedFolder.cards.filter((card) => (card.boxLevel ?? 0) === box).length
+    );
     return (
       <LearningModeTemplate elapsedSeconds={elapsedSeconds}>
         <SC.CenteredColumn>
@@ -83,7 +93,7 @@ const LearningModeSelection = () => {
                   setStep("learn");
                 }}
               >
-                {`Box ${box + 1}`}
+                {`Box ${box + 1} (${boxCounts[box]})`}
               </Button>
             ))}
           </SC.BoxButtonRow>

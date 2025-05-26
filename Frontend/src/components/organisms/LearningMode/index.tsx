@@ -66,8 +66,11 @@ const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack, b
     if (onNextCard) onNextCard();
   };
 
+  // Anzahl Karten in der aktuellen Box berechnen
+  const boxCardCount = cards.filter(card => (card.boxLevel ?? 0) === boxLevel).length;
+
   return (
-    <LearningModeTemplate elapsedSeconds={elapsedSeconds} boxLevel={boxLevel}>
+    <LearningModeTemplate elapsedSeconds={elapsedSeconds} boxLevel={boxLevel} boxCount={boxCardCount}>
       <SC.Container>
         {onBack && (
           <SC.TopRow>
