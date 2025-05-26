@@ -57,7 +57,7 @@ const LearningModeSelection = () => {
     return (
       <LearningModeTemplate>
         <SC.CenteredColumn>
-          <Headline size="md">Wähle eine Box</Headline>
+          <Headline size="md">Select a box</Headline>
           <SC.BoxButtonRow>
             {[0, 1, 2, 3].map((box) => (
               <Button
@@ -73,7 +73,7 @@ const LearningModeSelection = () => {
             ))}
           </SC.BoxButtonRow>
           <Button $variant="secondary" onClick={() => setStep("select-folder")}>
-            Zurück
+            Back
           </Button>
         </SC.CenteredColumn>
       </LearningModeTemplate>
@@ -84,7 +84,7 @@ const LearningModeSelection = () => {
     return (
       <LearningModeTemplate>
         <SC.CenteredColumn>
-          <Headline size="md">Wähle einen Ordner</Headline>
+          <Headline size="md">Select a folder</Headline>
           <FolderList
             folders={folders}
             showOnlyNames={true}
@@ -100,7 +100,7 @@ const LearningModeSelection = () => {
             }}
           />
           <Button $variant="secondary" onClick={() => setStep("start")}>
-            Zurück
+            Back
           </Button>
         </SC.CenteredColumn>
       </LearningModeTemplate>
@@ -112,10 +112,10 @@ const LearningModeSelection = () => {
     <LearningModeTemplate>
       <SC.CenteredColumn>
         <Button $variant="primary" onClick={() => setStep("select-folder")}>
-          Learning Mode starten
+          Start learning mode
         </Button>
         <Button $variant="secondary" onClick={() => router.push("/cards")}>
-          Karteikarten vor dem Lernen anpassen
+          Edit flashcards before learning
         </Button>
       </SC.CenteredColumn>
     </LearningModeTemplate>

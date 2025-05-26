@@ -72,7 +72,7 @@ const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack }:
         {onBack && (
           <SC.TopRow>
             <Button $variant="secondary" onClick={onBack}>
-              Zurück
+              Back
             </Button>
           </SC.TopRow>
         )}
