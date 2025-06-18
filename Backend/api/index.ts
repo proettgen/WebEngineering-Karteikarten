@@ -1,7 +1,7 @@
 import express from 'express';
-import folderRoutes from './api/routes/folderRoutes';
-import { globalErrorHandler } from './utils/errorHandler';
-import { AppError } from './utils/AppError';
+import folderRoutes from '../src/routes/folderRoutes';
+import { globalErrorHandler } from '../src/utils/errorHandler';
+import { AppError } from '../src/utils/AppError';
 
 const app = express();
 
@@ -28,9 +28,4 @@ app.all('*', (req, res, next) => {
 // Global error handling middleware
 app.use(globalErrorHandler);
 
-const PORT = process.env.PORT || 3001;
-
-app.listen(PORT, () => {
-    console.log(`🚀 Server started at http://localhost:${PORT}`);
-    console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+export default app;

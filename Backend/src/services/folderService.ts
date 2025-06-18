@@ -34,13 +34,13 @@ export const getMockFolders = async (): Promise<FolderData> => {
 };
 
 const getDataFilePath = (filename: string): string => {
-    // Try different possible paths
-    const possiblePaths = [
-        path.join(process.cwd(), 'src', 'data', filename),
-        path.join(process.cwd(), 'dist', 'data', filename),
-    ];
-    
-    return possiblePaths[0];
+    // Resolve path to data files. This works for development (ts-node) and production (Vercel).
+    // __dirname is the directory of the current module.
+    // In dev: src/services -> resolves to src/data
+    // In prod (after build): dist/services -> resolves to dist/data
+    const dataDir = path.resolve(__dirname, '..', 'data');
+    const filePath = path.join(dataDir, filename);
+    return filePath;
 };
 
 // Type guard for Node.js errors

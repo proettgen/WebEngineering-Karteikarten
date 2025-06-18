@@ -14,7 +14,7 @@
 
     /* Modules */
     "module": "NodeNext",
-    "rootDir": "./src",
+    "rootDir": "./",
     "moduleResolution": "NodeNext",
     "types": ["node"],
     
@@ -37,7 +37,8 @@
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.json"
+    "src/**/*.json",
+    "api/*.ts",
   ],
   "exclude": [
     "node_modules",

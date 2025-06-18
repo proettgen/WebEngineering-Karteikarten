@@ -1,5 +1,5 @@
 import express from 'express';
-import * as folderController from '../../controllers/folderController';
+import * as folderController from '../controllers/folderController';
 
 const router = express.Router();
 
