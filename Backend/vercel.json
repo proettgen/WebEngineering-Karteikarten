@@ -4,9 +4,5 @@
         { "source": "/(.*)", 
         "destination": "/api" 
         }
-    ],
-    "build": {
-        "env": {},
-        "npmCommand": "npm install"
-    }
+    ]
 }
