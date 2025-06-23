@@ -39,6 +39,7 @@
     "src/**/*.ts",
     "src/**/*.json",
     "api/*.ts",
+    "scripts/*.ts"
   ],
   "exclude": [
     "node_modules",

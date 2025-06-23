@@ -4,16 +4,6 @@ import { globalErrorHandler } from '../src/utils/errorHandler';
 import { AppError } from '../src/utils/AppError';
 import 'dotenv/config';
 
-/*
-example of using a database connection pool
-import { Pool } from 'pg';
-
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-});
-
-*/
-
 const app = express();
 
 // Middleware to parse JSON request bodies

@@ -1,5 +1,5 @@
 {
-    "folderId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+    "folderId": "subj-math-001",
     "lastedLearned": "2024-01-15T10:30:00.000Z",
     "cards": [
         {
@@ -7,7 +7,7 @@
             "title": "Introduction to JavaScript",
             "question": "What is a closure in JavaScript?",
             "answer": "A closure is the combination of a function bundled together (enclosed) with references to its surrounding state (the lexical environment).",
-            "currentLearingLevel": 0,
+            "currentLearningLevel": 0,
             "createdAt": "2024-05-01T08:00:00.000Z",
             "tags": [ "javascript", "core-concepts", "frontend" ]
         },
@@ -16,7 +16,7 @@
             "title": "React State Management",
             "question": "What is the difference between props and state in React?",
             "answer": "Props (short for properties) are read-only and passed down from parent to child components. State is managed within a component and can change over time.",
-            "currentLearingLevel": 1,
+            "currentLearningLevel": 1,
             "createdAt": "2024-05-02T09:15:00.000Z",
             "tags": [ "react", "state", "props" ]
         },
@@ -25,7 +25,7 @@
             "title": "CSS Flexbox",
             "question": "How do you center an item horizontally and vertically using Flexbox?",
             "answer": "Set the parent container to `display: flex;`, `justify-content: center;` (for horizontal centering), and `align-items: center;` (for vertical centering).",
-            "currentLearingLevel": 2,
+            "currentLearningLevel": 2,
             "createdAt": "2024-05-03T11:30:00.000Z",
             "tags": null
         },
@@ -34,7 +34,7 @@
             "title": "Node.js Basics",
             "question": "What is the Node.js event loop?",
             "answer": "The event loop allows Node.js to perform non-blocking I/O operations — despite the fact that JavaScript is single-threaded — by offloading operations to the system kernel whenever possible.",
-            "currentLearingLevel": 0,
+            "currentLearningLevel": 0,
             "createdAt": "2024-05-04T14:00:00.000Z",
             "tags": [ "nodejs" ]
         },
@@ -43,8 +43,8 @@
             "title": "TypeScript Types",
             "question": "What is an interface in TypeScript?",
             "answer": "An interface in TypeScript is a way to define a contract for an object's shape. It specifies the names and types of properties an object should have.",
-            "currentLearingLevel": 3,
-            "createdAt": "2024-05-05T16:45  :00.000Z",
+            "currentLearningLevel": 3,
+            "createdAt": "2024-05-05T16:45:00.000Z",
             "tags": [ "typescript", "types", "interface" ]
         },
         {
@@ -52,7 +52,7 @@
             "title": "REST API Principles",
             "question": "What does idempotent mean in the context of HTTP methods?",
             "answer": "An HTTP method is idempotent if an identical request can be made once or several times in a row with the same effect while leaving the server in the same state. GET, PUT, DELETE are idempotent.",
-            "currentLearingLevel": 2,
+            "currentLearningLevel": 2,
             "createdAt": "2024-05-06T18:20:00.000Z",
             "tags": [ "api", "rest", "http" ]
         }
