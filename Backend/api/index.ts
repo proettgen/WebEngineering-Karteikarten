@@ -1,5 +1,6 @@
 import express from 'express';
 import folderRoutes from '../src/routes/folderRoutes';
+import cardRoutes from '../src/routes/cardRoutes';
 import { globalErrorHandler } from '../src/utils/errorHandler';
 import { AppError } from '../src/utils/AppError';
 import 'dotenv/config';
@@ -20,6 +21,7 @@ app.get("/", (_, res) => {
 
 // API routes
 app.use('/api/folders', folderRoutes);
+app.use('/api/cards', cardRoutes);
 
 // Catch-all route for 404 Not Found errors
 app.all('*', (req, res, next) => {
