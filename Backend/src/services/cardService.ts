@@ -7,14 +7,18 @@ const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
 });
 
-export const getAllCards = async (): Promise<Card[]> => {
+export const getAllCards = async (limit = 20, offset = 0): Promise<{ cards: Card[]; total: number }> => {
     try {
-        const res = await pool.query<Card>(
+        const data = await pool.query<Card>(
             `SELECT id, title, question, answer, current_learning_level AS "currentLearningLevel",
                     created_at AS "createdAt", tags, folder_id AS "folderId"
-            FROM cards`
+            FROM cards
+            ORDER BY created_at DESC
+            LIMIT $1 OFFSET $2`,
+            [limit, offset]
         );
-        return res.rows;
+        const count = await pool.query<{ count: string }>('SELECT COUNT(*) FROM cards');
+        return { cards: data.rows, total: parseInt(count.rows[0].count, 10) };
     } catch {
         throw new AppError('Could not retrieve cards data from database.', 500);
     }
@@ -95,5 +99,20 @@ export const deleteCard = async (id: string): Promise<void> => {
         await pool.query('DELETE FROM cards WHERE id = $1', [id]);
     } catch {
         throw new AppError('Could not delete card.', 500);
+    }
+};
+
+export const getCardsByFolder = async (folderId: string): Promise<Card[]> => {
+    try {
+        const res = await pool.query<Card>(
+            `SELECT id, title, question, answer, current_learning_level AS "currentLearningLevel",
+                    created_at AS "createdAt", tags, folder_id AS "folderId"
+            FROM cards
+            WHERE folder_id = $1`,
+            [folderId]
+        );
+        return res.rows;
+    } catch {
+        throw new AppError('Could not retrieve cards for folder.', 500);
     }
 };

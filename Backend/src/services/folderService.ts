@@ -7,12 +7,17 @@ const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
 });
 
-export const getAllFolders = async (): Promise<Folder[]> => {
+export const getAllFolders = async (limit = 20, offset = 0): Promise<{ folders: Folder[]; total: number }> => {
     try {
-        const res = await pool.query<Folder>(
-        'SELECT id, name, parent_id AS "parentId", created_at AS "createdAt", last_opened_at AS "lastOpenedAt" FROM folders'
+        const data = await pool.query<Folder>(
+            `SELECT id, name, parent_id AS "parentId", created_at AS "createdAt", last_opened_at AS "lastOpenedAt"
+            FROM folders
+            ORDER BY created_at DESC
+            LIMIT $1 OFFSET $2`,
+            [limit, offset]
         );
-        return res.rows;
+        const count = await pool.query<{ count: string }>('SELECT COUNT(*) FROM folders');
+        return { folders: data.rows, total: parseInt(count.rows[0].count, 10) };
     } catch {
         throw new AppError('Could not retrieve folder data from database.', 500);
     }
@@ -69,6 +74,11 @@ export const deleteFolder = async (id: string): Promise<void> => {
     } catch {
         throw new AppError('Could not delete folder.', 500);
     }
+};
+
+export const folderExists = async (id: string): Promise<boolean> => {
+    const res = await pool.query('SELECT 1 FROM folders WHERE id = $1', [id]);
+    return (res.rowCount ?? 0) > 0;
 };
 
 

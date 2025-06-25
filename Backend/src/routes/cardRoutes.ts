@@ -3,6 +3,8 @@ import * as cardController from '../controllers/cardController';
 
 const router = express.Router();
 
+router.get('/folders/:folderId/cards', cardController.getCardsByFolder);
+
 router
     .route('/')
     .get(cardController.getAllCards)
