@@ -1,16 +1,14 @@
 {
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "eslint.validate": [
     "javascript",
-    "javascriptreact", 
+    "javascriptreact",
     "typescript",
     "typescriptreact"
   ],
   "editor.formatOnSave": true,
   "eslint.alwaysShowStatus": true,
-  "eslint.workingDirectories": [
-    "./Frontend"
-  ]
+  "eslint.workingDirectories": ["./Frontend"]
 }
