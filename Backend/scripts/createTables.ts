@@ -24,7 +24,7 @@ async function createTables(): Promise<void> {
         current_learning_level INTEGER,
         created_at TIMESTAMP,
         tags TEXT[],
-        folder_id TEXT REFERENCES folders(id)
+        folder_id TEXT REFERENCES folders(id) ON DELETE CASCADE
       );
     `);
     console.log('Tabellen wurden erfolgreich angelegt!');

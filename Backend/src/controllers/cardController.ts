@@ -2,17 +2,23 @@ import { Request, Response, NextFunction } from 'express';
 import * as cardService from '../services/cardService';
 import * as folderService from '../services/folderService';
 import { AppError } from '../utils/AppError';
-import { cardSchema, cardUpdateSchema } from '../validation/cardValidation';
+import { cardSchema, cardUpdateSchema, cardFilterSchema, cardSortSchema } from '../validation/cardValidation';
 import { idSchema } from '../validation/common';
 import { paginationSchema } from '../validation/pagination';
 
+const querySchema = cardFilterSchema.merge(paginationSchema).merge(cardSortSchema);
+
 export const getAllCards = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { limit, offset } = paginationSchema.parse(req.query);
+        const { folderId, tags, title, limit, offset, sortBy, order } = querySchema.parse(req.query);
         const limitNum = limit ? parseInt(limit, 10) : 20;
         const offsetNum = offset ? parseInt(offset, 10) : 0;
+        const sortField = sortBy === 'currentLearningLevel' ? 'current_learning_level' : 'created_at';
+        const sortOrder = order?.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
-        const { cards, total } = await cardService.getAllCards(limitNum, offsetNum);
+        const { cards, total } = await cardService.getAllCards({
+            folderId, tags, title, limit: limitNum, offset: offsetNum, sortField, sortOrder
+        });
         res.status(200).json({
             status: 'success',
             results: cards.length,

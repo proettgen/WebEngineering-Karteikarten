@@ -8,3 +8,13 @@ export interface Card {
     tags: string[] | null;
     folderId: string;
 }
+
+export interface CardFilter {
+    folderId?: string;
+    tags?: string;
+    title?: string;
+    limit?: number;
+    offset?: number;
+    sortField?: string;
+    sortOrder?: string;
+}

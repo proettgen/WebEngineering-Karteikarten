@@ -1,142 +1,142 @@
 {
   "folders": [
     {
-      "id": "subj-math-001",
+      "id": "56c60d82-57bf-4e49-b466-2b8a08a096fd",
       "name": "Mathematics",
       "parentId": null,
       "createdAt": "2025-05-17T10:00:00Z",
       "lastOpenedAt": "2025-05-24T09:30:00Z"
     },
     {
-      "id": "topic-algebra-002",
+      "id": "5ac97e09-c652-4a8c-b8de-c215787caa7c",
       "name": "Algebra",
-      "parentId": "subj-math-001",
+      "parentId": "56c60d82-57bf-4e49-b466-2b8a08a096fd",
       "createdAt": "2025-05-17T10:01:00Z",
       "lastOpenedAt": "2025-05-23T11:15:00Z"
     },
     {
-      "id": "chapt-linear-eq-003",
+      "id": "9e1819d6-1a74-40f9-9ff7-8517000e3c15",
       "name": "Linear Equations",
-      "parentId": "topic-algebra-002",
+      "parentId": "5ac97e09-c652-4a8c-b8de-c215787caa7c",
       "createdAt": "2025-05-17T10:02:00Z",
       "lastOpenedAt": "2025-05-22T14:00:00Z"
     },
     {
-      "id": "chapt-quadratic-eq-004",
+      "id": "fd9a14d9-5cb0-4628-be43-5046d498ddd6",
       "name": "Quadratic Equations and Complex Numbers - Advanced Concepts and Applications in Engineering",
-      "parentId": "topic-algebra-002",
+      "parentId": "5ac97e09-c652-4a8c-b8de-c215787caa7c",
       "createdAt": "2025-05-17T10:03:00Z",
       "lastOpenedAt": "2025-05-21T16:45:00Z"
     },
     {
-      "id": "topic-calculus-005",
+      "id": "3bd605f2-ae60-4f7a-a261-18562416f078",
       "name": "Calculus",
-      "parentId": "subj-math-001",
+      "parentId": "56c60d82-57bf-4e49-b466-2b8a08a096fd",
       "createdAt": "2025-05-18T10:04:00Z",
       "lastOpenedAt": "2025-05-24T18:05:00Z"
     },
     {
-      "id": "chapt-derivatives-006",
+      "id": "68aa4027-2a99-427e-850a-d9203360d74f",
       "name": "Derivatives",
-      "parentId": "topic-calculus-005",
+      "parentId": "3bd605f2-ae60-4f7a-a261-18562416f078",
       "createdAt": "2025-05-18T10:05:00Z",
       "lastOpenedAt": "2025-05-23T08:20:00Z"
     },
     {
-      "id": "subchapt-rules-007",
+      "id": "a97acc32-c3af-4ecf-b17e-705c527f8a4d",
       "name": "Differentiation Rules",
-      "parentId": "chapt-derivatives-006",
+      "parentId": "68aa4027-2a99-427e-850a-d9203360d74f",
       "createdAt": "2025-05-18T10:06:00Z",
       "lastOpenedAt": "2025-05-22T08:22:00Z"
     },
     {
-      "id": "subj-history-008",
+      "id": "f83f3691-ba3c-4e84-8a30-b7eac67f1e54",
       "name": "History",
       "parentId": null,
       "createdAt": "2025-05-19T11:00:00Z",
       "lastOpenedAt": "2025-05-24T15:00:00Z"
     },
     {
-      "id": "era-ancient-009",
+      "id": "38cbab5c-2149-475d-868e-695cb5cc9e74",
       "name": "Ancient Civilizations",
-      "parentId": "subj-history-008",
+      "parentId": "f83f3691-ba3c-4e84-8a30-b7eac67f1e54",
       "createdAt": "2025-05-19T11:01:00Z",
       "lastOpenedAt": "2025-05-23T10:10:00Z"
     },
     {
-      "id": "civ-rome-010",
+      "id": "ce4e257b-1693-4f61-a0aa-aa8da97e43e4",
       "name": "Roman Empire",
-      "parentId": "era-ancient-009",
+      "parentId": "38cbab5c-2149-475d-868e-695cb5cc9e74",
       "createdAt": "2025-05-19T11:02:00Z",
       "lastOpenedAt": "2025-05-24T12:30:00Z"
     },
     {
-      "id": "rome-period-01",
+      "id": "05d6feca-6bf5-44ea-88c9-d00d72362683",
       "name": "Early Republic",
-      "parentId": "civ-rome-010",
+      "parentId": "ce4e257b-1693-4f61-a0aa-aa8da97e43e4",
       "createdAt": "2025-05-19T11:03:00Z",
       "lastOpenedAt": "2025-05-24T12:31:00Z"
     },
     {
-      "id": "rome-period-02",
+      "id": "f03c153a-7a60-4c96-8169-fabe9edd376a",
       "name": "Late Republic",
-      "parentId": "civ-rome-010",
+      "parentId": "ce4e257b-1693-4f61-a0aa-aa8da97e43e4",
       "createdAt": "2025-05-19T11:04:00Z",
       "lastOpenedAt": "2025-05-24T12:32:00Z"
     },
     {
-      "id": "rome-period-03",
+      "id": "18637440-cedb-46b7-936f-009fc0d5cfda",
       "name": "The Principate",
-      "parentId": "civ-rome-010",
+      "parentId": "ce4e257b-1693-4f61-a0aa-aa8da97e43e4",
       "createdAt": "2025-05-19T11:05:00Z",
       "lastOpenedAt": "2025-05-24T12:33:00Z"
     },
     {
-      "id": "rome-period-04",
+      "id": "5f637cf7-c97a-499e-9118-098a54b1d671",
       "name": "The Dominate",
-      "parentId": "civ-rome-010",
+      "parentId": "ce4e257b-1693-4f61-a0aa-aa8da97e43e4",
       "createdAt": "2025-05-19T11:06:00Z",
       "lastOpenedAt": "2025-05-24T12:34:00Z"
     },
     {
-      "id": "rome-period-05",
+      "id": "40b4d420-834a-4d75-a374-1cad2d63905e",
       "name": "Fall of the Western Empire",
-      "parentId": "civ-rome-010",
+      "parentId": "ce4e257b-1693-4f61-a0aa-aa8da97e43e4",
       "createdAt": "2025-05-19T11:07:00Z",
       "lastOpenedAt": "2025-05-24T12:35:00Z"
     },
     {
-      "id": "rome-figures-01",
+      "id": "d444b331-91f0-481e-8fb7-59c3118a900c",
       "name": "Julius Caesar",
-      "parentId": "rome-period-02",
+      "parentId": "f03c153a-7a60-4c96-8169-fabe9edd376a",
       "createdAt": "2025-05-19T11:08:00Z",
       "lastOpenedAt": "2025-05-24T12:36:00Z"
     },
     {
-      "id": "rome-figures-02",
+      "id": "a167e289-63c6-4f5c-8282-857c0ce90294",
       "name": "Augustus",
-      "parentId": "rome-period-03",
+      "parentId": "18637440-cedb-46b7-936f-009fc0d5cfda",
       "createdAt": "2025-05-19T11:09:00Z",
       "lastOpenedAt": "2025-05-24T12:37:00Z"
     },
     {
-      "id": "subj-language-011",
-      "name": "Languages",
+      "id": "8ab1227b-5191-46a1-8953-8826646223ec",
+      "name": "Informatik",
       "parentId": null,
       "createdAt": "2025-05-20T09:00:00Z",
       "lastOpenedAt": "2025-05-22T17:00:00Z"
     },
     {
-      "id": "lang-spanish-vocab-012",
-      "name": "Spanish Vocabulary",
-      "parentId": "subj-language-011",
+      "id": "2e31fab0-0f24-48d6-9716-450903d5b760",
+      "name": "WebEngineering",
+      "parentId": "8ab1227b-5191-46a1-8953-8826646223ec",
       "createdAt": "2025-05-20T09:01:00Z",
       "lastOpenedAt": "2025-05-23T14:50:00Z"
     },
     {
-      "id": "lang-french-grammar-013",
-      "name": "French Grammar",
-      "parentId": "subj-language-011",
+      "id": "af924d1d-c178-4a96-933c-0619c57abbc7",
+      "name": "Programmierung",
+      "parentId": "8ab1227b-5191-46a1-8953-8826646223ec",
       "createdAt": "2025-05-20T09:02:00Z",
       "lastOpenedAt": "2025-05-24T10:00:00Z"
     }

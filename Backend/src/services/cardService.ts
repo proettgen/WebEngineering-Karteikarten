@@ -1,27 +1,51 @@
 import { Pool } from 'pg';
 import { AppError } from '../utils/AppError';
-import { Card } from '../types/cardTypes';
+import { Card, CardFilter } from '../types/cardTypes';
 import { v4 as uuidv4 } from 'uuid';
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
 });
 
-export const getAllCards = async (limit = 20, offset = 0): Promise<{ cards: Card[]; total: number }> => {
-    try {
-        const data = await pool.query<Card>(
-            `SELECT id, title, question, answer, current_learning_level AS "currentLearningLevel",
-                    created_at AS "createdAt", tags, folder_id AS "folderId"
-            FROM cards
-            ORDER BY created_at DESC
-            LIMIT $1 OFFSET $2`,
-            [limit, offset]
-        );
-        const count = await pool.query<{ count: string }>('SELECT COUNT(*) FROM cards');
-        return { cards: data.rows, total: parseInt(count.rows[0].count, 10) };
-    } catch {
-        throw new AppError('Could not retrieve cards data from database.', 500);
+export const getAllCards = async (filter: CardFilter): Promise<{ cards: Card[]; total: number }> => {
+    const conditions: string[] = [];
+    const values: unknown[] = [];
+    let idx = 1;
+
+    if (filter.folderId) {
+        conditions.push(`folder_id = $${idx++}`);
+        values.push(filter.folderId);
     }
+    if (filter.title) {
+        conditions.push(`LOWER(title) LIKE $${idx++}`);
+        values.push(`%${filter.title.toLowerCase()}%`);
+    }
+    if (filter.tags) {
+        const tagList = filter.tags.split(',').map(tag => tag.trim());
+        conditions.push(`tags && $${idx++}::text[]`);
+        values.push(tagList);
+    }
+
+    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const sortField = filter.sortField ?? 'created_at';
+    const sortOrder = filter.sortOrder ?? 'DESC';
+
+    let sql = `
+        SELECT id, title, question, answer, current_learning_level AS "currentLearningLevel",
+            created_at AS "createdAt", tags, folder_id AS "folderId"
+        FROM cards
+        ${where}
+        ORDER BY ${sortField} ${sortOrder}
+        LIMIT $${idx++} OFFSET $${idx}
+    `;
+    values.push(filter.limit ?? 20, filter.offset ?? 0);
+
+    const data = await pool.query<Card>(sql, values);
+
+    sql = `SELECT COUNT(*) FROM cards ${where}`;
+    const count = await pool.query<{ count: string }>(sql, values.slice(0, values.length - 2));
+
+    return { cards: data.rows, total: parseInt(count.rows[0].count, 10) };
 };
 
 export const getCardById = async (id: string): Promise<Card | null> => {

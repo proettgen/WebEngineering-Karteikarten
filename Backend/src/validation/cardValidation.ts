@@ -11,3 +11,16 @@ export const cardSchema = z.object({
 });
 
 export const cardUpdateSchema = cardSchema.partial();
+
+export const cardFilterSchema = z.object({
+    folderId: z.string().uuid().optional(),
+    tags: z.string().optional(),
+    title: z.string().optional(),
+    limit: z.string().regex(/^\d+$/).optional(),
+    offset: z.string().regex(/^\d+$/).optional(),
+});
+
+export const cardSortSchema = z.object({
+    sortBy: z.enum(['createdAt', 'currentLearningLevel']).optional(),
+    order: z.enum(['asc', 'desc', 'ASC', 'DESC']).optional(),
+});
