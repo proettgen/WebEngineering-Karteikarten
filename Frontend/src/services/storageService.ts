@@ -1,4 +1,4 @@
-import { DatabaseData } from '../database/dbtypes';
+import { DatabaseData } from '../database/apiTypes';
 
 const STORAGE_KEY = 'flashcards';
 

@@ -1,6 +1,8 @@
+import { Card } from "@/database/cardTypes";
+
 export interface FolderProps {
   name: string;
-  cards: { title: string; question: string; answer: string; tags: string[] }[];
+  cards: Card[];
   onAddCard: (
     _folderName: string,
     _title: string,
@@ -16,5 +18,8 @@ export interface FolderProps {
     _newAnswer: string,
     _newTags: string[],
   ) => void;
-  onDeleteCard: (_folderName: string, _cardIndex: number) => void;
+  onDeleteCard: (
+    _folderName: string,
+    _cardIndex: number
+  ) => void;
 }

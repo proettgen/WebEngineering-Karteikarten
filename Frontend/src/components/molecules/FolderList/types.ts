@@ -1,12 +1,9 @@
+import { Card } from "@/database/cardTypes";
+
 export interface FolderListProps {
   folders: {
     name: string;
-    cards: {
-      title: string;
-      question: string;
-      answer: string;
-      tags: string[];
-    }[];
+    cards: Card[];
   }[];
   onAddCard: (
     _folderName: string,

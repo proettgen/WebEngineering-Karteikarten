@@ -1,3 +1,6 @@
+// !!! ACHTUNG: Build schlägt fehl, weil Folder aus Storage/Backend nicht alle Felder des Folder-Typs haben.
+// Bitte Backend und Datenmodell anpassen, damit Folder dem Typ aus folderTypes.ts entsprechen!
+
 import React, { useState, useEffect, useRef } from "react";
 import { storageService } from "../../../services/storageService";
 import FolderList from "@/components/molecules/FolderList";

@@ -6,6 +6,7 @@ import * as SC from "./styles";
 import { FolderProps } from "./types";
 import Icon from "../../atoms/Icon";
 
+// Folder component displays a folder with its cards and allows card operations
 const Folder = ({
   name,
   cards,
@@ -14,11 +15,14 @@ const Folder = ({
   onDeleteCard,
   onEditFolder,
 }: FolderProps & { onEditFolder?: () => void }) => {
+  // State for showing the add card modal
   const [isAdding, setIsAdding] = useState(false);
+  // State for tracking which cards are flipped
   const [flippedCards, setFlippedCards] = useState<boolean[]>(
     cards.map(() => false),
   );
 
+  // Handler for adding a new card
   const handleAddCard = (
     title: string,
     question: string,
@@ -29,6 +33,7 @@ const Folder = ({
     setIsAdding(false);
   };
 
+  // Handler for flipping a card (show answer)
   const handleFlip = (index: number) => {
     setFlippedCards(
       flippedCards.map((flipped, i) => (i === index ? !flipped : flipped)),
@@ -39,6 +44,7 @@ const Folder = ({
     <SC.FolderContainer>
       <SC.FolderHeader>
         <SC.EditButtonWrapper>
+          {/* Edit folder button */}
           {onEditFolder && (
             <SC.EditButton onClick={onEditFolder} aria-label="Edit folder">
               <Icon size="s" color="textPrimary">
@@ -52,8 +58,10 @@ const Folder = ({
               </Icon>
             </SC.EditButton>
           )}
+          {/* Folder title */}
           <SC.FolderTitle>{name}</SC.FolderTitle>
         </SC.EditButtonWrapper>
+        {/* Add card button */}
         <SC.AddButton onClick={() => setIsAdding(true)}>
           <Icon size="s" color="textPrimary">
             <svg
@@ -66,6 +74,7 @@ const Folder = ({
           </Icon>
         </SC.AddButton>
       </SC.FolderHeader>
+      {/* List of cards */}
       <SC.CardList>
         {cards.map((card, index) => (
           <Card
@@ -73,7 +82,7 @@ const Folder = ({
             title={card.title}
             question={card.question}
             answer={card.answer}
-            tags={card.tags}
+            tags={card.tags ?? []} // Ensure tags is always an array
             onEdit={(newTitle, newQuestion, newAnswer, newTags) =>
               onEditCard(name, index, newTitle, newQuestion, newAnswer, newTags)
             }
@@ -83,16 +92,18 @@ const Folder = ({
           />
         ))}
       </SC.CardList>
+      {/* Modal for adding a new card */}
       {isAdding && (
         <Modal isOpen={isAdding} onClose={() => setIsAdding(false)}>
           <CardForm
             onSubmit={handleAddCard}
             onDelete={() => {}}
             onCancel={() => setIsAdding(false)}
-            />
+          />
         </Modal>
       )}
     </SC.FolderContainer>
   );
 };
+
 export default Folder;

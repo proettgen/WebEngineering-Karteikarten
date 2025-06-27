@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix Backend\" \"npm run dev --prefix Frontend\"",
-    "build": "npm run build --prefix Backend && npm run build --prefix Frontend"
+    "build": "npm run build --prefix Backend && npm run build --prefix Frontend",
+    "sync-types": "node sync-types.js"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
