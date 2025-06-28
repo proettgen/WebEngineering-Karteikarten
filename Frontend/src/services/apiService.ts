@@ -14,7 +14,7 @@ export const apiService = {
     // Folders
     getFolders: (params?: { search?: string; limit?: number; offset?: number; sortBy?: string; order?: string }) => {
         const query = new URLSearchParams();
-        if (params?.search) query.append("title", params.search); // oder "name", je nach Backend
+        if (params?.search) query.append("name", params.search);
         if (params?.limit) query.append("limit", params.limit.toString());
         if (params?.offset) query.append("offset", params.offset.toString());
         if (params?.sortBy) query.append("sortBy", params.sortBy);

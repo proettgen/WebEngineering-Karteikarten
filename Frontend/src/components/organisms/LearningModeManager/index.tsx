@@ -1,3 +1,4 @@
+/*
 import React, { useState, useEffect } from "react";
 import LearningMode from "@/components/organisms/LearningMode";
 import { storageService } from "@/services/storageService";
@@ -10,7 +11,7 @@ import * as SC from "./styles";
 
 const clampBox = (level: number) => Math.max(0, Math.min(3, level)); // Hilfsfunktion: begrenzt Box-Level auf 0-3
 const LAST_BOX = 3; // Maximale Box-Stufe
-
+*/
 /**
  * LearningModeManager-Komponente
  * Steuert den Ablauf des Lernvorgangs für einen Ordner und eine bestimmte Box-Stufe.
@@ -19,6 +20,7 @@ const LAST_BOX = 3; // Maximale Box-Stufe
  * - Erkennt, wenn alle Karten in der letzten Box sind (Lernziel erreicht)
  * - Bietet Funktionen zum Neustart und Rückkehr zur Auswahl
  */
+/*
 const LearningModeManager = ({ folder, boxLevel, elapsedSeconds, onBack, onRestart, onBackToFolders }: LearningModeManagerProps) => {
   // State für die aktuell zu lernenden Karten
   const [cards, setCards] = useState<any[]>([]);
@@ -28,10 +30,11 @@ const LearningModeManager = ({ folder, boxLevel, elapsedSeconds, onBack, onResta
   const [completedTime, setCompletedTime] = useState<number | null>(null);
   // Schlüssel zum Erzwingen eines Remounts (z.B. nach Reset)
   const [resetKey, setResetKey] = useState(0);
-
+*/
   /**
    * Effekt: Lädt die Karten für die aktuelle Box und setzt Abschluss-Status zurück, wenn Ordner, Box oder Reset sich ändern.
    */
+  /*
   useEffect(() => {
     const freshFolders = storageService.getData().folders;
     const freshFolder = freshFolders.find((f: any) => f.id === folder.id);
@@ -43,10 +46,12 @@ const LearningModeManager = ({ folder, boxLevel, elapsedSeconds, onBack, onResta
     setIsCompleted(false);
     setCompletedTime(null);
   }, [folder.id, boxLevel, resetKey]);
-
+*/
   /**
    * Bewertet eine Karte als richtig/falsch, verschiebt sie in die nächste/letzte Box und prüft, ob alle Karten gelernt wurden.
    */
+
+  /*
   const handleEvaluate = (cardId: string, correct: boolean) => {
     const freshFolders = storageService.getData().folders;
     const freshFolder = freshFolders.find((f: any) => f.id === folder.id);
@@ -70,10 +75,11 @@ const LearningModeManager = ({ folder, boxLevel, elapsedSeconds, onBack, onResta
       setCompletedTime(elapsedSeconds);
     }
   };
-
+*/
   /**
    * Lädt die Karten für die aktuelle Box neu (z.B. nach Bewertung oder Zurück).
    */
+  /*
   const handleNextCard = () => {
     const freshFolders = storageService.getData().folders;
     const freshFolder = freshFolders.find((f: any) => f.id === folder.id);
@@ -83,18 +89,20 @@ const LearningModeManager = ({ folder, boxLevel, elapsedSeconds, onBack, onResta
         : []
     );
   };
-
+*/
   /**
    * Geht zurück zur vorherigen Ansicht und lädt die Karten neu.
    */
+  /*
   const handleBack = () => {
     handleNextCard();
     onBack();
   };
-
+*/
   /**
    * Setzt alle Karten im aktuellen Ordner auf Box 0 zurück (Neustart).
    */
+  /*
   const resetAllCardsToBox0 = () => {
     const freshFolders = storageService.getData().folders;
     const freshFolder = freshFolders.find((f: any) => f.id === folder.id);
@@ -103,19 +111,21 @@ const LearningModeManager = ({ folder, boxLevel, elapsedSeconds, onBack, onResta
       storageService.updateSingleCardBoxLevel(freshFolder.id, card.id, 0);
     });
   };
-
+*/
   /**
    * Startet den Lernmodus neu (setzt alle Karten zurück und erhöht den Reset-Key).
    */
+  /*
   const handleRestart = () => {
     resetAllCardsToBox0();
     setResetKey(prev => prev + 1);
     if (typeof onRestart === "function") onRestart();
   };
-
+*/
   /**
    * Geht zurück zur Ordnerauswahl oder zur vorherigen Ansicht.
    */
+  /*
   const handleBackToFolders = () => {
     if (typeof onBackToFolders === "function") onBackToFolders();
     else handleBack();
@@ -156,3 +166,4 @@ const LearningModeManager = ({ folder, boxLevel, elapsedSeconds, onBack, onResta
 };
 
 export default LearningModeManager;
+*/
