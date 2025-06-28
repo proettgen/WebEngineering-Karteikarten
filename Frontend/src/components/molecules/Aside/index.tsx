@@ -1,62 +1,35 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useMemo } from "react";
 import { useTheme } from "styled-components";
 import { Folder } from "@/database/folderTypes";
 import { ThemeType } from "@/components/templates/ThemeWrapper/types";
+import { AsideProps } from "./types";
 import * as SC from "./styles";
 import Icon from "@/components/atoms/Icon";
 import SortButton from "@/components/atoms/SortButton";
 import { SortOption } from "@/components/atoms/SortButton/types";
 import SearchBar from "../SearchBar";
-import { apiService } from "@/services/apiService";
 
-const FolderNavigationAside: React.FC = () => {
-  // State for all folders, navigation, and selection
-  const [allFolders, setAllFolders] = useState<Folder[]>([]);
-  const [currentParentId, setCurrentParentId] = useState<string | null>(null);
-  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
-
-  // State for search and sort
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [searchResults, setSearchResults] = useState<Folder[]>([]);
-  const [currentSortOption, setCurrentSortOption] = useState<SortOption>("name");
+const FolderNavigationAside: React.FC<AsideProps> = ({
+  folders,
+  selectedFolderId,
+  searchTerm,
+  sortOption,
+  onFolderSelect,
+  onSearch,
+  onSort,
+  onAddFolder,
+  loading = false
+}) => {
+  const theme = useTheme() as ThemeType;
   const isSearching = searchTerm.trim() !== "";
-
-  // Fetch folders from backend on mount or when search/sort changes
-  useEffect(() => {
-    const fetchFolders = async () => {
-      try {
-        const params: any = {};
-        if (isSearching) params.search = searchTerm;
-        if (currentSortOption === "name") params.sortBy = "name";
-        if (currentSortOption === "date") params.sortBy = "createdAt";
-        if (currentSortOption === "lastUsed") params.sortBy = "lastOpenedAt";
-        params.order = "asc";
-
-        const res = await apiService.getFolders(params);
-        if (isSearching) setSearchResults(res.data.folders);
-        else setAllFolders(res.data.folders);
-      } catch {
-        setSearchResults([]);
-        setAllFolders([]);
-      }
-    };
-    fetchFolders();
-  }, [searchTerm, isSearching, currentSortOption]);
 
   // Find the currently selected folder object
   const selectedFolder = useMemo(
-    () => allFolders.find((f) => f.id === selectedFolderId) ?? null,
-    [allFolders, selectedFolderId]
+    () => folders.find((f) => f.id === selectedFolderId) ?? null,
+    [folders, selectedFolderId]
   );
-
-  const theme = useTheme() as ThemeType;
-
-  // Update lastOpenedAt for a folder (API call placeholder)
-  const updateFolderLastOpenedAt = async (_folderId: string) => {
-    // Implement API call to update lastOpenedAt if needed
-  };
 
   // Sort folders based on the selected sort option
   const sortFolders = (foldersToSort: Folder[], sortOption: SortOption): Folder[] => {
@@ -77,177 +50,69 @@ const FolderNavigationAside: React.FC = () => {
     }
   };
 
-  // Get the current parent folder object
-  const currentParentFolderObject = useMemo(
-    () => allFolders.find((folder) => folder.id === currentParentId),
-    [allFolders, currentParentId]
+  // List of folders to display (all folders since filtering is handled in parent)
+  const displayedFolders = useMemo((): Folder[] => 
+    sortFolders(folders, sortOption), 
+    [folders, sortOption]
   );
-
-  // Get the parent of the current view (for the back button)
-  const parentOfCurrentViewForBackBtn = useMemo(() => {
-    if (!currentParentFolderObject || currentParentFolderObject.parentId === null) {
-      return undefined;
-    }
-    return allFolders.find((folder) => folder.id === currentParentFolderObject.parentId);
-  }, [allFolders, currentParentFolderObject]);
-
-  // List of folders to display based on currentParentId or search
-  const displayedFolders = useMemo((): Folder[] => {
-    if (isSearching) {
-      return sortFolders(searchResults, currentSortOption);
-    }
-    const filtered = allFolders.filter((folder) => folder.parentId === currentParentId);
-    return sortFolders(filtered, currentSortOption);
-  }, [allFolders, currentParentId, isSearching, searchResults, currentSortOption]);
 
   // Check if a folder has subfolders
   const hasSubfolders = useMemo(
     () => (folderId: string): boolean =>
-      allFolders.some((folder) => folder.parentId === folderId),
-    [allFolders]
+      folders.some((folder) => folder.parentId === folderId),
+    [folders]
   );
 
-  // Get the name of a parent folder by its ID
-  const getParentFolderName = (parentId: string | null): string | null => {
-    if (!parentId) return null;
-    const parent = allFolders.find((f) => f.id === parentId);
-    return parent ? parent.name : null;
-  };
-
-  // Handle click on a folder item (navigation and selection logic)
+  // Handle click on a folder item
   const handleFolderClick = (clickedFolder: Folder): void => {
-    const folderHasSubfolders = hasSubfolders(clickedFolder.id);
-
-    if (isSearching) {
-      setSearchTerm("");
-      setCurrentParentId(clickedFolder.parentId);
-      setSelectedFolderId(clickedFolder.id);
-      updateFolderLastOpenedAt(clickedFolder.id);
-      return;
-    }
-
-    if (folderHasSubfolders) {
-      setSelectedFolderId(clickedFolder.id);
-      setCurrentParentId(clickedFolder.id);
-      updateFolderLastOpenedAt(clickedFolder.id);
-    } else {
-      if (selectedFolderId === clickedFolder.id) {
-        setSelectedFolderId(clickedFolder.parentId);
-      } else {
-        setSelectedFolderId(clickedFolder.id);
-        updateFolderLastOpenedAt(clickedFolder.id);
-      }
-    }
-  };
-
-  // Handle click on the "Back" button (navigate up in hierarchy)
-  const handleBackClick = (): void => {
-    if (isSearching) {
-      setSearchTerm("");
-      setCurrentParentId(null);
-      setSelectedFolderId(null);
-      return;
-    }
-
-    if (!currentParentFolderObject) return;
-
-    const newParentId = currentParentFolderObject.parentId;
-    setCurrentParentId(newParentId);
-    setSelectedFolderId(currentParentFolderObject.id);
-  };
-
-  // Determine the text for the back button
-  const backButtonText = useMemo((): string => {
-    if (isSearching) return "Clear Search";
-    if (!currentParentFolderObject) return "Up";
-    if (parentOfCurrentViewForBackBtn) {
-      return `${parentOfCurrentViewForBackBtn.name}`;
-    }
-    return "Your Folders";
-  }, [currentParentFolderObject, parentOfCurrentViewForBackBtn, isSearching]);
-
-  // Handle search input
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    setCurrentParentId(null);
-    setSelectedFolderId(null);
-  };
-
-  // Handle sort option change
-  const handleSortChange = (option: SortOption) => {
-    setCurrentSortOption(option);
+    onFolderSelect(clickedFolder.id);
   };
 
   return (
     <SC.AsideContainer>
       <SC.TopControlsContainer>
         <SearchBar
-          onSearch={handleSearch}
+          onSearch={onSearch}
           placeholder="Search..."
           initialValue={searchTerm}
         />
         <SortButton
-          onSortChange={handleSortChange}
-          currentSortOption={currentSortOption}
+          onSortChange={onSort}
+          currentSortOption={sortOption}
         />
       </SC.TopControlsContainer>
 
-      {(currentParentId !== null || isSearching) && (
-        <SC.BackButton
-          onClick={handleBackClick}
-          disabled={!isSearching && !currentParentFolderObject}
-        >
-          <Icon size="s" color="textPrimary">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960">
-              <path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z" />
-            </svg>
-          </Icon>
-          <SC.FolderName>{backButtonText}</SC.FolderName>
-        </SC.BackButton>
-      )}
+      {/* Add Folder Button */}
+      <SC.AddFolderButton onClick={onAddFolder}>
+        <Icon size="s" color="textPrimary">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
+            <path d="M720-160v-120H600v-80h120v-120h80v120h120v80H800v120h-80Zm-600 40q-33 0-56.5-23.5T40-200v-560q0-33 23.5-56.5T120-840h560q33 0 56.5 23.5T760-760v200h-80v-80H120v440h520v80H120Zm0-600h560v-40H120v40Zm0 0v-40 40Z" />
+          </svg>
+        </Icon>
+        Add Folder
+      </SC.AddFolderButton>
+
+      {/* Selected Folder Display */}
       {selectedFolder && (
         <SC.SelectedFolderItem $isSelected={true} title={selectedFolder.name}>
-          <SC.FolderName>{selectedFolder.name}</SC.FolderName>
-          <SC.EditButton
-            aria-label="Edit folder"
-            onClick={e => {
-              e.stopPropagation();
-              // Replace with your edit handler
-              alert(`Edit folder: ${selectedFolder.name}`);
-            }}
-          >
-            <Icon size="s" color="textPrimary">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 960 960"
-                fill="currentColor"
-              >
-                <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
-              </svg>
-            </Icon>
-          </SC.EditButton>
+          <SC.FolderName>Selected: {selectedFolder.name}</SC.FolderName>
         </SC.SelectedFolderItem>
       )}
-      <SC.FolderList>
-        {displayedFolders.map((folder) => {
-          const parentName = isSearching
-            ? getParentFolderName(folder.parentId)
-            : null;
-          const displayName = isSearching
-            ? parentName
-              ? `${folder.name} (in ${parentName})`
-              : `${folder.name} (in Root)`
-            : folder.name;
 
-          return (
+      {/* Folder List */}
+      {loading ? (
+        <SC.LoadingContainer>Loading folders...</SC.LoadingContainer>
+      ) : (
+        <SC.FolderList>
+          {displayedFolders.map((folder) => (
             <SC.FolderItem
               key={folder.id}
               onClick={() => handleFolderClick(folder)}
-              $isSelected={folder.id === selectedFolderId && !isSearching}
+              $isSelected={folder.id === selectedFolderId}
               title={folder.name}
             >
-              <SC.FolderName>{displayName}</SC.FolderName>
-              {hasSubfolders(folder.id) && !isSearching && (
+              <SC.FolderName>{folder.name}</SC.FolderName>
+              {hasSubfolders(folder.id) && (
                 <Icon size="s" color="textSecondary" cursorStyle="pointer">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -258,11 +123,8 @@ const FolderNavigationAside: React.FC = () => {
                 </Icon>
               )}
             </SC.FolderItem>
-          );
-        })}
-        {displayedFolders.length === 0 &&
-          currentParentId !== null &&
-          !isSearching && (
+          ))}
+          {displayedFolders.length === 0 && !isSearching && (
             <SC.FolderItem
               $isSelected={false}
               style={{ cursor: "default", justifyContent: "center" }}
@@ -270,23 +132,24 @@ const FolderNavigationAside: React.FC = () => {
               <SC.FolderName
                 style={{ textAlign: "center", color: theme.textSecondary }}
               >
-                This folder is empty.
+                No folders yet. Create your first folder!
               </SC.FolderName>
             </SC.FolderItem>
           )}
-        {displayedFolders.length === 0 && isSearching && (
-          <SC.FolderItem
-            $isSelected={false}
-            style={{ cursor: "default", justifyContent: "center" }}
-          >
-            <SC.FolderName
-              style={{ textAlign: "center", color: theme.textSecondary }}
+          {displayedFolders.length === 0 && isSearching && (
+            <SC.FolderItem
+              $isSelected={false}
+              style={{ cursor: "default", justifyContent: "center" }}
             >
-              No folders found.
-            </SC.FolderName>
-          </SC.FolderItem>
-        )}
-      </SC.FolderList>
+              <SC.FolderName
+                style={{ textAlign: "center", color: theme.textSecondary }}
+              >
+                No folders found.
+              </SC.FolderName>
+            </SC.FolderItem>
+          )}
+        </SC.FolderList>
+      )}
     </SC.AsideContainer>
   );
 };

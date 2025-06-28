@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { apiService } from "@/services/apiService";
 import Folder from "../../molecules/Folder";
 import Modal from "../../molecules/Modal";
-import Icon from "../../atoms/Icon";
 import Notification from "../../molecules/Notification";
 import * as SC from "./styles";
 import Aside from "@/components/molecules/Aside";
 import FolderForm from "@/components/molecules/FolderForm";
 import { Folder as FolderType } from "@/database/folderTypes";
 import { FolderProps } from "../../molecules/Folder/types";
+import { SortOption } from "@/components/atoms/SortButton/types";
 
 // API response type for folders
 type GetFoldersResponse = { status: string; data: { folders: FolderType[] } };
@@ -17,21 +17,23 @@ type GetFoldersResponse = { status: string; data: { folders: FolderType[] } };
 const CardManager = () => {
   const [folders, setFolders] = useState<FolderType[]>([]);
   const [cardsByFolder, setCardsByFolder] = useState<Record<string, any[]>>({});
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [sortOption, setSortOption] = useState<SortOption>("name");
   const [isModalOpen, setModalOpen] = useState(false);
   const [notification, setNotification] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
   const [editingFolder, setEditingFolder] = useState<{ name: string; id: string | null } | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Load folders on mount
-  useEffect(() => {
-    loadFolders();
-  }, []);
-
-  // Loads all folders and their cards
-  const loadFolders = async () => {
+  // Load folders on mount and when search/sort params change
+  const loadFolders = useCallback(async (params?: { search?: string; sortBy?: string; order?: string }) => {
     setLoading(true);
     try {
-      const res = await apiService.getFolders();
+      const folderParams = {
+        ...params,
+        order: params?.order || "asc"
+      };
+      const res = await apiService.getFolders(folderParams);
       // Type assertion for API response
       const foldersData = (res as GetFoldersResponse).data.folders;
       setFolders(foldersData);
@@ -48,7 +50,41 @@ const CardManager = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Load folders on mount
+  useEffect(() => {
+    loadFolders();
+  }, [loadFolders]);
+
+  // Handler functions for Aside component
+  const handleFolderSelect = useCallback((folderId: string | null) => {
+    setSelectedFolderId(folderId);
+  }, []);
+
+  const handleSearch = useCallback((searchValue: string) => {
+    setSearchTerm(searchValue);
+    const params: any = {};
+    if (searchValue.trim()) {
+      params.search = searchValue;
+    }
+    if (sortOption === "name") params.sortBy = "name";
+    if (sortOption === "date") params.sortBy = "createdAt";
+    if (sortOption === "lastUsed") params.sortBy = "lastOpenedAt";
+    loadFolders(params);
+  }, [loadFolders, sortOption]);
+
+  const handleSort = useCallback((newSortOption: SortOption) => {
+    setSortOption(newSortOption);
+    const params: any = {};
+    if (searchTerm.trim()) {
+      params.search = searchTerm;
+    }
+    if (newSortOption === "name") params.sortBy = "name";
+    if (newSortOption === "date") params.sortBy = "createdAt";
+    if (newSortOption === "lastUsed") params.sortBy = "lastOpenedAt";
+    loadFolders(params);
+  }, [loadFolders, searchTerm]);
 
   // Create or update a folder
   const handleSaveFolder = async (folderName: string) => {
@@ -157,37 +193,60 @@ const CardManager = () => {
     setModalOpen(true);
   };
 
+  const handleAddFolder = useCallback(() => {
+    setEditingFolder(null);
+    setModalOpen(true);
+  }, []);
+
+  // Get the selected folder and its cards for display
+  const selectedFolder = selectedFolderId ? folders.find(f => f.id === selectedFolderId) : null;
+  const selectedFolderCards = selectedFolderId ? (cardsByFolder[selectedFolderId] || []) : [];
+
   return (
     <SC.ContentWrapper>
-      <Aside />
+      <Aside
+        folders={folders}
+        selectedFolderId={selectedFolderId}
+        searchTerm={searchTerm}
+        sortOption={sortOption}
+        onFolderSelect={handleFolderSelect}
+        onSearch={handleSearch}
+        onSort={handleSort}
+        onAddFolder={handleAddFolder}
+        loading={loading}
+      />
       <SC.CardsWrapper>
-        <SC.Title>Folders</SC.Title>
-        <SC.AddButtonWrapper>
-          <SC.AddButton onClick={() => { setEditingFolder(null); setModalOpen(true); }}>
-            <Icon size="s" color="textPrimary">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
-                <path d="M720-160v-120H600v-80h120v-120h80v120h120v80H800v120h-80Zm-600 40q-33 0-56.5-23.5T40-200v-560q0-33 23.5-56.5T120-840h560q33 0 56.5 23.5T760-760v200h-80v-80H120v440h520v80H120Zm0-600h560v-40H120v40Zm0 0v-40 40Z" />
-              </svg>
-            </Icon>
-          </SC.AddButton>
-        </SC.AddButtonWrapper>
-        {notification && (
-          <Notification message={notification.message} type={notification.type} />
-        )}
-        {loading ? (
-          <div>Loading...</div>
+        {selectedFolder ? (
+          <>
+            <SC.Title>{selectedFolder.name}</SC.Title>
+            {notification && (
+              <Notification message={notification.message} type={notification.type} />
+            )}
+            {loading ? (
+              <div>Loading...</div>
+            ) : (
+              <Folder
+                key={selectedFolder.id}
+                name={selectedFolder.name}
+                cards={selectedFolderCards}
+                onAddCard={handleAddCard}
+                onEditCard={handleEditCard}
+                onDeleteCard={handleDeleteCard}
+                onEditFolder={() => {
+                  const index = folders.findIndex(f => f.id === selectedFolder.id);
+                  handleEditFolder(index);
+                }}
+              />
+            )}
+          </>
         ) : (
-          folders.map((folder, index) => (
-            <Folder
-              key={folder.id}
-              name={folder.name}
-              cards={cardsByFolder[folder.id] || []}
-              onAddCard={handleAddCard}
-              onEditCard={handleEditCard}
-              onDeleteCard={handleDeleteCard}
-              onEditFolder={() => handleEditFolder(index)}
-            />
-          ))
+          <>
+            <SC.Title>Select a Folder</SC.Title>
+            {notification && (
+              <Notification message={notification.message} type={notification.type} />
+            )}
+            <div>Please select a folder from the sidebar to view its cards.</div>
+          </>
         )}
         <Modal isOpen={isModalOpen} onClose={() => { setModalOpen(false); setEditingFolder(null); }}>
           <FolderForm

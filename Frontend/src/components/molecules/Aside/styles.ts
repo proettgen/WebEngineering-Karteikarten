@@ -183,3 +183,49 @@ export const SelectedFolderItem = styled(FolderItem)`
     pointer-events: auto;
   }
 `;
+
+/**
+ * Styles for the Add Folder button.
+ */
+export const AddFolderButton = styled.button`
+  background-color: ${({ theme }) => theme.primary};
+  color: ${({ theme }) => theme.onPrimary};
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  transition: background-color 0.2s, transform 0.1s;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.primaryHover || theme.primary};
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+  }
+`;
+
+/**
+ * Loading container for when folders are being fetched.
+ */
+export const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: ${({ theme }) => theme.textSecondary};
+  font-size: 14px;
+`;

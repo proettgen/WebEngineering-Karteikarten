@@ -7,6 +7,21 @@ import 'dotenv/config';
 
 const app = express();
 
+// CORS middleware - MUST be before other routes
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    // Handle preflight OPTIONS requests
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(200);
+        return;
+    }
+    
+    next();
+});
+
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
@@ -30,5 +45,13 @@ app.all('*', (req, res, next) => {
 
 // Global error handling middleware
 app.use(globalErrorHandler);
+
+// Start the server (only when not in Vercel environment)
+if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 3001;
+    app.listen(PORT, () => {
+        console.log(`🚀 Server is running on http://localhost:${PORT}`);
+    });
+}
 
 export default app;
