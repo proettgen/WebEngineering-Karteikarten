@@ -76,56 +76,47 @@ export const deleteFolder = async (id: string): Promise<void> => {
     }
 };
 
-export const folderExists = async (id: string): Promise<boolean> => {
-    const res = await pool.query('SELECT 1 FROM folders WHERE id = $1', [id]);
-    return (res.rowCount ?? 0) > 0;
-};
-
-
-/* * Mock data retrieval for testing purposes.
- * This function reads from a local JSON file containing mock folder data.
-export const getMockFolders = async (): Promise<FolderData> => {
+// Hierarchical folder functions for Aside component
+export const getRootFolders = async (limit = 20, offset = 0): Promise<{ folders: Folder[]; total: number }> => {
     try {
-        const filePath = getDataFilePath('mockFolders.json');
-        console.log('📁 Reading mockFolders.json from:', filePath);
-        
-        const fileContent = await fs.readFile(filePath, 'utf-8');
-        const jsonData = JSON.parse(fileContent) as FolderData;
-        
-        // Validate the data structure
-        if (!jsonData.folders || !Array.isArray(jsonData.folders)) {
-            throw new AppError('Invalid data structure in folders source.', 500);
-        }
-        
-        return jsonData;
-    } catch (error) {
-        if (error instanceof SyntaxError) {
-            console.error("❌ SyntaxError parsing mockFolders.json:", error.message);
-            throw new AppError('Invalid JSON format in folders source.', 500);
-        }
-        
-        if (isNodeError(error) && error.code === 'ENOENT') {
-            console.error("❌ mockFolders.json not found at expected path");
-            throw new AppError('Folders data source not found.', 404);
-        }
-        
-        console.error("❌ Error reading or parsing mockFolders.json:", error);
-        throw new AppError('Could not retrieve folder data.', 500);
+        const data = await pool.query<Folder>(
+            `SELECT id, name, parent_id AS "parentId", created_at AS "createdAt", last_opened_at AS "lastOpenedAt"
+            FROM folders 
+            WHERE parent_id IS NULL
+            ORDER BY name ASC
+            LIMIT $1 OFFSET $2`,
+            [limit, offset]
+        );
+        const count = await pool.query<{ count: string }>('SELECT COUNT(*) FROM folders WHERE parent_id IS NULL');
+        return { folders: data.rows, total: parseInt(count.rows[0].count, 10) };
+    } catch {
+        throw new AppError('Could not retrieve root folders from database.', 500);
     }
 };
 
-const getDataFilePath = (filename: string): string => {
-    // Resolve path to data files. This works for development (ts-node) and production (Vercel).
-    // __dirname is the directory of the current module.
-    // In dev: src/services -> resolves to src/data
-    // In prod (after build): dist/services -> resolves to dist/data
-    const dataDir = path.resolve(__dirname, '..', 'data');
-    const filePath = path.join(dataDir, filename);
-    return filePath;
+export const getChildFolders = async (parentId: string, limit = 20, offset = 0): Promise<{ folders: Folder[]; total: number }> => {
+    try {
+        const data = await pool.query<Folder>(
+            `SELECT id, name, parent_id AS "parentId", created_at AS "createdAt", last_opened_at AS "lastOpenedAt"
+            FROM folders 
+            WHERE parent_id = $1
+            ORDER BY name ASC
+            LIMIT $2 OFFSET $3`,
+            [parentId, limit, offset]
+        );
+        const count = await pool.query<{ count: string }>('SELECT COUNT(*) FROM folders WHERE parent_id = $1', [parentId]);
+        return { folders: data.rows, total: parseInt(count.rows[0].count, 10) };
+    } catch {
+        throw new AppError('Could not retrieve child folders from database.', 500);
+    }
 };
 
-// Type guard for Node.js errors
-const isNodeError = (error: unknown): error is NodeJS.ErrnoException => {
-    return typeof error === 'object' && error !== null && 'code' in error;
+// Check if folder exists (for card validation)
+export const folderExists = async (folderId: string): Promise<boolean> => {
+    try {
+        const res = await pool.query('SELECT 1 FROM folders WHERE id = $1', [folderId]);
+        return res.rows.length > 0;
+    } catch {
+        return false;
+    }
 };
-*/

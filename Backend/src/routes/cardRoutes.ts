@@ -3,17 +3,12 @@ import * as cardController from '../controllers/cardController';
 
 const router = express.Router();
 
-router.get('/folders/:folderId/cards', cardController.getCardsByFolder);
+// General card operations (for admin/search across all folders)
+router.get('/', cardController.getAllCards);
 
-router
-    .route('/')
-    .get(cardController.getAllCards)
-    .post(cardController.createCard);
-
+// Individual card operations (for direct card access)
 router
     .route('/:id')
-    .get(cardController.getCardById)
-    .put(cardController.updateCard)
-    .delete(cardController.deleteCard);
+    .get(cardController.getCardById);
 
 export default router;

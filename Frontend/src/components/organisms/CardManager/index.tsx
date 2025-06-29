@@ -38,13 +38,8 @@ const CardManager = () => {
       const foldersData = (res as GetFoldersResponse).data.folders;
       setFolders(foldersData);
 
-      // Optionally, load cards for each folder
-      const cardsMap: Record<string, any[]> = {};
-      for (const folder of foldersData) {
-        const cardsRes = await apiService.getCardsByFolder(folder.id);
-        cardsMap[folder.id] = (cardsRes as any).data.cards || [];
-      }
-      setCardsByFolder(cardsMap);
+      // TODO: Load cards when selected folder changes
+      // For now, don't preload all cards to avoid API errors
     } catch {
       setNotification({ message: "Error loading folders!", type: "error" });
     } finally {
@@ -56,6 +51,30 @@ const CardManager = () => {
   useEffect(() => {
     loadFolders();
   }, [loadFolders]);
+
+  // Load cards for selected folder
+  const loadCardsForFolder = useCallback(async (folderId: string) => {
+    try {
+      const cardsRes = await apiService.getCardsByFolder(folderId);
+      setCardsByFolder(prev => ({
+        ...prev,
+        [folderId]: (cardsRes as any).data?.cards || []
+      }));
+    } catch {
+      // No cards found for folder - that's ok
+      setCardsByFolder(prev => ({
+        ...prev,
+        [folderId]: []
+      }));
+    }
+  }, []);
+
+  // Load cards when folder is selected
+  useEffect(() => {
+    if (selectedFolderId) {
+      loadCardsForFolder(selectedFolderId);
+    }
+  }, [selectedFolderId, loadCardsForFolder]);
 
   // Handler functions for Aside component
   const handleFolderSelect = useCallback((folderId: string | null) => {
@@ -131,17 +150,16 @@ const CardManager = () => {
     try {
       const folder = folders.find(f => f.name === folderName);
       if (!folder) throw new Error("Folder not found");
-      await apiService.createCard({
+      await apiService.createCardInFolder(folder.id, {
         title,
         question,
         answer,
         tags,
-        folderId: folder.id,
         currentLearningLevel: 0,
         createdAt: new Date().toISOString()
       });
       setNotification({ message: "Card created!", type: "success" });
-      await loadFolders();
+      await loadCardsForFolder(folder.id); // Reload cards for this folder
     } catch {
       setNotification({ message: "Error creating card!", type: "error" });
     } finally {
@@ -156,14 +174,14 @@ const CardManager = () => {
       if (!folder) throw new Error("Folder not found");
       const card = cardsByFolder[folder.id]?.[cardIndex];
       if (!card) throw new Error("Card not found");
-      await apiService.updateCard(card.id, {
+      await apiService.updateCardInFolder(folder.id, card.id, {
         title: newTitle,
         question: newQuestion,
         answer: newAnswer,
         tags: newTags
       });
       setNotification({ message: "Card updated!", type: "success" });
-      await loadFolders();
+      await loadCardsForFolder(folder.id); // Reload cards for this folder
     } catch {
       setNotification({ message: "Error updating card!", type: "error" });
     } finally {
@@ -178,9 +196,9 @@ const CardManager = () => {
       if (!folder) throw new Error("Folder not found");
       const card = cardsByFolder[folder.id]?.[cardIndex];
       if (!card) throw new Error("Card not found");
-      await apiService.deleteCard(card.id);
+      await apiService.deleteCardInFolder(folder.id, card.id);
       setNotification({ message: "Card deleted!", type: "success" });
-      await loadFolders();
+      await loadCardsForFolder(folder.id); // Reload cards for this folder
     } catch {
       setNotification({ message: "Error deleting card!", type: "error" });
     } finally {

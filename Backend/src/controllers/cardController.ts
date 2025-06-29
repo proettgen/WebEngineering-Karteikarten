@@ -108,10 +108,97 @@ export const deleteCard = async (req: Request, res: Response, next: NextFunction
 
 export const getCardsByFolder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { folderId } = req.params;
+        const { id: folderId } = req.params;
         idSchema.parse(folderId);
         const cards = await cardService.getCardsByFolder(folderId);
         res.status(200).json({ status: 'success', data: { cards } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Folder-context card operations
+export const createCardInFolder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id: folderId } = req.params;
+        idSchema.parse(folderId);
+        
+        // Check if folder exists
+        const folderExists = await folderService.folderExists(folderId);
+        if (!folderExists) {
+            throw new AppError(`Folder with ID ${folderId} does not exist.`, 404);
+        }
+
+        const parsed = cardSchema.omit({ folderId: true }).parse(req.body);
+        const card = await cardService.createCard({
+            ...parsed,
+            folderId,
+            tags: parsed.tags ?? null
+        });
+        res.status(201).json({
+            status: 'success',
+            data: { card }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const updateCardInFolder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id: folderId, cardId } = req.params;
+        idSchema.parse(folderId);
+        idSchema.parse(cardId);
+        
+        // Check if folder exists
+        const folderExists = await folderService.folderExists(folderId);
+        if (!folderExists) {
+            throw new AppError(`Folder with ID ${folderId} does not exist.`, 404);
+        }
+
+        // Ensure card belongs to this folder
+        const existingCard = await cardService.getCardById(cardId);
+        if (!existingCard) {
+            throw new AppError(`Card with ID ${cardId} not found`, 404);
+        }
+        if (existingCard.folderId !== folderId) {
+            throw new AppError(`Card ${cardId} does not belong to folder ${folderId}`, 400);
+        }
+
+        const parsed = cardUpdateSchema.omit({ folderId: true }).parse(req.body);
+        const card = await cardService.updateCard(cardId, parsed);
+        res.status(200).json({
+            status: 'success',
+            data: { card }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteCardInFolder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id: folderId, cardId } = req.params;
+        idSchema.parse(folderId);
+        idSchema.parse(cardId);
+        
+        // Check if folder exists
+        const folderExists = await folderService.folderExists(folderId);
+        if (!folderExists) {
+            throw new AppError(`Folder with ID ${folderId} does not exist.`, 404);
+        }
+
+        // Ensure card belongs to this folder
+        const existingCard = await cardService.getCardById(cardId);
+        if (!existingCard) {
+            throw new AppError(`Card with ID ${cardId} not found`, 404);
+        }
+        if (existingCard.folderId !== folderId) {
+            throw new AppError(`Card ${cardId} does not belong to folder ${folderId}`, 400);
+        }
+
+        await cardService.deleteCard(cardId);
+        res.status(204).send();
     } catch (error) {
         next(error);
     }

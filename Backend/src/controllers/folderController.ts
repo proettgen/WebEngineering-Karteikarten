@@ -88,3 +88,46 @@ export const deleteFolder = async (req: Request, res: Response, next: NextFuncti
         next(error);
     }
 };
+
+// Hierarchical folder controllers for Aside component
+export const getRootFolders = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { limit, offset } = paginationSchema.parse(req.query);
+        const limitNum = limit ? parseInt(limit, 10) : 20;
+        const offsetNum = offset ? parseInt(offset, 10) : 0;
+
+        const { folders, total } = await folderService.getRootFolders(limitNum, offsetNum);
+        res.status(200).json({
+            status: 'success',
+            results: folders.length,
+            limit: limitNum,
+            offset: offsetNum,
+            total,
+            data: { folders }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getChildFolders = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id: parentId } = req.params;
+        const { limit, offset } = paginationSchema.parse(req.query);
+        idSchema.parse(parentId);
+        const limitNum = limit ? parseInt(limit, 10) : 20;
+        const offsetNum = offset ? parseInt(offset, 10) : 0;
+
+        const { folders, total } = await folderService.getChildFolders(parentId, limitNum, offsetNum);
+        res.status(200).json({
+            status: 'success',
+            results: folders.length,
+            limit: limitNum,
+            offset: offsetNum,
+            total,
+            data: { folders }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
