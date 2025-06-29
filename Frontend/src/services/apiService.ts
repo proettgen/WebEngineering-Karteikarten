@@ -1,4 +1,4 @@
-const API_BASE = "https://web-engineering-karteikarten-60iw2vp6l-proettgens-projects.vercel.app/api";
+const API_BASE = "https://web-engineering-karteikarten-j9ahtxe1q-proettgens-projects.vercel.app/api";
 
 const request = async <T>(url: string, options?: RequestInit): Promise<T> => {
     const res = await fetch(url, {
