@@ -229,3 +229,37 @@ export const LoadingContainer = styled.div`
   color: ${({ theme }) => theme.textSecondary};
   font-size: 14px;
 `;
+
+/**
+ * Breadcrumb container
+ */
+export const BreadcrumbContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin: 10px 0 15px;
+`;
+
+/**
+ * Individual breadcrumb item
+ */
+export const BreadcrumbItem = styled.span<{ $isActive?: boolean }>`
+  cursor: pointer;
+  font-size: ${({ theme }) => theme.fontSizes.small};
+  color: ${({ theme, $isActive }) => $isActive ? theme.primary : theme.textPrimary};
+  font-weight: ${({ $isActive }) => $isActive ? 600 : 400};
+  
+  &:hover {
+    text-decoration: underline;
+    color: ${({ theme }) => theme.primary};
+  }
+`;
+
+/**
+ * Separator between breadcrumb items
+ */
+export const BreadcrumbSeparator = styled.span`
+  color: ${({ theme }) => theme.textSecondary};
+  margin: 0 2px;
+`;

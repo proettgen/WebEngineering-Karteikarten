@@ -26,16 +26,6 @@ export const apiService = {
     updateFolder: (id: string, data: any) => request(`${API_BASE}/folders/${id}`, { method: "PUT", body: JSON.stringify(data) }),
     deleteFolder: (id: string) => request(`${API_BASE}/folders/${id}`, { method: "DELETE" }),
 
-    // Hierarchical folders for Aside
-    getRootFolders: (params?: { limit?: number; offset?: number }) => {
-        const query = params ? "?" + new URLSearchParams(Object.entries(params).map(([k, v]) => [k, String(v)])).toString() : "";
-        return request(`${API_BASE}/folders/root${query}`);
-    },
-    getChildFolders: (parentId: string, params?: { limit?: number; offset?: number }) => {
-        const query = params ? "?" + new URLSearchParams(Object.entries(params).map(([k, v]) => [k, String(v)])).toString() : "";
-        return request(`${API_BASE}/folders/${parentId}/children${query}`);
-    },
-
     // Cards (general operations)
     getCards: (params?: Record<string, any>) => {
         const query = params ? "?" + new URLSearchParams(params).toString() : "";
@@ -45,13 +35,18 @@ export const apiService = {
 
     // Cards within folder context (recommended for CRUD operations)
     getCardsByFolder: (folderId: string, params?: Record<string, any>) => {
-        const query = params ? "?" + new URLSearchParams(params).toString() : "";
-        return request(`${API_BASE}/folders/${folderId}/cards${query}`);
+        // Use the working endpoint: /api/cards with folderId filter
+        const queryParams = { folderId, ...params };
+        const query = "?" + new URLSearchParams(queryParams).toString();
+        return request(`${API_BASE}/cards${query}`);
     },
     createCardInFolder: (folderId: string, data: any) => 
-        request(`${API_BASE}/folders/${folderId}/cards`, { method: "POST", body: JSON.stringify(data) }),
+        // Use general cards endpoint with folderId in data
+        request(`${API_BASE}/cards`, { method: "POST", body: JSON.stringify({ ...data, folderId, createdAt: new Date().toISOString() }) }),
     updateCardInFolder: (folderId: string, cardId: string, data: any) => 
-        request(`${API_BASE}/folders/${folderId}/cards/${cardId}`, { method: "PUT", body: JSON.stringify(data) }),
+        // Use general cards endpoint, folderId is maintained automatically
+        request(`${API_BASE}/cards/${cardId}`, { method: "PUT", body: JSON.stringify(data) }),
     deleteCardInFolder: (folderId: string, cardId: string) => 
-        request(`${API_BASE}/folders/${folderId}/cards/${cardId}`, { method: "DELETE" }),
+        // Use general cards endpoint
+        request(`${API_BASE}/cards/${cardId}`, { method: "DELETE" }),
 };

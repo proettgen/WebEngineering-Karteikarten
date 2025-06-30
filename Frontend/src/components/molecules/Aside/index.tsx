@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import { useTheme } from "styled-components";
 import { Folder } from "@/database/folderTypes";
 import { ThemeType } from "@/components/templates/ThemeWrapper/types";
-import { AsideProps } from "./types";
+import { AsideProps, BreadcrumbItem } from "./types";
 import * as SC from "./styles";
 import Icon from "@/components/atoms/Icon";
 import SortButton from "@/components/atoms/SortButton";
@@ -12,11 +12,15 @@ import { SortOption } from "@/components/atoms/SortButton/types";
 import SearchBar from "../SearchBar";
 
 const FolderNavigationAside: React.FC<AsideProps> = ({
-  folders,
+  currentFolders,
+  currentParentId,
   selectedFolderId,
+  breadcrumb,
   searchTerm,
   sortOption,
   onFolderSelect,
+  onFolderNavigate,
+  onBreadcrumbNavigate,
   onSearch,
   onSort,
   onAddFolder,
@@ -27,8 +31,8 @@ const FolderNavigationAside: React.FC<AsideProps> = ({
 
   // Find the currently selected folder object
   const selectedFolder = useMemo(
-    () => folders.find((f) => f.id === selectedFolderId) ?? null,
-    [folders, selectedFolderId]
+    () => currentFolders.find((f) => f.id === selectedFolderId) ?? null,
+    [currentFolders, selectedFolderId]
   );
 
   // Sort folders based on the selected sort option
@@ -52,20 +56,32 @@ const FolderNavigationAside: React.FC<AsideProps> = ({
 
   // List of folders to display (all folders since filtering is handled in parent)
   const displayedFolders = useMemo((): Folder[] => 
-    sortFolders(folders, sortOption), 
-    [folders, sortOption]
+    sortFolders(currentFolders, sortOption), 
+    [currentFolders, sortOption]
   );
 
-  // Check if a folder has subfolders
-  const hasSubfolders = useMemo(
-    () => (folderId: string): boolean =>
-      folders.some((folder) => folder.parentId === folderId),
-    [folders]
-  );
+  // Check if a folder has subfolders - we could improve this by adding hasChildren to the API response
+  // For now, we'll show the navigation arrow for all folders and handle empty results gracefully
+  const hasSubfolders = (_folder: Folder): boolean => true;
 
-  // Handle click on a folder item
+  // Handle click on a folder item (to select it and view its cards)
   const handleFolderClick = (clickedFolder: Folder): void => {
     onFolderSelect(clickedFolder.id);
+  };
+
+  // Handle double-click on a folder item (alternative navigation method)
+  const handleFolderDoubleClick = (clickedFolder: Folder): void => {
+    onFolderNavigate(clickedFolder.id);
+  };
+
+  // Handle navigation into a subfolder (to view its subfolders)
+  const handleFolderNavigate = (clickedFolder: Folder): void => {
+    onFolderNavigate(clickedFolder.id);
+  };
+
+  // Handle breadcrumb navigation
+  const handleBreadcrumbClick = (item: BreadcrumbItem | null): void => {
+    onBreadcrumbNavigate(item ? item.id : null);
   };
 
   return (
@@ -81,6 +97,37 @@ const FolderNavigationAside: React.FC<AsideProps> = ({
           currentSortOption={sortOption}
         />
       </SC.TopControlsContainer>
+
+      {/* Breadcrumb Navigation */}
+      {breadcrumb.length > 0 && (
+        <div style={{ marginBottom: '15px' }}>
+          <SC.BackButton onClick={() => handleBreadcrumbClick(null)}>
+            <Icon size="s" color="textPrimary">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960">
+                <path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/>
+              </svg>
+            </Icon>
+            Root
+          </SC.BackButton>
+          
+          {/* Breadcrumb trail */}
+          <SC.BreadcrumbContainer>
+            {breadcrumb.map((item, index) => (
+              <React.Fragment key={item.id}>
+                {index > 0 && (
+                  <SC.BreadcrumbSeparator>/</SC.BreadcrumbSeparator>
+                )}
+                <SC.BreadcrumbItem 
+                  $isActive={index === breadcrumb.length - 1}
+                  onClick={() => handleBreadcrumbClick(item)}
+                >
+                  {item.name}
+                </SC.BreadcrumbItem>
+              </React.Fragment>
+            ))}
+          </SC.BreadcrumbContainer>
+        </div>
+      )}
 
       {/* Add Folder Button */}
       <SC.AddFolderButton onClick={onAddFolder}>
@@ -108,19 +155,45 @@ const FolderNavigationAside: React.FC<AsideProps> = ({
             <SC.FolderItem
               key={folder.id}
               onClick={() => handleFolderClick(folder)}
+              onDoubleClick={() => handleFolderDoubleClick(folder)}
               $isSelected={folder.id === selectedFolderId}
-              title={folder.name}
+              title={`${folder.name} (Click to select, double-click or arrow to navigate)`}
             >
               <SC.FolderName>{folder.name}</SC.FolderName>
-              {hasSubfolders(folder.id) && (
-                <Icon size="s" color="textSecondary" cursorStyle="pointer">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 960 960"
+              {hasSubfolders(folder) && (
+                <div 
+                  style={{ 
+                    cursor: 'pointer', 
+                    display: 'flex', 
+                    alignItems: 'center',
+                    padding: '4px',
+                    borderRadius: '4px',
+                    transition: 'background-color 0.2s'
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Don't select the folder when clicking the icon
+                    handleFolderNavigate(folder);
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = theme.background;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                >
+                  <Icon 
+                    size="s" 
+                    color="textSecondary" 
+                    cursorStyle="pointer"
                   >
-                    <path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z" />
-                  </svg>
-                </Icon>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 960 960"
+                    >
+                      <path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z" />
+                    </svg>
+                  </Icon>
+                </div>
               )}
             </SC.FolderItem>
           ))}
@@ -132,7 +205,9 @@ const FolderNavigationAside: React.FC<AsideProps> = ({
               <SC.FolderName
                 style={{ textAlign: "center", color: theme.textSecondary }}
               >
-                No folders yet. Create your first folder!
+                {currentParentId === null 
+                  ? "No folders yet. Create your first folder!" 
+                  : "This folder has no subfolders. Add one!"}
               </SC.FolderName>
             </SC.FolderItem>
           )}
