@@ -13,6 +13,11 @@ const request = async <T>(url: string, options?: RequestInit): Promise<T> => {
         throw new Error(`HTTP ${res.status}: ${errorText || res.statusText}`);
     }
     
+    // Handle 204 No Content responses (e.g., successful DELETE operations)
+    if (res.status === 204) {
+        return null as T;
+    }
+    
     return res.json();
 };
 

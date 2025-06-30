@@ -12,7 +12,7 @@ export interface Card {
   question: string;
   answer: string;
   tags: string[];
-  boxLevel?: number; // Fachzuordnung für Karteikasten
+  boxLevel?: number; // Box level for spaced repetition learning
 }
 
 export interface Folder {

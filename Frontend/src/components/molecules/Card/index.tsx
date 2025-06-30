@@ -18,6 +18,10 @@ const Card = ({
   showEditButton = true,
 }: CardProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isQuestionExpanded, setIsQuestionExpanded] = useState(false);
+  const [isAnswerExpanded, setIsAnswerExpanded] = useState(false);
+
+  const isTextLong = (text: string) => text.length > 150;
 
   const handleEditSubmit = (
     newTitle: string,
@@ -71,9 +75,16 @@ const Card = ({
             </Text>
           </SC.SectionTitleWrapper>
           <SC.MainTextWrapper>
-            <Text size="large" weight="bold" color="textPrimary">
-              {question}
-            </Text>
+            <SC.TruncatedText $isExpanded={isQuestionExpanded}>
+              <Text size="large" weight="bold" color="textPrimary">
+                {question}
+              </Text>
+            </SC.TruncatedText>
+            {isTextLong(question) && (
+              <SC.ExpandButton onClick={() => setIsQuestionExpanded(!isQuestionExpanded)}>
+                {isQuestionExpanded ? 'Show less' : 'Show more'}
+              </SC.ExpandButton>
+            )}
           </SC.MainTextWrapper>
           {showEditButton && (
             <SC.EditButtonWrapper>
@@ -116,9 +127,16 @@ const Card = ({
             </Text>
           </SC.SectionTitleWrapper>
           <SC.MainTextWrapper>
-            <Text size="large" weight="bold" color="textPrimary">
-              {answer}
-            </Text>
+            <SC.TruncatedText $isExpanded={isAnswerExpanded}>
+              <Text size="large" weight="bold" color="textPrimary">
+                {answer}
+              </Text>
+            </SC.TruncatedText>
+            {isTextLong(answer) && (
+              <SC.ExpandButton onClick={() => setIsAnswerExpanded(!isAnswerExpanded)}>
+                {isAnswerExpanded ? 'Show less' : 'Show more'}
+              </SC.ExpandButton>
+            )}
           </SC.MainTextWrapper>
           {showEditButton && (
             <SC.EditButtonWrapper>

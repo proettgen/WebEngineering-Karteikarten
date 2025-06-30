@@ -171,14 +171,27 @@ const CardManager = () => {
         setNotification({ message: "Folder updated!", type: "success" });
       } else {
         // Create folder at current level (parentId is currentParentId)
-        await apiService.createFolder({ name: folderName, parentId: currentParentId });
+        const now = new Date().toISOString();
+        await apiService.createFolder({ 
+          name: folderName, 
+          parentId: currentParentId,
+          createdAt: now,
+          lastOpenedAt: now
+        });
         setNotification({ message: "Folder created!", type: "success" });
       }
-      // Reload the current level folders
+      // Reload all folders first to ensure we have fresh data
+      const res = await apiService.getFolders();
+      const allFoldersData = (res as GetFoldersResponse).data.folders;
+      setAllFolders(allFoldersData);
+      
+      // Then reload the current level folders
       if (currentParentId === null) {
-        await loadRootFolders();
+        const rootFolders = allFoldersData.filter(folder => folder.parentId === null);
+        setCurrentFolders(rootFolders);
       } else {
-        await loadChildFolders(currentParentId);
+        const childFolders = allFoldersData.filter(folder => folder.parentId === currentParentId);
+        setCurrentFolders(childFolders);
       }
     } catch {
       setNotification({ message: "Error saving folder!", type: "error" });
@@ -196,11 +209,18 @@ const CardManager = () => {
       try {
         await apiService.deleteFolder(editingFolder.id);
         setNotification({ message: "Folder deleted!", type: "success" });
-        // Reload the current level folders
+        // Reload all folders first to ensure we have fresh data
+        const res = await apiService.getFolders();
+        const allFoldersData = (res as GetFoldersResponse).data.folders;
+        setAllFolders(allFoldersData);
+        
+        // Then reload the current level folders
         if (currentParentId === null) {
-          await loadRootFolders();
+          const rootFolders = allFoldersData.filter(folder => folder.parentId === null);
+          setCurrentFolders(rootFolders);
         } else {
-          await loadChildFolders(currentParentId);
+          const childFolders = allFoldersData.filter(folder => folder.parentId === currentParentId);
+          setCurrentFolders(childFolders);
         }
       } catch {
         setNotification({ message: "Error deleting folder!", type: "error" });
