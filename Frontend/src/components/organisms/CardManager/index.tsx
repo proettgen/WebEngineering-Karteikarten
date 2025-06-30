@@ -355,9 +355,13 @@ const CardManager = () => {
       <SC.CardsWrapper>
         {selectedFolder ? (
           <>
-            <SC.Title>{selectedFolder.name}</SC.Title>
             {notification && (
-              <Notification message={notification.message} type={notification.type} />
+              <Notification 
+                message={notification.message} 
+                type={notification.type}
+                onDismiss={() => setNotification(null)}
+                duration={3000} // 3 seconds
+              />
             )}
             {loading ? (
               <div>Loading...</div>
@@ -375,11 +379,18 @@ const CardManager = () => {
           </>
         ) : (
           <>
-            <SC.Title>Select a Folder</SC.Title>
             {notification && (
-              <Notification message={notification.message} type={notification.type} />
+              <Notification 
+                message={notification.message} 
+                type={notification.type}
+                onDismiss={() => setNotification(null)}
+                duration={3000} // 3 seconds
+              />
             )}
-            <div>Please select a folder from the sidebar to view its cards.</div>
+            <SC.EmptyStateWrapper>
+              <SC.EmptyStateTitle>Select a Folder</SC.EmptyStateTitle>
+              <SC.EmptyStateText>Please select a folder from the sidebar to view its cards.</SC.EmptyStateText>
+            </SC.EmptyStateWrapper>
           </>
         )}
         <Modal isOpen={isModalOpen} onClose={() => { setModalOpen(false); setEditingFolder(null); }}>

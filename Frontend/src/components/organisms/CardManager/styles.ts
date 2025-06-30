@@ -61,3 +61,30 @@ export const AddButtonWrapper = styled.div`
   top: 70px;
   right: 42px;
 `;
+
+// Empty state styling for when no folder is selected
+export const EmptyStateWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+  text-align: center;
+  padding: 40px 20px;
+  min-height: 400px;
+`;
+
+export const EmptyStateTitle = styled.h1`
+  font-size: 2.5rem;
+  color: ${({ theme }) => theme.textPrimary};
+  margin: 0 0 16px 0;
+  font-weight: 600;
+`;
+
+export const EmptyStateText = styled.p`
+  font-size: 1.1rem;
+  color: ${({ theme }) => theme.textSecondary};
+  margin: 0;
+  max-width: 400px;
+  line-height: 1.5;
+`;

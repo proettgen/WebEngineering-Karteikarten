@@ -44,14 +44,15 @@ export const FlipButtonWrapper = styled.div`
   position: absolute;
   top: 16px;
   right: 16px;
-  z-index: 10;
 `;
 
 export const EditButtonWrapper = styled.div`
   position: absolute;
+  left: 0;
+  right: 0;
   bottom: 16px;
-  right: 16px;
-  z-index: 10;
+  display: flex;
+  justify-content: center;
 `;
 
 export const TitleWrapper = styled.div`
@@ -106,59 +107,64 @@ export const MainTextWrapper = styled.div`
 `;
 
 export const FlipButton = styled.button`
-  background-color: ${({ theme }) => theme.surface};
+  background-color: transparent;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border: 1px solid ${({ theme }) => theme.border};
-  color: ${({ theme }) => theme.textPrimary};
+  color: ${({ theme }) => theme.onPrimary};
   padding: 8px;
   border-radius: 50%;
   cursor: pointer;
   position: relative;
-  transition: all 0.2s;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 10;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  
+  /* Ensure button is always interactive */
+  pointer-events: auto;
+  user-select: none;
 
   &:hover {
-    background-color: ${({ theme }) => theme.primary};
-    border-color: ${({ theme }) => theme.primary};
-    color: white;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    background-color: ${({ theme }) => theme.background};
+    border-color: ${({ theme }) => theme.textSecondary};
+  }
+
+  &:active {
+    transform: scale(0.95);
   }
 
   svg {
     width: 20px;
     height: 20px;
-    fill: currentColor;
+    fill: ${({ theme }) => theme.onPrimary};
     pointer-events: none;
   }
 `;
 
 export const EditButton = styled.button`
-  background-color: ${({ theme }) => theme.surface};
+  background-color: transparent;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid ${({ theme }) => theme.border};
-  color: ${({ theme }) => theme.textPrimary};
+  border:1px solid ${({ theme }) => theme.border};
+  color: ${({ theme }) => theme.onPrimary};
   padding: 8px;
   border-radius: 50%;
   cursor: pointer;
   position: relative;
-  transition: all 0.2s;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
 
   &:hover {
-    background-color: ${({ theme }) => theme.accent};
-    border-color: ${({ theme }) => theme.accent};
-    color: white;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    background-color: ${({ theme }) => theme.background};
+    border-color: ${({ theme }) => theme.textSecondary};
   }
 
   svg {
     width: 20px;
     height: 20px;
-    fill: currentColor;
+    fill: ${({ theme }) => theme.onPrimary};
     pointer-events: none;
   }
 `;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "../Card";
 import Modal from "../Modal";
 import CardForm from "../CardForm";
@@ -18,9 +18,16 @@ const Folder = ({
   // State for showing the add card modal
   const [isAdding, setIsAdding] = useState(false);
   // State for tracking which cards are flipped
-  const [flippedCards, setFlippedCards] = useState<boolean[]>(
-    cards.map(() => false),
-  );
+  const [flippedCards, setFlippedCards] = useState<boolean[]>([]);
+
+  // Update flippedCards when cards change (important for proper initialization)
+  useEffect(() => {
+    setFlippedCards(prev => {
+      const newFlippedCards = cards.map(() => false);
+      // Preserve existing flip states for cards that still exist
+      return newFlippedCards.map((_, index) => prev[index] || false);
+    });
+  }, [cards]);
 
   // Handler for adding a new card
   const handleAddCard = (

@@ -22,4 +22,8 @@ export interface FolderProps {
     _folderName: string,
     _cardIndex: number
   ) => void;
+  onFlipCard?: (
+    _folderName: string,
+    _cardIndex: number
+  ) => void;
 }
