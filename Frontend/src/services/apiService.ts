@@ -26,6 +26,13 @@ export const apiService = {
     // Folders
     getFolders: (_params?: { search?: string; limit?: number; offset?: number; sortBy?: string; order?: string }) => 
         request(`${API_BASE}/folders`),
+    searchFolders: (searchTerm: string, params?: { limit?: number; offset?: number }) => {
+        const queryParams: Record<string, string> = { search: searchTerm };
+        if (params?.limit) queryParams.limit = params.limit.toString();
+        if (params?.offset) queryParams.offset = params.offset.toString();
+        const query = "?" + new URLSearchParams(queryParams).toString();
+        return request(`${API_BASE}/folders/search${query}`);
+    },
     getFolder: (id: string) => request(`${API_BASE}/folders/${id}`),
     createFolder: (data: any) => request(`${API_BASE}/folders`, { method: "POST", body: JSON.stringify(data) }),
     updateFolder: (id: string, data: any) => request(`${API_BASE}/folders/${id}`, { method: "PUT", body: JSON.stringify(data) }),

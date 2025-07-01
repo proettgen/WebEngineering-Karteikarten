@@ -120,3 +120,24 @@ export const folderExists = async (folderId: string): Promise<boolean> => {
         return false;
     }
 };
+
+// Search folders by name
+export const searchFolders = async (searchTerm: string, limit = 20, offset = 0): Promise<{ folders: Folder[]; total: number }> => {
+    try {
+        const data = await pool.query<Folder>(
+            `SELECT id, name, parent_id AS "parentId", created_at AS "createdAt", last_opened_at AS "lastOpenedAt"
+            FROM folders 
+            WHERE LOWER(name) LIKE LOWER($1)
+            ORDER BY name ASC
+            LIMIT $2 OFFSET $3`,
+            [`%${searchTerm}%`, limit, offset]
+        );
+        const count = await pool.query<{ count: string }>(
+            'SELECT COUNT(*) FROM folders WHERE LOWER(name) LIKE LOWER($1)', 
+            [`%${searchTerm}%`]
+        );
+        return { folders: data.rows, total: parseInt(count.rows[0].count, 10) };
+    } catch {
+        throw new AppError('Could not search folders in database.', 500);
+    }
+};

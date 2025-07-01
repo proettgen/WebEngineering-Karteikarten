@@ -149,11 +149,50 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
     handleFolderSelect(folderId);
   }, [handleFolderSelect]);
 
-  const handleSearch = useCallback((searchValue: string) => {
+  const handleSearch = useCallback(async (searchValue: string) => {
     setSearchTerm(searchValue);
-    // For now, search only filters the current level of folders
-    // A more advanced implementation would search across all folders
-  }, []);
+    
+    if (searchValue.trim() === '') {
+      // If search is cleared, reload the current folder context
+      const loadFolderContent = async () => {
+        setLoading(true);
+        try {
+          const res = await apiService.getFolders();
+          const allFoldersData = (res as GetFoldersResponse).data.folders;
+          setAllFolders(allFoldersData);
+          
+          if (urlFolderId) {
+            const childFolders = allFoldersData.filter(folder => folder.parentId === urlFolderId);
+            setCurrentFolders(childFolders);
+          } else {
+            const rootFolders = allFoldersData.filter(folder => folder.parentId === null);
+            setCurrentFolders(rootFolders);
+          }
+        } catch {
+          setNotification({ message: "Error loading folders!", type: "error" });
+        } finally {
+          setLoading(false);
+        }
+      };
+      loadFolderContent();
+    } else {
+      // Perform global search across all folders
+      setLoading(true);
+      try {
+        const searchRes = await apiService.searchFolders(searchValue.trim());
+        const searchResults = (searchRes as any).data?.folders || [];
+        setCurrentFolders(searchResults);
+        // Clear breadcrumb during search
+        setBreadcrumb([]);
+        setCurrentParentId(null);
+      } catch {
+        setNotification({ message: "Error searching folders!", type: "error" });
+        setCurrentFolders([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+  }, [urlFolderId]);
 
   const handleSort = useCallback((newSortOption: SortOption) => {
     setSortOption(newSortOption);

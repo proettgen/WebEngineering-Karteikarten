@@ -3,7 +3,7 @@ import * as folderService from '../services/folderService';
 import { AppError } from '../utils/AppError';
 import { folderSchema, folderUpdateSchema } from '../validation/folderValidation';
 import { idSchema } from '../validation/common'; 
-import { paginationSchema } from '../validation/pagination';
+import { paginationSchema, searchPaginationSchema } from '../validation/pagination';
 
 export const getAllFolders = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -125,6 +125,33 @@ export const getChildFolders = async (req: Request, res: Response, next: NextFun
             limit: limitNum,
             offset: offsetNum,
             total,
+            data: { folders }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Search folders controller
+export const searchFolders = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { search, limit, offset } = searchPaginationSchema.parse(req.query);
+        
+        if (!search || search.trim() === '') {
+            throw new AppError('Search term is required', 400);
+        }
+        
+        const limitNum = limit ? parseInt(limit, 10) : 20;
+        const offsetNum = offset ? parseInt(offset, 10) : 0;
+
+        const { folders, total } = await folderService.searchFolders(search.trim(), limitNum, offsetNum);
+        res.status(200).json({
+            status: 'success',
+            results: folders.length,
+            limit: limitNum,
+            offset: offsetNum,
+            total,
+            searchTerm: search.trim(),
             data: { folders }
         });
     } catch (error) {

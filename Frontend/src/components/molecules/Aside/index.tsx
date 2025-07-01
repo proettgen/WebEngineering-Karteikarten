@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { useTheme } from "styled-components";
 import { Folder } from "@/database/folderTypes";
-import { ThemeType } from "@/components/templates/ThemeWrapper/types";
 import { AsideProps, BreadcrumbItem } from "./types";
 import * as SC from "./styles";
 import Icon from "@/components/atoms/Icon";
@@ -25,7 +23,6 @@ const FolderNavigationAside: React.FC<AsideProps> = ({
   onAddFolder,
   loading = false
 }) => {
-  const theme = useTheme() as ThemeType;
   const isSearching = searchTerm.trim() !== "";
 
   // Find the currently selected folder object
@@ -74,7 +71,7 @@ const FolderNavigationAside: React.FC<AsideProps> = ({
       <SC.TopControlsContainer>
         <SearchBar
           onSearch={onSearch}
-          placeholder="Search..."
+          placeholder="Search folders..."
           initialValue={searchTerm}
         />
         <SortButton
@@ -83,46 +80,48 @@ const FolderNavigationAside: React.FC<AsideProps> = ({
         />
       </SC.TopControlsContainer>
 
-      {/* Breadcrumb Navigation */}
-      {breadcrumb.length > 0 && (
-        <div style={{ marginBottom: '15px' }}>
-          <SC.BackButton onClick={() => handleBreadcrumbClick(null)}>
-            <Icon size="s" color="textPrimary">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960">
-                <path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/>
-              </svg>
-            </Icon>
-            Root
-          </SC.BackButton>
-          
-          {/* Breadcrumb trail */}
-          <SC.BreadcrumbContainer>
-            {breadcrumb.map((item, index) => (
-              <React.Fragment key={item.id}>
-                {index > 0 && (
-                  <SC.BreadcrumbSeparator>/</SC.BreadcrumbSeparator>
-                )}
-                <SC.BreadcrumbItem 
-                  $isActive={index === breadcrumb.length - 1}
-                  onClick={() => handleBreadcrumbClick(item)}
-                >
-                  {item.name}
-                </SC.BreadcrumbItem>
-              </React.Fragment>
-            ))}
-          </SC.BreadcrumbContainer>
-        </div>
+      {/* Breadcrumb Navigation with Add Folder Button */}
+      {!isSearching && (
+        <SC.BreadcrumbSection>
+          <SC.BreadcrumbHeader>
+            <SC.BreadcrumbContainer>
+              {/* Root is always the first element */}
+              <SC.BreadcrumbItem 
+                $isActive={breadcrumb.length === 0}
+                onClick={() => handleBreadcrumbClick(null)}
+              >
+                Root
+              </SC.BreadcrumbItem>
+              
+              {/* Show breadcrumb trail if we're not at root */}
+              {breadcrumb.length > 0 && (
+                <>
+                  {breadcrumb.map((item, index) => (
+                    <React.Fragment key={item.id}>
+                      <SC.BreadcrumbSeparator>/</SC.BreadcrumbSeparator>
+                      <SC.BreadcrumbItem 
+                        $isActive={index === breadcrumb.length - 1}
+                        onClick={() => handleBreadcrumbClick(item)}
+                      >
+                        {item.name}
+                      </SC.BreadcrumbItem>
+                    </React.Fragment>
+                  ))}
+                </>
+              )}
+            </SC.BreadcrumbContainer>
+            
+            {/* Modern Add Folder Button */}
+            <SC.AddFolderButton onClick={onAddFolder} title="Add subfolder">
+              <Icon size="s" color="textPrimary">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
+                  <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+                </svg>
+              </Icon>
+            </SC.AddFolderButton>
+          </SC.BreadcrumbHeader>
+        </SC.BreadcrumbSection>
       )}
-
-      {/* Add Folder Button */}
-      <SC.AddFolderButton onClick={onAddFolder}>
-        <Icon size="s" color="textPrimary">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
-            <path d="M720-160v-120H600v-80h120v-120h80v120h120v80H800v120h-80Zm-600 40q-33 0-56.5-23.5T40-200v-560q0-33 23.5-56.5T120-840h560q33 0 56.5 23.5T760-760v200h-80v-80H120v440h520v80H120Zm0-600h560v-40H120v40Zm0 0v-40 40Z" />
-          </svg>
-        </Icon>
-        Add Folder
-      </SC.AddFolderButton>
 
       {/* Selected Folder Display */}
       {selectedFolder && (
@@ -147,30 +146,42 @@ const FolderNavigationAside: React.FC<AsideProps> = ({
             </SC.FolderItem>
           ))}
           {displayedFolders.length === 0 && !isSearching && (
-            <SC.FolderItem
-              $isSelected={false}
-              style={{ cursor: "default", justifyContent: "center" }}
-            >
-              <SC.FolderName
-                style={{ textAlign: "center", color: theme.textSecondary }}
-              >
+            <SC.EmptyStateContainer>
+              <SC.EmptyStateIcon>
+                <Icon size="m" color="textSecondary">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                    <path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v400q0 33-23.5 56.5T800-160H160Zm0-80h640v-400H447l-80-80H160v480Zm0 0v-480 480Zm240-200v40q0 17 11.5 28.5T440-360q17 0 28.5-11.5T480-400v-40h40q17 0 28.5-11.5T560-480q0-17-11.5-28.5T520-520h-40v-40q0-17-11.5-28.5T440-600q-17 0-28.5 11.5T400-560v40h-40q-17 0-28.5 11.5T320-480q0 17 11.5 28.5T360-440h40Z"/>
+                  </svg>
+                </Icon>
+              </SC.EmptyStateIcon>
+              <SC.EmptyStateText>
                 {currentParentId === null 
-                  ? "No folders yet. Create your first folder!" 
-                  : "This folder has no subfolders. Add one!"}
-              </SC.FolderName>
-            </SC.FolderItem>
+                  ? "No folders yet" 
+                  : "Empty folder"}
+              </SC.EmptyStateText>
+              <SC.EmptyStateSubtext>
+                {currentParentId === null 
+                  ? "Create your first folder to get started"
+                  : "Add a subfolder using the button above"}
+              </SC.EmptyStateSubtext>
+            </SC.EmptyStateContainer>
           )}
           {displayedFolders.length === 0 && isSearching && (
-            <SC.FolderItem
-              $isSelected={false}
-              style={{ cursor: "default", justifyContent: "center" }}
-            >
-              <SC.FolderName
-                style={{ textAlign: "center", color: theme.textSecondary }}
-              >
-                No folders found.
-              </SC.FolderName>
-            </SC.FolderItem>
+            <SC.EmptyStateContainer>
+              <SC.EmptyStateIcon>
+                <Icon size="m" color="textSecondary">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                    <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                  </svg>
+                </Icon>
+              </SC.EmptyStateIcon>
+              <SC.EmptyStateText>
+                No results found
+              </SC.EmptyStateText>
+              <SC.EmptyStateSubtext>
+                Try different search terms or check spelling
+              </SC.EmptyStateSubtext>
+            </SC.EmptyStateContainer>
           )}
         </SC.FolderList>
       )}

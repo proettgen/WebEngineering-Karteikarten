@@ -9,6 +9,9 @@ router
     .get(folderController.getAllFolders)
     .post(folderController.createFolder);
 
+// Search folders
+router.get('/search', folderController.searchFolders);
+
 // Hierarchical folder routes
 router.get('/root', folderController.getRootFolders);
 router.get('/:id/children', folderController.getChildFolders);
