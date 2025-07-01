@@ -45,13 +45,13 @@ export const apiService = {
         const query = "?" + new URLSearchParams(queryParams).toString();
         return request(`${API_BASE}/cards${query}`);
     },
-    createCardInFolder: (folderId: string, data: any) => 
-        // Use general cards endpoint with folderId in data
-        request(`${API_BASE}/cards`, { method: "POST", body: JSON.stringify({ ...data, folderId, createdAt: new Date().toISOString() }) }),
-    updateCardInFolder: (folderId: string, cardId: string, data: any) => 
-        // Use general cards endpoint, folderId is maintained automatically
-        request(`${API_BASE}/cards/${cardId}`, { method: "PUT", body: JSON.stringify(data) }),
-    deleteCardInFolder: (folderId: string, cardId: string) => 
-        // Use general cards endpoint
-        request(`${API_BASE}/cards/${cardId}`, { method: "DELETE" }),
+    createCardInFolder: (folderId: string, data: any) =>
+        // Use folder-specific endpoint for better validation
+        request(`${API_BASE}/folders/${folderId}/cards`, { method: "POST", body: JSON.stringify(data) }),
+    updateCardInFolder: (folderId: string, cardId: string, data: any) =>
+        // Use folder-specific endpoint for proper validation
+        request(`${API_BASE}/folders/${folderId}/cards/${cardId}`, { method: "PUT", body: JSON.stringify(data) }),
+    deleteCardInFolder: (folderId: string, cardId: string) =>
+        // Use folder-specific endpoint
+        request(`${API_BASE}/folders/${folderId}/cards/${cardId}`, { method: "DELETE" }),
 };

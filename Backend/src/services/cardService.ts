@@ -113,8 +113,9 @@ export const updateCard = async (id: string, card: Partial<Card>): Promise<Card 
             ]
         );
         return res.rows[0] ?? null;
-    } catch {
-        throw new AppError('Could not update card.', 500);
+    } catch (error) {
+        console.error('Error updating card:', error);
+        throw new AppError(`Could not update card: ${error instanceof Error ? error.message : 'Unknown error'}`, 500);
     }
 };
 

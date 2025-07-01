@@ -129,11 +129,13 @@ export const createCardInFolder = async (req: Request, res: Response, next: Next
             throw new AppError(`Folder with ID ${folderId} does not exist.`, 404);
         }
 
+        // Parse request body without requiring folderId (we set it from params)
         const parsed = cardSchema.omit({ folderId: true }).parse(req.body);
         const card = await cardService.createCard({
             ...parsed,
             folderId,
-            tags: parsed.tags ?? null
+            tags: parsed.tags ?? null,
+            createdAt: parsed.createdAt || new Date().toISOString()
         });
         res.status(201).json({
             status: 'success',
@@ -165,8 +167,15 @@ export const updateCardInFolder = async (req: Request, res: Response, next: Next
             throw new AppError(`Card ${cardId} does not belong to folder ${folderId}`, 400);
         }
 
-        const parsed = cardUpdateSchema.omit({ folderId: true }).parse(req.body);
-        const card = await cardService.updateCard(cardId, parsed);
+        // Parse update data (allow partial updates, but keep folderId fixed)
+        const parsed = cardUpdateSchema.parse(req.body);
+        // Ensure folderId cannot be changed via this endpoint
+        const updateData = { ...parsed, folderId };
+        
+        const card = await cardService.updateCard(cardId, updateData);
+        if (!card) {
+            throw new AppError(`Failed to update card with ID ${cardId}`, 500);
+        }
         res.status(200).json({
             status: 'success',
             data: { card }

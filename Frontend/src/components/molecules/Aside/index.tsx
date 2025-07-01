@@ -19,7 +19,6 @@ const FolderNavigationAside: React.FC<AsideProps> = ({
   searchTerm,
   sortOption,
   onFolderSelect,
-  onFolderNavigate,
   onBreadcrumbNavigate,
   onSearch,
   onSort,
@@ -60,23 +59,9 @@ const FolderNavigationAside: React.FC<AsideProps> = ({
     [currentFolders, sortOption]
   );
 
-  // Check if a folder has subfolders - we could improve this by adding hasChildren to the API response
-  // For now, we'll show the navigation arrow for all folders and handle empty results gracefully
-  const hasSubfolders = (_folder: Folder): boolean => true;
-
-  // Handle click on a folder item (to select it and view its cards)
+  // Handle click on a folder item (to select it)
   const handleFolderClick = (clickedFolder: Folder): void => {
     onFolderSelect(clickedFolder.id);
-  };
-
-  // Handle double-click on a folder item (alternative navigation method)
-  const handleFolderDoubleClick = (clickedFolder: Folder): void => {
-    onFolderNavigate(clickedFolder.id);
-  };
-
-  // Handle navigation into a subfolder (to view its subfolders)
-  const handleFolderNavigate = (clickedFolder: Folder): void => {
-    onFolderNavigate(clickedFolder.id);
   };
 
   // Handle breadcrumb navigation
@@ -155,46 +140,10 @@ const FolderNavigationAside: React.FC<AsideProps> = ({
             <SC.FolderItem
               key={folder.id}
               onClick={() => handleFolderClick(folder)}
-              onDoubleClick={() => handleFolderDoubleClick(folder)}
               $isSelected={folder.id === selectedFolderId}
-              title={`${folder.name} (Click to select, double-click or arrow to navigate)`}
+              title={`${folder.name} (Click to select and view content)`}
             >
               <SC.FolderName>{folder.name}</SC.FolderName>
-              {hasSubfolders(folder) && (
-                <div 
-                  style={{ 
-                    cursor: 'pointer', 
-                    display: 'flex', 
-                    alignItems: 'center',
-                    padding: '4px',
-                    borderRadius: '4px',
-                    transition: 'background-color 0.2s'
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation(); // Don't select the folder when clicking the icon
-                    handleFolderNavigate(folder);
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = theme.background;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }}
-                >
-                  <Icon 
-                    size="s" 
-                    color="textSecondary" 
-                    cursorStyle="pointer"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 960 960"
-                    >
-                      <path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z" />
-                    </svg>
-                  </Icon>
-                </div>
-              )}
             </SC.FolderItem>
           ))}
           {displayedFolders.length === 0 && !isSearching && (

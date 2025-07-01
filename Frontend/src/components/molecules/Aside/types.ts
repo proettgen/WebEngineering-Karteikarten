@@ -14,7 +14,6 @@ export interface AsideProps {
     searchTerm: string;
     sortOption: SortOption;
     onFolderSelect: (_folderId: string | null) => void;
-    onFolderNavigate: (_folderId: string) => void;
     onBreadcrumbNavigate: (_folderId: string | null) => void;
     onSearch: (_searchValue: string) => void;
     onSort: (_sortOption: SortOption) => void;
