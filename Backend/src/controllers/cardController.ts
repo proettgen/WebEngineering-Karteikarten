@@ -157,12 +157,8 @@ export const updateCard = async (req: Request, res: Response, next: NextFunction
         // Validate UUID format
         idSchema.parse(id);
         
-        // Log the incoming request for debugging
-        console.log('updateCard called with id:', id, 'body:', req.body);
-        
         // Validate and parse update data
         const parsed = cardUpdateSchema.parse(req.body);
-        console.log('Parsed update data:', parsed);
         
         // If folderId is being changed, verify the new folder exists
         if (parsed.folderId) {
@@ -174,7 +170,6 @@ export const updateCard = async (req: Request, res: Response, next: NextFunction
 
         // Update card in service layer
         const card = await cardService.updateCard(id, parsed);
-        console.log('Service returned card:', card);
         
         if (!card) {
             throw new AppError(`Card with ID ${id} not found`, 404);
@@ -185,7 +180,6 @@ export const updateCard = async (req: Request, res: Response, next: NextFunction
             data: { card }
         });
     } catch (error) {
-        console.error('Error in updateCard controller:', error);
         next(error);
     }
 };
@@ -250,6 +244,7 @@ export const createCardInFolder = async (req: Request, res: Response, next: Next
 
         // Parse request body - use dedicated schema for folder context creation
         const parsed = cardCreateInFolderSchema.parse(req.body);
+        
         const card = await cardService.createCard({
             ...parsed,
             folderId,
@@ -257,6 +252,7 @@ export const createCardInFolder = async (req: Request, res: Response, next: Next
             currentLearningLevel: parsed.currentLearningLevel ?? 0,
             createdAt: parsed.createdAt ?? new Date().toISOString()
         });
+        
         res.status(201).json({
             status: 'success',
             data: { card }
@@ -283,16 +279,21 @@ export const updateCardInFolder = async (req: Request, res: Response, next: Next
         if (!existingCard) {
             throw new AppError(`Card with ID ${cardId} not found`, 404);
         }
+        
         if (existingCard.folderId !== folderId) {
             throw new AppError(`Card ${cardId} does not belong to folder ${folderId}`, 400);
         }
 
         // Parse update data (allow partial updates, but keep folderId fixed)
         const parsed = cardUpdateSchema.parse(req.body);
-        // Ensure folderId cannot be changed via this endpoint
-        const updateData = { ...parsed, folderId };
+        
+        // Ensure folderId cannot be changed via this endpoint - remove any folderId from parsed data
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { folderId: _, ...updateDataWithoutFolderId } = parsed;
+        const updateData = { ...updateDataWithoutFolderId, folderId };
         
         const card = await cardService.updateCard(cardId, updateData);
+        
         if (!card) {
             throw new AppError(`Failed to update card with ID ${cardId}`, 500);
         }
@@ -322,11 +323,13 @@ export const deleteCardInFolder = async (req: Request, res: Response, next: Next
         if (!existingCard) {
             throw new AppError(`Card with ID ${cardId} not found`, 404);
         }
+        
         if (existingCard.folderId !== folderId) {
             throw new AppError(`Card ${cardId} does not belong to folder ${folderId}`, 400);
         }
 
         await cardService.deleteCard(cardId);
+        
         res.status(204).send();
     } catch (error) {
         next(error);
