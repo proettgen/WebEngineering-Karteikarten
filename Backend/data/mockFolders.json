@@ -1,142 +1,142 @@
 {
   "folders": [
     {
-      "id": "56c60d82-57bf-4e49-b466-2b8a08a096fd",
+      "id": "c6f8fb2b-a33f-46da-941d-9832b6212395",
       "name": "Mathematics",
       "parentId": null,
       "createdAt": "2025-05-17T10:00:00Z",
       "lastOpenedAt": "2025-05-24T09:30:00Z"
     },
     {
-      "id": "5ac97e09-c652-4a8c-b8de-c215787caa7c",
+      "id": "28382a88-9ad9-4f8b-851d-e0494ca2d509",
       "name": "Algebra",
-      "parentId": "56c60d82-57bf-4e49-b466-2b8a08a096fd",
+      "parentId": "c6f8fb2b-a33f-46da-941d-9832b6212395",
       "createdAt": "2025-05-17T10:01:00Z",
       "lastOpenedAt": "2025-05-23T11:15:00Z"
     },
     {
-      "id": "9e1819d6-1a74-40f9-9ff7-8517000e3c15",
+      "id": "d71f958d-9750-47a4-9164-5bb3b7aaf59b",
       "name": "Linear Equations",
-      "parentId": "5ac97e09-c652-4a8c-b8de-c215787caa7c",
+      "parentId": "28382a88-9ad9-4f8b-851d-e0494ca2d509",
       "createdAt": "2025-05-17T10:02:00Z",
       "lastOpenedAt": "2025-05-22T14:00:00Z"
     },
     {
-      "id": "fd9a14d9-5cb0-4628-be43-5046d498ddd6",
+      "id": "45d279b2-ed40-4a60-84af-1f6d7b453a6f",
       "name": "Quadratic Equations and Complex Numbers - Advanced Concepts and Applications in Engineering",
-      "parentId": "5ac97e09-c652-4a8c-b8de-c215787caa7c",
+      "parentId": "28382a88-9ad9-4f8b-851d-e0494ca2d509",
       "createdAt": "2025-05-17T10:03:00Z",
       "lastOpenedAt": "2025-05-21T16:45:00Z"
     },
     {
-      "id": "3bd605f2-ae60-4f7a-a261-18562416f078",
+      "id": "1a69d899-dcd7-4009-a987-489e42ddd534",
       "name": "Calculus",
-      "parentId": "56c60d82-57bf-4e49-b466-2b8a08a096fd",
+      "parentId": "c6f8fb2b-a33f-46da-941d-9832b6212395",
       "createdAt": "2025-05-18T10:04:00Z",
       "lastOpenedAt": "2025-05-24T18:05:00Z"
     },
     {
-      "id": "68aa4027-2a99-427e-850a-d9203360d74f",
+      "id": "4ff71a53-7330-4273-a24e-ff5ad2b18d8c",
       "name": "Derivatives",
-      "parentId": "3bd605f2-ae60-4f7a-a261-18562416f078",
+      "parentId": "1a69d899-dcd7-4009-a987-489e42ddd534",
       "createdAt": "2025-05-18T10:05:00Z",
       "lastOpenedAt": "2025-05-23T08:20:00Z"
     },
     {
-      "id": "a97acc32-c3af-4ecf-b17e-705c527f8a4d",
+      "id": "b1c3009f-c910-4362-89d1-c8e6c12b7935",
       "name": "Differentiation Rules",
-      "parentId": "68aa4027-2a99-427e-850a-d9203360d74f",
+      "parentId": "4ff71a53-7330-4273-a24e-ff5ad2b18d8c",
       "createdAt": "2025-05-18T10:06:00Z",
       "lastOpenedAt": "2025-05-22T08:22:00Z"
     },
     {
-      "id": "f83f3691-ba3c-4e84-8a30-b7eac67f1e54",
+      "id": "7944900b-01c8-47a1-a37e-b4c10ac88a30",
       "name": "History",
       "parentId": null,
       "createdAt": "2025-05-19T11:00:00Z",
       "lastOpenedAt": "2025-05-24T15:00:00Z"
     },
     {
-      "id": "38cbab5c-2149-475d-868e-695cb5cc9e74",
+      "id": "5fdbed62-4852-4e72-b456-36df4943a0a5",
       "name": "Ancient Civilizations",
-      "parentId": "f83f3691-ba3c-4e84-8a30-b7eac67f1e54",
+      "parentId": "7944900b-01c8-47a1-a37e-b4c10ac88a30",
       "createdAt": "2025-05-19T11:01:00Z",
       "lastOpenedAt": "2025-05-23T10:10:00Z"
     },
     {
-      "id": "ce4e257b-1693-4f61-a0aa-aa8da97e43e4",
+      "id": "2b61da1d-5b4b-4bdf-badd-0bddad244d31",
       "name": "Roman Empire",
-      "parentId": "38cbab5c-2149-475d-868e-695cb5cc9e74",
+      "parentId": "5fdbed62-4852-4e72-b456-36df4943a0a5",
       "createdAt": "2025-05-19T11:02:00Z",
       "lastOpenedAt": "2025-05-24T12:30:00Z"
     },
     {
-      "id": "05d6feca-6bf5-44ea-88c9-d00d72362683",
+      "id": "21eee500-1bb0-4ec4-aa0a-8b51f3c9394b",
       "name": "Early Republic",
-      "parentId": "ce4e257b-1693-4f61-a0aa-aa8da97e43e4",
+      "parentId": "2b61da1d-5b4b-4bdf-badd-0bddad244d31",
       "createdAt": "2025-05-19T11:03:00Z",
       "lastOpenedAt": "2025-05-24T12:31:00Z"
     },
     {
-      "id": "f03c153a-7a60-4c96-8169-fabe9edd376a",
+      "id": "825c649e-6270-432f-9d06-1ddffa73ad34",
       "name": "Late Republic",
-      "parentId": "ce4e257b-1693-4f61-a0aa-aa8da97e43e4",
+      "parentId": "2b61da1d-5b4b-4bdf-badd-0bddad244d31",
       "createdAt": "2025-05-19T11:04:00Z",
       "lastOpenedAt": "2025-05-24T12:32:00Z"
     },
     {
-      "id": "18637440-cedb-46b7-936f-009fc0d5cfda",
+      "id": "79cc1a6d-35a4-4c92-b12f-95a199a133f8",
       "name": "The Principate",
-      "parentId": "ce4e257b-1693-4f61-a0aa-aa8da97e43e4",
+      "parentId": "2b61da1d-5b4b-4bdf-badd-0bddad244d31",
       "createdAt": "2025-05-19T11:05:00Z",
       "lastOpenedAt": "2025-05-24T12:33:00Z"
     },
     {
-      "id": "5f637cf7-c97a-499e-9118-098a54b1d671",
+      "id": "625c9ae1-1805-4ffa-b4e6-d731f49fc6b6",
       "name": "The Dominate",
-      "parentId": "ce4e257b-1693-4f61-a0aa-aa8da97e43e4",
+      "parentId": "2b61da1d-5b4b-4bdf-badd-0bddad244d31",
       "createdAt": "2025-05-19T11:06:00Z",
       "lastOpenedAt": "2025-05-24T12:34:00Z"
     },
     {
-      "id": "40b4d420-834a-4d75-a374-1cad2d63905e",
+      "id": "f3debe00-8e1c-4520-8f71-776fe1f4b0b4",
       "name": "Fall of the Western Empire",
-      "parentId": "ce4e257b-1693-4f61-a0aa-aa8da97e43e4",
+      "parentId": "2b61da1d-5b4b-4bdf-badd-0bddad244d31",
       "createdAt": "2025-05-19T11:07:00Z",
       "lastOpenedAt": "2025-05-24T12:35:00Z"
     },
     {
-      "id": "d444b331-91f0-481e-8fb7-59c3118a900c",
+      "id": "3787c109-6a76-4a7c-aac0-d339a7a5bc0b",
       "name": "Julius Caesar",
-      "parentId": "f03c153a-7a60-4c96-8169-fabe9edd376a",
+      "parentId": "825c649e-6270-432f-9d06-1ddffa73ad34",
       "createdAt": "2025-05-19T11:08:00Z",
       "lastOpenedAt": "2025-05-24T12:36:00Z"
     },
     {
-      "id": "a167e289-63c6-4f5c-8282-857c0ce90294",
+      "id": "cf149024-703a-4503-b3a8-7f445372661d",
       "name": "Augustus",
-      "parentId": "18637440-cedb-46b7-936f-009fc0d5cfda",
+      "parentId": "79cc1a6d-35a4-4c92-b12f-95a199a133f8",
       "createdAt": "2025-05-19T11:09:00Z",
       "lastOpenedAt": "2025-05-24T12:37:00Z"
     },
     {
-      "id": "8ab1227b-5191-46a1-8953-8826646223ec",
-      "name": "Informatik",
+      "id": "6adfc5b7-436f-421a-9b39-3f1994539c1c",
+      "name": "Languages",
       "parentId": null,
       "createdAt": "2025-05-20T09:00:00Z",
       "lastOpenedAt": "2025-05-22T17:00:00Z"
     },
     {
-      "id": "2e31fab0-0f24-48d6-9716-450903d5b760",
-      "name": "WebEngineering",
-      "parentId": "8ab1227b-5191-46a1-8953-8826646223ec",
+      "id": "f3f9a526-eb55-4a84-ae52-2a74fce9c717",
+      "name": "Spanish Vocabulary",
+      "parentId": "6adfc5b7-436f-421a-9b39-3f1994539c1c",
       "createdAt": "2025-05-20T09:01:00Z",
       "lastOpenedAt": "2025-05-23T14:50:00Z"
     },
     {
-      "id": "af924d1d-c178-4a96-933c-0619c57abbc7",
-      "name": "Programmierung",
-      "parentId": "8ab1227b-5191-46a1-8953-8826646223ec",
+      "id": "33aa6bf8-3d70-4fb4-96b2-932a8696c311",
+      "name": "French Grammar",
+      "parentId": "6adfc5b7-436f-421a-9b39-3f1994539c1c",
       "createdAt": "2025-05-20T09:02:00Z",
       "lastOpenedAt": "2025-05-24T10:00:00Z"
     }

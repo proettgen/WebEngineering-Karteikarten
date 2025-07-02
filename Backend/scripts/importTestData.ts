@@ -27,7 +27,7 @@ const pool = new Pool({
 });
 
 async function importFolders() {
-    const filePath = path.join(__dirname, '../data/mockFolders.json');
+    const filePath = path.join(__dirname, '../src/data/mockFolders.json');
     const raw = await fs.readFile(filePath, 'utf-8');
     const { folders } = JSON.parse(raw) as { folders: Folder[] };
 
@@ -43,7 +43,7 @@ async function importFolders() {
 }
 
 async function importCards() {
-    const filePath = path.join(__dirname, '../data/mockCardStack.json');
+    const filePath = path.join(__dirname, '../src/data/mockCardStack.json');
     const raw = await fs.readFile(filePath, 'utf-8');
     const cardStack = JSON.parse(raw) as { folderId: string; cards: Card[] };
 

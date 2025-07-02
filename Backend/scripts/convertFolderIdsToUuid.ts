@@ -25,29 +25,62 @@ function isFolderData(obj: unknown): obj is FolderData {
 }
 
 async function main() {
-    const filePath = path.join(__dirname, '../data/mockFolders.json');
-    const raw = await fs.readFile(filePath, 'utf-8');
+    // Convert folders
+    const folderFilePath = path.join(__dirname, '../src/data/mockFolders.json');
+    const folderRaw = await fs.readFile(folderFilePath, 'utf-8');
 
-    const parsed = JSON.parse(raw) as unknown;
-    if (!isFolderData(parsed)) {
+    const folderParsed = JSON.parse(folderRaw) as unknown;
+    if (!isFolderData(folderParsed)) {
         throw new Error('JSON does not match FolderData structure');
     }
-    const data: FolderData = parsed;
+    const folderData: FolderData = folderParsed;
 
     const idMap: Record<string, string> = {};
-    for (const folder of data.folders) {
+    for (const folder of folderData.folders) {
         idMap[folder.id] = uuidv4();
     }
 
-    for (const folder of data.folders) {
+    // Update folder IDs and parent references
+    for (const folder of folderData.folders) {
         folder.id = idMap[folder.id];
         if (folder.parentId) {
             folder.parentId = idMap[folder.parentId];
         }
     }
 
-    await fs.writeFile(filePath.replace('.json', '.uuid.json'), JSON.stringify(data, null, 2));
-    console.log('Neue UUID-Testdaten geschrieben:', filePath.replace('.json', '.uuid.json'));
+    // Write updated folders
+    await fs.writeFile(folderFilePath, JSON.stringify(folderData, null, 2));
+    console.log('Folder-IDs zu UUIDs konvertiert:', folderFilePath);
+
+interface CardStack {
+    folderId: string;
+    lastedLearned: string;
+    cards: Array<{
+        id: string;
+        title: string;
+        question: string;
+        answer: string;
+        currentLearingLevel: number;
+        createdAt: string;
+        tags: string[] | null;
+    }>;
+    learnProgress: Record<string, number>;
+}
+
+// ...existing code...
+
+    // Update card stack with new folder ID
+    const cardFilePath = path.join(__dirname, '../src/data/mockCardStack.json');
+    const cardRaw = await fs.readFile(cardFilePath, 'utf-8');
+    const cardData = JSON.parse(cardRaw) as CardStack;
+    
+    // Use the first folder ID (Mathematics) for our cards
+    const firstFolderId = folderData.folders[0].id;
+    cardData.folderId = firstFolderId;
+    
+    await fs.writeFile(cardFilePath, JSON.stringify(cardData, null, 2));
+    console.log('Card folderId aktualisiert:', cardFilePath);
+    console.log('Verwendete folderId für Cards:', firstFolderId);
 }
 
 void main();
