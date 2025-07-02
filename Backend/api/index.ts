@@ -1,5 +1,5 @@
 import express from 'express';
-import { specs } from '../src/config/swagger';
+import { staticSwaggerSpec } from '../src/config/staticSwagger';
 import folderRoutes from '../src/routes/folderRoutes';
 import cardRoutes from '../src/routes/cardRoutes';
 import { globalErrorHandler } from '../src/utils/errorHandler';
@@ -30,7 +30,7 @@ app.use(express.json());
 // JSON-Endpunkt für Swagger-Spec (funktioniert auf Vercel)
 app.get('/api-docs/swagger.json', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
-    res.json(specs);
+    res.json(staticSwaggerSpec);
 });
 
 // Swagger UI Redirect (für externe Swagger UI)
