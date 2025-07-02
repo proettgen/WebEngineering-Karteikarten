@@ -31,7 +31,7 @@ export const getAllFolders = async (req: Request, res: Response, next: NextFunct
         // Parse and validate query parameters
         const { limit, offset } = paginationSchema.parse(req.query);
         
-        // Use transformed pagination values directly (already converted to numbers by schema)
+        // Apply defaults if not provided
         const limitNum = limit ?? DEFAULT_LIMIT;
         const offsetNum = offset ?? DEFAULT_OFFSET;
 
@@ -254,7 +254,7 @@ export const searchFolders = async (req: Request, res: Response, next: NextFunct
             throw new AppError('Search term is required', 400);
         }
         
-        // Use pagination parameters directly (already transformed by Zod)
+        // Use pagination parameters with defaults if not provided
         const limitNum = limit ?? DEFAULT_LIMIT;
         const offsetNum = offset ?? DEFAULT_OFFSET;
         const searchTerm = search.trim();

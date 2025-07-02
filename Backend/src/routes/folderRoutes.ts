@@ -32,17 +32,6 @@ router
     .get(folderController.getAllFolders)
     .post(folderController.createFolder);
 
-/**
- * GET /api/folders/:id - Get folder by ID
- * PUT /api/folders/:id - Update folder
- * DELETE /api/folders/:id - Delete folder (cascades to cards)
- */
-router
-    .route('/:id')
-    .get(folderController.getFolderById)
-    .put(folderController.updateFolder)
-    .delete(folderController.deleteFolder);
-
 // =============================================================================
 // FOLDER SEARCH & NAVIGATION
 // =============================================================================
@@ -58,6 +47,17 @@ router.get('/search', folderController.searchFolders);
  * Query params: limit, offset
  */
 router.get('/root', folderController.getRootFolders);
+
+/**
+ * GET /api/folders/:id - Get folder by ID
+ * PUT /api/folders/:id - Update folder
+ * DELETE /api/folders/:id - Delete folder (cascades to cards)
+ */
+router
+    .route('/:id')
+    .get(folderController.getFolderById)
+    .put(folderController.updateFolder)
+    .delete(folderController.deleteFolder);
 
 /**
  * GET /api/folders/:id/children - Get child folders of a specific folder

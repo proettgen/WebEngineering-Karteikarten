@@ -47,15 +47,11 @@ export const paginationSchema = z.object({
         .transform(val => parseInt(val, 10))
         .refine(val => val >= 1 && val <= MAX_PAGINATION_LIMIT, 
             `Limit must be between 1 and ${MAX_PAGINATION_LIMIT}`)
-        .optional()
-        .default(DEFAULT_PAGINATION_LIMIT.toString())
-        .transform(val => typeof val === 'string' ? parseInt(val, 10) : val),
+        .optional(),
     offset: z.string()
         .regex(PAGINATION_REGEX, 'Offset must be a positive integer')
         .transform(val => parseInt(val, 10))
-        .optional()
-        .default('0')
-        .transform(val => typeof val === 'string' ? parseInt(val, 10) : val),
+        .optional(),
 });
 
 /**
@@ -74,15 +70,11 @@ export const searchPaginationSchema = z.object({
         .transform(val => parseInt(val, 10))
         .refine(val => val >= 1 && val <= MAX_PAGINATION_LIMIT, 
             `Limit must be between 1 and ${MAX_PAGINATION_LIMIT}`)
-        .optional()
-        .default(DEFAULT_PAGINATION_LIMIT.toString())
-        .transform(val => typeof val === 'string' ? parseInt(val, 10) : val),
+        .optional(),
     offset: z.string()
         .regex(PAGINATION_REGEX, 'Offset must be a positive integer')
         .transform(val => parseInt(val, 10))
-        .optional()
-        .default('0')
-        .transform(val => typeof val === 'string' ? parseInt(val, 10) : val),
+        .optional(),
     search: z.string()
         .min(1, 'Search term must not be empty')
         .trim()
@@ -104,15 +96,11 @@ export const sortedPaginationSchema = z.object({
         .transform(val => parseInt(val, 10))
         .refine(val => val >= 1 && val <= MAX_PAGINATION_LIMIT,
             `Limit must be between 1 and ${MAX_PAGINATION_LIMIT}`)
-        .optional()
-        .default(DEFAULT_PAGINATION_LIMIT.toString())
-        .transform(val => typeof val === 'string' ? parseInt(val, 10) : val),
+        .optional(),
     offset: z.string()
         .regex(PAGINATION_REGEX, 'Offset must be a positive integer')
         .transform(val => parseInt(val, 10))
-        .optional()
-        .default('0')
-        .transform(val => typeof val === 'string' ? parseInt(val, 10) : val),
+        .optional(),
     sortBy: z.string()
         .min(1, 'Sort field must not be empty')
         .optional(),
