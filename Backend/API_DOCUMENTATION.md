@@ -170,5 +170,3 @@ Before every deployment to Vercel:
 - [Swagger UI](https://swagger.io/tools/swagger-ui/) - Interactive documentation
 
 ---
-
-**Remember**: Good API documentation is a gift to your future self and your teammates! 🎁

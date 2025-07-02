@@ -3,6 +3,9 @@ import folderRoutes from '../src/routes/folderRoutes';
 import cardRoutes from '../src/routes/cardRoutes';
 import { globalErrorHandler } from '../src/utils/errorHandler';
 import { AppError } from '../src/utils/AppError';
+import fs from 'fs';
+import path from 'path';
+import { staticSwaggerSpec } from '../src/config/staticSwagger';
 import 'dotenv/config';
 
 const app = express();
@@ -25,16 +28,25 @@ app.use((req, res, next) => {
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
-// Swagger Documentation
-// JSON-Endpunkt für Swagger-Spec (funktioniert auf Vercel)
-import fs from 'fs';
-import path from 'path';
-import { staticSwaggerSpec } from '../src/config/staticSwagger.js';
+// Health check endpoint
+app.get("/", (_, res) => {
+    res.status(200).json({
+        status: 'success',
+        message: 'Backend is running successfully!',
+        timestamp: new Date().toISOString()
+    });
+});
 
-// ...existing code...
+// API routes
+app.use('/api/folders', folderRoutes);
+app.use('/api/cards', cardRoutes);
 
+// Swagger documentation routes
 app.get('/api-docs/swagger.json', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     
     // Try to load generated swagger file (created by build script)
     const generatedSwaggerPath = path.join(__dirname, '../src/config/generated-swagger.json');
@@ -56,65 +68,10 @@ app.get('/api-docs/swagger.json', (req, res) => {
     res.json(staticSwaggerSpec);
 });
 
-// Swagger UI Redirect (für externe Swagger UI)
 app.get('/api-docs', (req, res) => {
     const swaggerUrl = `https://petstore.swagger.io/?url=${encodeURIComponent('https://web-engineering-karteikarten.vercel.app/api-docs/swagger.json')}`;
     res.redirect(swaggerUrl);
 });
-
-// Fallback: Swagger UI mit CDN (falls swagger-ui-express nicht funktioniert)
-app.get('/api-docs/ui', (req, res) => {
-    const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Karteikarten API Documentation</title>
-        <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css" />
-        <style>
-            html { box-sizing: border-box; overflow: -moz-scrollbars-vertical; overflow-y: scroll; }
-            *, *:before, *:after { box-sizing: inherit; }
-            body { margin:0; background: #fafafa; }
-        </style>
-    </head>
-    <body>
-        <div id="swagger-ui"></div>
-        <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js"></script>
-        <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-standalone-preset.js"></script>
-        <script>
-            window.onload = function() {
-                SwaggerUIBundle({
-                    url: '/api-docs/swagger.json',
-                    dom_id: '#swagger-ui',
-                    deepLinking: true,
-                    presets: [
-                        SwaggerUIBundle.presets.apis,
-                        SwaggerUIStandalonePreset
-                    ],
-                    plugins: [
-                        SwaggerUIBundle.plugins.DownloadUrl
-                    ],
-                    layout: "StandaloneLayout"
-                });
-            };
-        </script>
-    </body>
-    </html>
-    `;
-    res.send(html);
-});
-
-// Health check endpoint
-app.get("/", (_, res) => {
-    res.status(200).json({
-        status: 'success',
-        message: 'Backend is running successfully!',
-        timestamp: new Date().toISOString()
-    });
-});
-
-// API routes
-app.use('/api/folders', folderRoutes);
-app.use('/api/cards', cardRoutes);
 
 // Catch-all route for 404 Not Found errors
 app.all('*', (req, res, next) => {

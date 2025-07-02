@@ -4,7 +4,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build:ts": "tsc",
-    "build:copy-assets": "copyfiles -u 1 \"src/data/**/*.json\" dist",
+    "build:copy-assets": "copyfiles -u 1 \"src/data/**/*.json\" dist && copyfiles -u 1 \"src/config/*.json\" dist",
     "generate-swagger": "ts-node scripts/generateSwagger.ts",
     "build": "npm run generate-swagger && npm run clean && npm run build:ts && npm run build:copy-assets",
     "start": "node dist/api/index.js",
