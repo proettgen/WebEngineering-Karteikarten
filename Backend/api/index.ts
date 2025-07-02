@@ -1,6 +1,5 @@
 import express from 'express';
-import swaggerUi from 'swagger-ui-express';
-import { specs, swaggerUiOptions } from '../src/config/swagger';
+import { specs } from '../src/config/swagger';
 import folderRoutes from '../src/routes/folderRoutes';
 import cardRoutes from '../src/routes/cardRoutes';
 import { globalErrorHandler } from '../src/utils/errorHandler';
@@ -28,8 +27,58 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 // Swagger Documentation
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, swaggerUiOptions));
+// JSON-Endpunkt für Swagger-Spec (funktioniert auf Vercel)
+app.get('/api-docs/swagger.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.json(specs);
+});
+
+// Swagger UI Redirect (für externe Swagger UI)
+app.get('/api-docs', (req, res) => {
+    const swaggerUrl = `https://petstore.swagger.io/?url=${encodeURIComponent('https://web-engineering-karteikarten.vercel.app/api-docs/swagger.json')}`;
+    res.redirect(swaggerUrl);
+});
+
+// Fallback: Swagger UI mit CDN (falls swagger-ui-express nicht funktioniert)
+app.get('/api-docs/ui', (req, res) => {
+    const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Karteikarten API Documentation</title>
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css" />
+        <style>
+            html { box-sizing: border-box; overflow: -moz-scrollbars-vertical; overflow-y: scroll; }
+            *, *:before, *:after { box-sizing: inherit; }
+            body { margin:0; background: #fafafa; }
+        </style>
+    </head>
+    <body>
+        <div id="swagger-ui"></div>
+        <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js"></script>
+        <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-standalone-preset.js"></script>
+        <script>
+            window.onload = function() {
+                SwaggerUIBundle({
+                    url: '/api-docs/swagger.json',
+                    dom_id: '#swagger-ui',
+                    deepLinking: true,
+                    presets: [
+                        SwaggerUIBundle.presets.apis,
+                        SwaggerUIStandalonePreset
+                    ],
+                    plugins: [
+                        SwaggerUIBundle.plugins.DownloadUrl
+                    ],
+                    layout: "StandaloneLayout"
+                });
+            };
+        </script>
+    </body>
+    </html>
+    `;
+    res.send(html);
+});
 
 // Health check endpoint
 app.get("/", (_, res) => {
