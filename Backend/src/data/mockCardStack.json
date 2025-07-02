@@ -1,9 +1,9 @@
 {
-    "folderId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+    "folderId": "a1b2c3d4-e5f6-47ab-8c9d-0e1f2a3b4c5d",
     "lastedLearned": "2024-01-15T10:30:00.000Z",
     "cards": [
         {
-            "id": "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5a",
+            "id": "1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a",
             "title": "Introduction to JavaScript",
             "question": "What is a closure in JavaScript?",
             "answer": "A closure is the combination of a function bundled together (enclosed) with references to its surrounding state (the lexical environment).",
@@ -44,11 +44,11 @@
             "question": "What is an interface in TypeScript?",
             "answer": "An interface in TypeScript is a way to define a contract for an object's shape. It specifies the names and types of properties an object should have.",
             "currentLearingLevel": 3,
-            "createdAt": "2024-05-05T16:45  :00.000Z",
+            "createdAt": "2024-05-05T16:45:00.000Z",
             "tags": [ "typescript", "types", "interface" ]
         },
         {
-            "id": "f6a7b8c9-d0e1-4f2a-3b4c-5d6g7h8f9f0f",
+            "id": "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8f9f0f",
             "title": "REST API Principles",
             "question": "What does idempotent mean in the context of HTTP methods?",
             "answer": "An HTTP method is idempotent if an identical request can be made once or several times in a row with the same effect while leaving the server in the same state. GET, PUT, DELETE are idempotent.",

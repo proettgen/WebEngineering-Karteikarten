@@ -66,10 +66,14 @@ export const cardSchema = z.object({
         .min(0, 'Learning level must be at least 0')
         .max(MAX_LEARNING_LEVEL, `Learning level must not exceed ${MAX_LEARNING_LEVEL}`),
     createdAt: z.string().datetime('Invalid datetime format'),
-    tags: z.array(z.string().trim().min(1, 'Tag must not be empty'))
+    tags: z.array(z.string().trim())
         .nullable()
         .optional()
-        .transform(tags => tags?.filter(tag => tag.length > 0) || null),
+        .transform(tags => {
+            if (!tags) return null;
+            const filteredTags = tags.filter(tag => tag.length > 0);
+            return filteredTags.length > 0 ? filteredTags : null;
+        }),
     folderId: z.string()
         .uuid('Folder ID must be a valid UUID'),
 });
@@ -108,10 +112,14 @@ export const cardCreateInFolderSchema = z.object({
         .optional()
         .default(0),
     createdAt: z.string().datetime('Invalid datetime format').optional(),
-    tags: z.array(z.string().trim().min(1, 'Tag must not be empty'))
+    tags: z.array(z.string().trim())
         .nullable()
         .optional()
-        .transform(tags => tags?.filter(tag => tag.length > 0) || null),
+        .transform(tags => {
+            if (!tags) return null;
+            const filteredTags = tags.filter(tag => tag.length > 0);
+            return filteredTags.length > 0 ? filteredTags : null;
+        }),
 });
 
 // =============================================================================

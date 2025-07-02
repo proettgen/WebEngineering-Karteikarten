@@ -1,9 +1,9 @@
 {
-    "folderId": "b4e2d9a3-5f6b-4c7d-8e2f-3f4g5h6i7j8k",
+    "folderId": "b4e2d9a3-5f6b-4c7d-8e2f-3a4b5c6d7e8f",
     "lastedLearned": "2024-01-15T10:30:00.000Z",
     "cards": [
         {
-            "id": "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5a",
+            "id": "1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a",
             "title": "Introduction to JavaScript",
             "question": "What is a closure in JavaScript?",
             "answer": "A closure is the combination of a function bundled together (enclosed) with references to its surrounding state (the lexical environment).",
@@ -53,7 +53,7 @@
             "boxLevel": 0
         },
         {
-            "id": "f6a7b8c9-d0e1-4f2a-3b4c-5d6g7h8f9f0f",
+            "id": "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8f9f0f",
             "title": "REST API Principles",
             "question": "What does idempotent mean in the context of HTTP methods?",
             "answer": "An HTTP method is idempotent if an identical request can be made once or several times in a row with the same effect while leaving the server in the same state. GET, PUT, DELETE are idempotent.",

@@ -29,11 +29,14 @@ const CardForm = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const processedTags = tags.split(",")
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0);
     onSubmit(
       title,
       question,
       answer,
-      tags.split(",").map((tag) => tag.trim()),
+      processedTags,
     );
   };
 
