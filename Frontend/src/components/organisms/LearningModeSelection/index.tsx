@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { apiService } from "@/services/apiService";
+import { cardAndFolderService } from "@/services/cardAndFolderService";
 import FolderList from "@/components/molecules/FolderList";
 import LearningModeManager from "../LearningModeManager";
 import LearningModeTemplate from "@/components/templates/LearningModeTemplate";
@@ -34,7 +34,6 @@ import { Folder } from "@/database/folderTypes";
  */
 
 const LearningModeSelection = () => {
-
   // Alle States und Effects müssen immer auf oberster Ebene stehen!
   const [step, setStep] = useState<LearningModeSelectionStep>("start");
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
@@ -53,7 +52,8 @@ const LearningModeSelection = () => {
   // Ordner vom Backend laden
   useEffect(() => {
     setLoadingFolders(true);
-    apiService.getFolders()
+    cardAndFolderService
+      .getFolders()
       .then((res: any) => {
         setFolders(res.data.folders || []);
         setError(null);
@@ -68,11 +68,13 @@ const LearningModeSelection = () => {
   useEffect(() => {
     if (step === "select-box" && selectedFolder) {
       setLoadingCards(true);
-      apiService.getCardsByFolder(selectedFolder.id)
+      cardAndFolderService
+        .getCardsByFolder(selectedFolder.id)
         .then((res: any) => {
           const cards = res.data.cards || [];
-          const counts = [0, 1, 2, 3].map((box) =>
-            cards.filter((card: any) => (card.boxLevel ?? 0) === box).length
+          const counts = [0, 1, 2, 3].map(
+            (box) =>
+              cards.filter((card: any) => (card.boxLevel ?? 0) === box).length,
           );
           setBoxCounts(counts);
         })
@@ -151,7 +153,7 @@ const LearningModeSelection = () => {
               ))}
             </SC.BoxButtonRow>
           )}
-          <Button $variant="secondary" onClick={() => setStep("select-folder")}> 
+          <Button $variant="secondary" onClick={() => setStep("select-folder")}>
             Back
           </Button>
         </SC.CenteredColumn>
@@ -171,19 +173,24 @@ const LearningModeSelection = () => {
             <p>{error}</p>
           ) : (
             <FolderList
-              folders={folders.map(f => ({ name: f.name, id: f.id, cards: [] }))}
+              folders={folders.map((f) => ({
+                name: f.name,
+                id: f.id,
+                cards: [],
+              }))}
               showOnlyNames={true}
               onAddCard={() => {}}
               onEditCard={() => {}}
               onDeleteCard={() => {}}
               onFolderClick={(folder) => {
-                const fullFolder = folders.find(f => f.id === folder.id) || folder;
+                const fullFolder =
+                  folders.find((f) => f.id === folder.id) || folder;
                 setSelectedFolder(fullFolder);
                 setStep("select-box");
               }}
             />
           )}
-          <Button $variant="secondary" onClick={() => setStep("start")}> 
+          <Button $variant="secondary" onClick={() => setStep("start")}>
             Back
           </Button>
         </SC.CenteredColumn>
@@ -195,10 +202,10 @@ const LearningModeSelection = () => {
   return (
     <LearningModeTemplate>
       <SC.CenteredColumn>
-        <Button $variant="primary" onClick={() => setStep("select-folder")}> 
+        <Button $variant="primary" onClick={() => setStep("select-folder")}>
           Start learning mode
         </Button>
-        <Button $variant="secondary" onClick={() => router.push("/cards")}> 
+        <Button $variant="secondary" onClick={() => router.push("/cards")}>
           Edit flashcards before learning
         </Button>
       </SC.CenteredColumn>

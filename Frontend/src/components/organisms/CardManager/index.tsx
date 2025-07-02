@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { apiService } from "@/services/apiService";
+import { cardAndFolderService } from "@/services/cardAndFolderService";
 import Folder from "../../molecules/Folder";
 import Modal from "../../molecules/Modal";
 import Notification from "../../molecules/Notification";
@@ -20,12 +20,14 @@ interface CardManagerProps {
   initialFolderId?: string | null;
 }
 
-const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) => {
+const CardManager = ({
+  initialFolderId: _initialFolderId,
+}: CardManagerProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   // Get current folderId from URL (simplified - no more parentId)
-  const urlFolderId = searchParams.get('folderId');
+  const urlFolderId = searchParams.get("folderId");
   const [currentFolders, setCurrentFolders] = useState<FolderType[]>([]);
   const [currentParentId, setCurrentParentId] = useState<string | null>(null);
   const [breadcrumb, setBreadcrumb] = useState<BreadcrumbItem[]>([]);
@@ -34,21 +36,32 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [sortOption, setSortOption] = useState<SortOption>("name");
   const [isModalOpen, setModalOpen] = useState(false);
-  const [notification, setNotification] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
-  const [editingFolder, setEditingFolder] = useState<{ name: string; id: string | null; parentId: string | null } | null>(null);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error" | "info";
+  } | null>(null);
+  const [editingFolder, setEditingFolder] = useState<{
+    name: string;
+    id: string | null;
+    parentId: string | null;
+  } | null>(null);
   const [loading, setLoading] = useState(false);
 
   // URL-based navigation helper (simplified)
-  const navigateToFolder = useCallback((folderId: string | null) => {
-    const url = folderId ? `/cards?folderId=${folderId}` : '/cards';
-    router.push(url);
-  }, [router]);
+  const navigateToFolder = useCallback(
+    (folderId: string | null) => {
+      const url = folderId ? `/cards?folderId=${folderId}` : "/cards";
+      router.push(url);
+    },
+    [router],
+  );
 
   // Get selected folder from URL
   const selectedFolderId = urlFolderId;
-  const selectedFolder = selectedFolderId && allFolders.length > 0 
-    ? allFolders.find(f => f.id === selectedFolderId) || null 
-    : null;
+  const selectedFolder =
+    selectedFolderId && allFolders.length > 0
+      ? allFolders.find((f) => f.id === selectedFolderId) || null
+      : null;
 
   // Load root folders on mount - only once
   useEffect(() => {
@@ -60,16 +73,17 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
     if (selectedFolderId) {
       const loadCards = async () => {
         try {
-          const cardsRes = await apiService.getCardsByFolder(selectedFolderId);
-          setCardsByFolder(prev => ({
+          const cardsRes =
+            await cardAndFolderService.getCardsByFolder(selectedFolderId);
+          setCardsByFolder((prev) => ({
             ...prev,
-            [selectedFolderId]: (cardsRes as any).data?.cards || []
+            [selectedFolderId]: (cardsRes as any).data?.cards || [],
           }));
         } catch {
           // No cards found for folder - that's ok
-          setCardsByFolder(prev => ({
+          setCardsByFolder((prev) => ({
             ...prev,
-            [selectedFolderId]: []
+            [selectedFolderId]: [],
           }));
         }
       };
@@ -85,21 +99,23 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
         setLoading(true);
         try {
           // Always load fresh from API to avoid stale state issues
-          const res = await apiService.getFolders();
+          const res = await cardAndFolderService.getFolders();
           const allFoldersData = (res as GetFoldersResponse).data.folders;
           setAllFolders(allFoldersData);
-          
-          const childFolders = allFoldersData.filter(folder => folder.parentId === urlFolderId);
-          
+
+          const childFolders = allFoldersData.filter(
+            (folder) => folder.parentId === urlFolderId,
+          );
+
           setCurrentFolders(childFolders);
           setCurrentParentId(urlFolderId);
 
           // Build complete breadcrumb path from root to current folder
           const breadcrumbPath: BreadcrumbItem[] = [];
           let currentId: string | null = urlFolderId;
-          
+
           while (currentId) {
-            const folder = allFoldersData.find(f => f.id === currentId);
+            const folder = allFoldersData.find((f) => f.id === currentId);
             if (folder) {
               breadcrumbPath.unshift({ id: folder.id, name: folder.name });
               currentId = folder.parentId;
@@ -107,7 +123,7 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
               break;
             }
           }
-          
+
           setBreadcrumb(breadcrumbPath);
         } catch {
           setNotification({ message: "Error loading folders!", type: "error" });
@@ -118,11 +134,13 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
         // If no folder selected, show root folders
         setLoading(true);
         try {
-          const res = await apiService.getFolders();
+          const res = await cardAndFolderService.getFolders();
           const allFoldersData = (res as GetFoldersResponse).data.folders;
           setAllFolders(allFoldersData);
-          
-          const rootFolders = allFoldersData.filter(folder => folder.parentId === null);
+
+          const rootFolders = allFoldersData.filter(
+            (folder) => folder.parentId === null,
+          );
           setCurrentFolders(rootFolders);
           setCurrentParentId(null);
           setBreadcrumb([]);
@@ -138,61 +156,82 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
   }, [urlFolderId]); // Only depend on urlFolderId
 
   // Handler functions for Aside component
-  const handleFolderSelect = useCallback((folderId: string | null) => {
-    // Only update the URL - the useEffect will handle loading data
-    navigateToFolder(folderId);
-  }, [navigateToFolder]);
+  const handleFolderSelect = useCallback(
+    (folderId: string | null) => {
+      // Only update the URL - the useEffect will handle loading data
+      navigateToFolder(folderId);
+    },
+    [navigateToFolder],
+  );
 
   // Handler for breadcrumb navigation
-  const handleBreadcrumbNavigate = useCallback((folderId: string | null) => {
-    // Breadcrumb navigation also selects the folder and shows its content
-    handleFolderSelect(folderId);
-  }, [handleFolderSelect]);
+  const handleBreadcrumbNavigate = useCallback(
+    (folderId: string | null) => {
+      // Breadcrumb navigation also selects the folder and shows its content
+      handleFolderSelect(folderId);
+    },
+    [handleFolderSelect],
+  );
 
-  const handleSearch = useCallback(async (searchValue: string) => {
-    setSearchTerm(searchValue);
-    
-    if (searchValue.trim() === '') {
-      // If search is cleared, reload the current folder context
-      const loadFolderContent = async () => {
+  const handleSearch = useCallback(
+    async (searchValue: string) => {
+      setSearchTerm(searchValue);
+
+      if (searchValue.trim() === "") {
+        // If search is cleared, reload the current folder context
+        const loadFolderContent = async () => {
+          setLoading(true);
+          try {
+            const res = await cardAndFolderService.getFolders();
+            const allFoldersData = (res as GetFoldersResponse).data.folders;
+            setAllFolders(allFoldersData);
+
+            if (urlFolderId) {
+              const childFolders = allFoldersData.filter(
+                (folder) => folder.parentId === urlFolderId,
+              );
+              setCurrentFolders(childFolders);
+            } else {
+              const rootFolders = allFoldersData.filter(
+                (folder) => folder.parentId === null,
+              );
+              setCurrentFolders(rootFolders);
+            }
+          } catch {
+            setNotification({
+              message: "Error loading folders!",
+              type: "error",
+            });
+          } finally {
+            setLoading(false);
+          }
+        };
+        loadFolderContent();
+      } else {
+        // Perform global search across all folders
         setLoading(true);
         try {
-          const res = await apiService.getFolders();
-          const allFoldersData = (res as GetFoldersResponse).data.folders;
-          setAllFolders(allFoldersData);
-          
-          if (urlFolderId) {
-            const childFolders = allFoldersData.filter(folder => folder.parentId === urlFolderId);
-            setCurrentFolders(childFolders);
-          } else {
-            const rootFolders = allFoldersData.filter(folder => folder.parentId === null);
-            setCurrentFolders(rootFolders);
-          }
+          const searchRes = await cardAndFolderService.searchFolders(
+            searchValue.trim(),
+          );
+          const searchResults = (searchRes as any).data?.folders || [];
+          setCurrentFolders(searchResults);
+          // Clear breadcrumb during search
+          setBreadcrumb([]);
+          setCurrentParentId(null);
         } catch {
-          setNotification({ message: "Error loading folders!", type: "error" });
+          setNotification({
+            message: "Error searching folders!",
+            type: "error",
+          });
+          setCurrentFolders([]);
         } finally {
           setLoading(false);
         }
-      };
-      loadFolderContent();
-    } else {
-      // Perform global search across all folders
-      setLoading(true);
-      try {
-        const searchRes = await apiService.searchFolders(searchValue.trim());
-        const searchResults = (searchRes as any).data?.folders || [];
-        setCurrentFolders(searchResults);
-        // Clear breadcrumb during search
-        setBreadcrumb([]);
-        setCurrentParentId(null);
-      } catch {
-        setNotification({ message: "Error searching folders!", type: "error" });
-        setCurrentFolders([]);
-      } finally {
-        setLoading(false);
       }
-    }
-  }, [urlFolderId]);
+    },
+    [urlFolderId],
+  );
 
   const handleSort = useCallback((newSortOption: SortOption) => {
     setSortOption(newSortOption);
@@ -204,43 +243,48 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
     setLoading(true);
     try {
       let allFoldersData: FolderType[];
-      
+
       if (editingFolder && editingFolder.id) {
         // Update existing folder
-        await apiService.updateFolder(editingFolder.id, { name: folderName });
+        await cardAndFolderService.updateFolder(editingFolder.id, {
+          name: folderName,
+        });
         setNotification({ message: "Folder updated!", type: "success" });
-        
+
         // Reload all folders to get updated data
-        const res = await apiService.getFolders();
+        const res = await cardAndFolderService.getFolders();
         allFoldersData = (res as GetFoldersResponse).data.folders;
         setAllFolders(allFoldersData);
-        
+
         // The selected folder name should update automatically via selectedFolder calculation
         // No need to change URL since we're updating the same folder
-        
       } else {
         // Create new folder at current level (parentId is currentParentId)
         const now = new Date().toISOString();
-        await apiService.createFolder({ 
-          name: folderName, 
+        await cardAndFolderService.createFolder({
+          name: folderName,
           parentId: currentParentId,
           createdAt: now,
-          lastOpenedAt: now
+          lastOpenedAt: now,
         });
         setNotification({ message: "Folder created!", type: "success" });
-        
+
         // Reload all folders first to ensure we have fresh data
-        const res = await apiService.getFolders();
+        const res = await cardAndFolderService.getFolders();
         allFoldersData = (res as GetFoldersResponse).data.folders;
         setAllFolders(allFoldersData);
       }
-      
+
       // Reload the current level folders for both create and update
       if (currentParentId === null) {
-        const rootFolders = allFoldersData.filter(folder => folder.parentId === null);
+        const rootFolders = allFoldersData.filter(
+          (folder) => folder.parentId === null,
+        );
         setCurrentFolders(rootFolders);
       } else {
-        const childFolders = allFoldersData.filter(folder => folder.parentId === currentParentId);
+        const childFolders = allFoldersData.filter(
+          (folder) => folder.parentId === currentParentId,
+        );
         setCurrentFolders(childFolders);
       }
     } catch {
@@ -259,29 +303,33 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
       try {
         const folderToDelete = editingFolder;
         const folderId = folderToDelete.id!; // We know it's not null because of the if condition
-        
+
         // If we're currently viewing the folder being deleted, navigate to parent
         const isViewingDeletedFolder = selectedFolderId === folderId;
-        
-        await apiService.deleteFolder(folderId);
+
+        await cardAndFolderService.deleteFolder(folderId);
         setNotification({ message: "Folder deleted!", type: "success" });
-        
+
         // Reload all folders first to ensure we have fresh data
-        const res = await apiService.getFolders();
+        const res = await cardAndFolderService.getFolders();
         const allFoldersData = (res as GetFoldersResponse).data.folders;
         setAllFolders(allFoldersData);
-        
+
         // If we were viewing the deleted folder, navigate to its parent
         if (isViewingDeletedFolder) {
           navigateToFolder(folderToDelete.parentId);
         }
-        
+
         // Reload the current level folders
         if (currentParentId === null) {
-          const rootFolders = allFoldersData.filter(folder => folder.parentId === null);
+          const rootFolders = allFoldersData.filter(
+            (folder) => folder.parentId === null,
+          );
           setCurrentFolders(rootFolders);
         } else {
-          const childFolders = allFoldersData.filter(folder => folder.parentId === currentParentId);
+          const childFolders = allFoldersData.filter(
+            (folder) => folder.parentId === currentParentId,
+          );
           setCurrentFolders(childFolders);
         }
       } catch {
@@ -297,33 +345,39 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
   // Load cards for a specific folder (used in CRUD operations)
   const loadCardsForFolder = useCallback(async (folderId: string) => {
     try {
-      const cardsRes = await apiService.getCardsByFolder(folderId);
-      setCardsByFolder(prev => ({
+      const cardsRes = await cardAndFolderService.getCardsByFolder(folderId);
+      setCardsByFolder((prev) => ({
         ...prev,
-        [folderId]: (cardsRes as any).data?.cards || []
+        [folderId]: (cardsRes as any).data?.cards || [],
       }));
     } catch {
       // No cards found for folder - that's ok
-      setCardsByFolder(prev => ({
+      setCardsByFolder((prev) => ({
         ...prev,
-        [folderId]: []
+        [folderId]: [],
       }));
     }
   }, []);
 
   // Card operations
-  const handleAddCard: FolderProps["onAddCard"] = async (folderName, title, question, answer, tags) => {
+  const handleAddCard: FolderProps["onAddCard"] = async (
+    folderName,
+    title,
+    question,
+    answer,
+    tags,
+  ) => {
     setLoading(true);
     try {
       // For selected folder, use selectedFolderId directly
       if (selectedFolderId) {
-        await apiService.createCardInFolder(selectedFolderId, {
+        await cardAndFolderService.createCardInFolder(selectedFolderId, {
           title,
           question,
           answer,
           tags,
           currentLearningLevel: 0,
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
         });
         setNotification({ message: "Card created!", type: "success" });
         await loadCardsForFolder(selectedFolderId); // Reload cards for this folder
@@ -337,19 +391,30 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
     }
   };
 
-  const handleEditCard: FolderProps["onEditCard"] = async (folderName, cardIndex, newTitle, newQuestion, newAnswer, newTags) => {
+  const handleEditCard: FolderProps["onEditCard"] = async (
+    folderName,
+    cardIndex,
+    newTitle,
+    newQuestion,
+    newAnswer,
+    newTags,
+  ) => {
     setLoading(true);
     try {
       // For selected folder, use selectedFolderId directly
       if (selectedFolderId) {
         const card = cardsByFolder[selectedFolderId]?.[cardIndex];
         if (!card) throw new Error("Card not found");
-        await apiService.updateCardInFolder(selectedFolderId, card.id, {
-          title: newTitle,
-          question: newQuestion,
-          answer: newAnswer,
-          tags: newTags
-        });
+        await cardAndFolderService.updateCardInFolder(
+          selectedFolderId,
+          card.id,
+          {
+            title: newTitle,
+            question: newQuestion,
+            answer: newAnswer,
+            tags: newTags,
+          },
+        );
         setNotification({ message: "Card updated!", type: "success" });
         await loadCardsForFolder(selectedFolderId); // Reload cards for this folder
       } else {
@@ -362,14 +427,20 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
     }
   };
 
-  const handleDeleteCard: FolderProps["onDeleteCard"] = async (folderName, cardIndex) => {
+  const handleDeleteCard: FolderProps["onDeleteCard"] = async (
+    folderName,
+    cardIndex,
+  ) => {
     setLoading(true);
     try {
       // For selected folder, use selectedFolderId directly
       if (selectedFolderId) {
         const card = cardsByFolder[selectedFolderId]?.[cardIndex];
         if (!card) throw new Error("Card not found");
-        await apiService.deleteCardInFolder(selectedFolderId, card.id);
+        await cardAndFolderService.deleteCardInFolder(
+          selectedFolderId,
+          card.id,
+        );
         setNotification({ message: "Card deleted!", type: "success" });
         await loadCardsForFolder(selectedFolderId); // Reload cards for this folder
       } else {
@@ -386,7 +457,7 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
     setEditingFolder({
       name: folder.name,
       id: folder.id,
-      parentId: folder.parentId
+      parentId: folder.parentId,
     });
     setModalOpen(true);
   };
@@ -394,15 +465,17 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
   const handleAddFolder = useCallback(() => {
     // Create a new folder at the current level
     setEditingFolder({
-      name: '',
+      name: "",
       id: null,
-      parentId: currentParentId
+      parentId: currentParentId,
     });
     setModalOpen(true);
   }, [currentParentId]);
 
   // Get the selected folder cards for display
-  const selectedFolderCards = selectedFolderId ? (cardsByFolder[selectedFolderId] || []) : [];
+  const selectedFolderCards = selectedFolderId
+    ? cardsByFolder[selectedFolderId] || []
+    : [];
 
   return (
     <SC.ContentWrapper>
@@ -424,8 +497,8 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
         {selectedFolder ? (
           <>
             {notification && (
-              <Notification 
-                message={notification.message} 
+              <Notification
+                message={notification.message}
                 type={notification.type}
                 onDismiss={() => setNotification(null)}
                 duration={3000} // 3 seconds
@@ -448,8 +521,8 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
         ) : (
           <>
             {notification && (
-              <Notification 
-                message={notification.message} 
+              <Notification
+                message={notification.message}
                 type={notification.type}
                 onDismiss={() => setNotification(null)}
                 duration={3000} // 3 seconds
@@ -457,16 +530,27 @@ const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) =>
             )}
             <SC.EmptyStateWrapper>
               <SC.EmptyStateTitle>Select a Folder</SC.EmptyStateTitle>
-              <SC.EmptyStateText>Please select a folder from the sidebar to view its cards.</SC.EmptyStateText>
+              <SC.EmptyStateText>
+                Please select a folder from the sidebar to view its cards.
+              </SC.EmptyStateText>
             </SC.EmptyStateWrapper>
           </>
         )}
-        <Modal isOpen={isModalOpen} onClose={() => { setModalOpen(false); setEditingFolder(null); }}>
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setEditingFolder(null);
+          }}
+        >
           <FolderForm
             initialName={editingFolder?.name}
             onSave={handleSaveFolder}
             onDelete={editingFolder ? handleDeleteFolder : undefined}
-            onCancel={() => { setModalOpen(false); setEditingFolder(null); }}
+            onCancel={() => {
+              setModalOpen(false);
+              setEditingFolder(null);
+            }}
             isEdit={!!editingFolder}
           />
         </Modal>

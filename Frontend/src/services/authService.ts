@@ -20,8 +20,8 @@ export const checkEmailAvailability = async (email: string): Promise<boolean> =>
 };
 
 // API call to register a new user
-export const registerUser = async (userData: AuthFormData): Promise<any> => {
-  return await request('/auth/register', {
+export const registerUser = async (userData: AuthFormData): Promise<any> =>
+  await request('/auth/register', {
     method: 'POST',
     body: JSON.stringify({
       username: userData.username,
@@ -29,15 +29,13 @@ export const registerUser = async (userData: AuthFormData): Promise<any> => {
       password: userData.password,
     }),
   });
-};
 
 // API call to login user
-export const loginUser = async (credentials: AuthFormData): Promise<any> => {
-  return await request('/auth/login', {
+export const loginUser = async (credentials: AuthFormData): Promise<any> =>
+  await request('/auth/login', {
     method: 'POST',
     body: JSON.stringify({
       usernameOrEmail: credentials.usernameOrEmail,
       password: credentials.password,
     }),
   });
-};

@@ -18,13 +18,16 @@ const LoginTemplate: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-  }, []);
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = event.target;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    },
+    [],
+  );
 
   const handleSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
@@ -37,8 +40,8 @@ const LoginTemplate: React.FC = () => {
           password: formData.password,
         });
         // Handle successful login (store token, redirect, etc.)
-        localStorage.setItem("token", response.token);
-        router.push("/dashboard");
+        localStorage.setItem("authToken", response.token);
+        router.push("/");
       } catch {
         //TODO: show error to user
       } finally {
@@ -48,9 +51,9 @@ const LoginTemplate: React.FC = () => {
     [router, formData],
   );
 
-  const isButtonDisabled = 
-    !formData.usernameOrEmail.trim() || 
-    !formData.password.trim() || 
+  const isButtonDisabled =
+    !formData.usernameOrEmail.trim() ||
+    !formData.password.trim() ||
     isSubmitting;
 
   // Create simple field objects for the AuthFormInput component

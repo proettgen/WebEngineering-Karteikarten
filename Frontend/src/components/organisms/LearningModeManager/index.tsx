@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import LearningMode from "@/components/organisms/LearningMode";
-import { apiService } from "@/services/apiService";
+import { cardAndFolderService } from "@/services/cardAndFolderService";
 import { LearningModeManagerProps } from "./types";
 import Button from "@/components/atoms/Button";
 import Headline from "@/components/atoms/Headline";
@@ -18,7 +18,14 @@ const LAST_BOX = 3; // Maximale Box-Stufe
  * - Erkennt, wenn alle Karten in der letzten Box sind (Lernziel erreicht)
  * - Bietet Funktionen zum Neustart und Rückkehr zur Auswahl
  */
-const LearningModeManager = ({ folder, boxLevel, elapsedSeconds, onBack, onRestart, onBackToFolders }: LearningModeManagerProps) => {
+const LearningModeManager = ({
+  folder,
+  boxLevel,
+  elapsedSeconds,
+  onBack,
+  onRestart,
+  onBackToFolders,
+}: LearningModeManagerProps) => {
   // State für die aktuell zu lernenden Karten
   const [cards, setCards] = useState<any[]>([]);
   const [loadingCards, setLoadingCards] = useState(false);
@@ -34,11 +41,14 @@ const LearningModeManager = ({ folder, boxLevel, elapsedSeconds, onBack, onResta
    */
   useEffect(() => {
     setLoadingCards(true);
-    apiService.getCardsByFolder(folder.id)
+    cardAndFolderService
+      .getCardsByFolder(folder.id)
       .then((res) => {
         // Typ: { data: { cards: any[] } }
         const allCards = (res as { data: { cards: any[] } }).data.cards || [];
-        setCards(allCards.filter((card: any) => (card.boxLevel ?? 0) === boxLevel));
+        setCards(
+          allCards.filter((card: any) => (card.boxLevel ?? 0) === boxLevel),
+        );
         setError(null);
       })
       .catch(() => setError("Fehler beim Laden der Karten"))
@@ -60,15 +70,21 @@ const LearningModeManager = ({ folder, boxLevel, elapsedSeconds, onBack, onResta
     if (correct) newLevel = clampBox(newLevel + 1);
     else newLevel = clampBox(newLevel - 1);
     try {
-      await apiService.updateCardInFolder(folder.id, cardId, { boxLevel: newLevel });
+      await cardAndFolderService.updateCardInFolder(folder.id, cardId, {
+        boxLevel: newLevel,
+      });
       // Karten neu laden
       setLoadingCards(true);
-      const res = await apiService.getCardsByFolder(folder.id);
+      const res = await cardAndFolderService.getCardsByFolder(folder.id);
       const allCards = (res as { data: { cards: any[] } }).data.cards || [];
-      const newCards = allCards.filter((c: any) => (c.boxLevel ?? 0) === boxLevel);
+      const newCards = allCards.filter(
+        (c: any) => (c.boxLevel ?? 0) === boxLevel,
+      );
       setCards(newCards);
       // Prüfen, ob alle Karten in der letzten Box sind (Lernziel erreicht)
-      const allInLastBox = allCards.length > 0 && allCards.every((c: any) => (c.boxLevel ?? 0) === LAST_BOX);
+      const allInLastBox =
+        allCards.length > 0 &&
+        allCards.every((c: any) => (c.boxLevel ?? 0) === LAST_BOX);
       if (allInLastBox) {
         setIsCompleted(true);
         setCompletedTime(elapsedSeconds);
@@ -85,9 +101,11 @@ const LearningModeManager = ({ folder, boxLevel, elapsedSeconds, onBack, onResta
   const handleNextCard = async () => {
     setLoadingCards(true);
     try {
-      const res = await apiService.getCardsByFolder(folder.id);
+      const res = await cardAndFolderService.getCardsByFolder(folder.id);
       const allCards = (res as { data: { cards: any[] } }).data.cards || [];
-      setCards(allCards.filter((card: any) => (card.boxLevel ?? 0) === boxLevel));
+      setCards(
+        allCards.filter((card: any) => (card.boxLevel ?? 0) === boxLevel),
+      );
     } catch {
       setError("Fehler beim Nachladen der Karten");
     } finally {
@@ -107,12 +125,14 @@ const LearningModeManager = ({ folder, boxLevel, elapsedSeconds, onBack, onResta
   const resetAllCardsToBox0 = async () => {
     setLoadingCards(true);
     try {
-      const res = await apiService.getCardsByFolder(folder.id);
+      const res = await cardAndFolderService.getCardsByFolder(folder.id);
       const allCards = (res as { data: { cards: any[] } }).data.cards || [];
       await Promise.all(
         allCards.map((card: any) =>
-          apiService.updateCardInFolder(folder.id, card.id, { boxLevel: 0 })
-        )
+          cardAndFolderService.updateCardInFolder(folder.id, card.id, {
+            boxLevel: 0,
+          }),
+        ),
       );
     } catch {
       setError("Fehler beim Zurücksetzen der Karten");
@@ -125,7 +145,7 @@ const LearningModeManager = ({ folder, boxLevel, elapsedSeconds, onBack, onResta
    */
   const handleRestart = async () => {
     await resetAllCardsToBox0();
-    setResetKey(prev => prev + 1);
+    setResetKey((prev) => prev + 1);
     if (typeof onRestart === "function") onRestart();
   };
   /**
@@ -138,25 +158,43 @@ const LearningModeManager = ({ folder, boxLevel, elapsedSeconds, onBack, onResta
 
   // Wenn alle Karten gelernt wurden, könnte hier eine Abschlussanzeige gerendert werden
   if (loadingCards) {
-    return <LearningModeTemplate><div style={{textAlign: "center", padding: 32}}><p>Karten werden geladen ...</p></div></LearningModeTemplate>;
+    return (
+      <LearningModeTemplate>
+        <div style={{ textAlign: "center", padding: 32 }}>
+          <p>Karten werden geladen ...</p>
+        </div>
+      </LearningModeTemplate>
+    );
   }
   if (error) {
-    return <LearningModeTemplate><div style={{textAlign: "center", padding: 32}}><p>{error}</p></div></LearningModeTemplate>;
+    return (
+      <LearningModeTemplate>
+        <div style={{ textAlign: "center", padding: 32 }}>
+          <p>{error}</p>
+        </div>
+      </LearningModeTemplate>
+    );
   }
   if (isCompleted) {
     return (
       <LearningModeTemplate elapsedSeconds={completedTime ?? elapsedSeconds}>
         <SC.CongratsWrapper>
           <Headline size="lg">Congratulations!</Headline>
-          <Text size="medium">You have successfully learned all flashcards.</Text>
+          <Text size="medium">
+            You have successfully learned all flashcards.
+          </Text>
           {typeof completedTime === "number" && (
             <Text size="medium">
               {`Total time: ${Math.floor(completedTime / 60)}:${String(completedTime % 60).padStart(2, "0")}`}
             </Text>
           )}
           <SC.ButtonRow>
-            <Button $variant="primary" onClick={handleRestart}>Learn again</Button>
-            <Button $variant="secondary" onClick={handleBackToFolders}>Back to folder selection</Button>
+            <Button $variant="primary" onClick={handleRestart}>
+              Learn again
+            </Button>
+            <Button $variant="secondary" onClick={handleBackToFolders}>
+              Back to folder selection
+            </Button>
           </SC.ButtonRow>
         </SC.CongratsWrapper>
       </LearningModeTemplate>
