@@ -1,10 +1,12 @@
-import express from "express";
-import folderRoutes from "../src/routes/folderRoutes";
-import cardRoutes from "../src/routes/cardRoutes";
-import { globalErrorHandler } from "../src/utils/errorHandler";
-import { AppError } from "../src/utils/AppError";
-import "dotenv/config";
-import authRoutes from "../src/routes/authRoutes";
+import express from 'express';
+import folderRoutes from '../src/routes/folderRoutes';
+import cardRoutes from '../src/routes/cardRoutes';
+import { globalErrorHandler } from '../src/utils/errorHandler';
+import { AppError } from '../src/utils/AppError';
+import fs from 'fs';
+import path from 'path';
+import { staticSwaggerSpec } from '../src/config/staticSwagger';
+import 'dotenv/config';
 
 const app = express();
 
@@ -36,9 +38,40 @@ app.get("/", (_, res) => {
 });
 
 // API routes
-app.use("/api/folders", folderRoutes);
-app.use("/api/cards", cardRoutes);
-app.use("/api/auth", authRoutes);
+app.use('/api/folders', folderRoutes);
+app.use('/api/cards', cardRoutes);
+
+// Swagger documentation routes
+app.get('/api/api-docs/swagger.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    
+    // Try to load generated swagger file (created by build script)
+    const generatedSwaggerPath = path.join(__dirname, '../src/config/generated-swagger.json');
+    
+    try {
+        if (fs.existsSync(generatedSwaggerPath)) {
+            const generatedSwagger = fs.readFileSync(generatedSwaggerPath, 'utf8');
+            const parsedSwagger = JSON.parse(generatedSwagger) as Record<string, unknown>;
+            console.log('📄 Serving generated Swagger documentation');
+            res.json(parsedSwagger);
+            return;
+        }
+    } catch (error) {
+        console.warn('⚠️  Failed to load generated swagger file:', error instanceof Error ? error.message : 'Unknown error');
+    }
+    
+    // Fallback to static spec if generated file doesn't exist or can't be parsed
+    console.log('📄 Serving static Swagger documentation (fallback)');
+    res.json(staticSwaggerSpec);
+});
+
+app.get('/api/api-docs', (req, res) => {
+    const swaggerUrl = `https://petstore.swagger.io/?url=${encodeURIComponent('https://web-engineering-karteikarten.vercel.app/api/api-docs/swagger.json')}`;
+    res.redirect(swaggerUrl);
+});
 
 // Catch-all route for 404 Not Found errors
 app.all("*", (req, res, next) => {

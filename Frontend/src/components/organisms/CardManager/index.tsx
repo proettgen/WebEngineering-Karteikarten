@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { apiService } from "@/services/apiService";
 import Folder from "../../molecules/Folder";
 import Modal from "../../molecules/Modal";
@@ -14,14 +15,21 @@ import { BreadcrumbItem } from "@/components/molecules/Aside/types";
 // API response types
 type GetFoldersResponse = { status: string; data: { folders: FolderType[] } };
 
-// CardManager component
-const CardManager = () => {
+// CardManager component with URL-based navigation
+interface CardManagerProps {
+  initialFolderId?: string | null;
+}
+
+const CardManager = ({ initialFolderId: _initialFolderId }: CardManagerProps) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Get current folderId from URL (simplified - no more parentId)
+  const urlFolderId = searchParams.get('folderId');
   const [currentFolders, setCurrentFolders] = useState<FolderType[]>([]);
   const [currentParentId, setCurrentParentId] = useState<string | null>(null);
   const [breadcrumb, setBreadcrumb] = useState<BreadcrumbItem[]>([]);
   const [cardsByFolder, setCardsByFolder] = useState<Record<string, any[]>>({});
-  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
-  const [selectedFolder, setSelectedFolder] = useState<FolderType | null>(null); // Store the selected folder separately
   const [allFolders, setAllFolders] = useState<FolderType[]>([]); // Store all folders for reference
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [sortOption, setSortOption] = useState<SortOption>("name");
@@ -30,132 +38,161 @@ const CardManager = () => {
   const [editingFolder, setEditingFolder] = useState<{ name: string; id: string | null; parentId: string | null } | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Load root folders on mount and when search/sort params change
-  const loadRootFolders = useCallback(async () => {
-    setLoading(true);
-    try {
-      // Use the simple approach: load all folders and filter for root folders
-      const res = await apiService.getFolders();
-      const allFoldersData = (res as GetFoldersResponse).data.folders;
-      setAllFolders(allFoldersData); // Store all folders for reference
-      const rootFolders = allFoldersData.filter(folder => folder.parentId === null);
-      setCurrentFolders(rootFolders);
-      setCurrentParentId(null);
-      setBreadcrumb([]);
-    } catch {
-      setNotification({ message: "Error loading folders!", type: "error" });
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // URL-based navigation helper (simplified)
+  const navigateToFolder = useCallback((folderId: string | null) => {
+    const url = folderId ? `/cards?folderId=${folderId}` : '/cards';
+    router.push(url);
+  }, [router]);
 
-  // Load child folders of a parent folder
-  const loadChildFolders = useCallback(async (parentId: string) => {
-    setLoading(true);
-    try {
-      // Use allFolders if available, otherwise load from API
-      let allFoldersData = allFolders;
-      if (allFoldersData.length === 0) {
-        const res = await apiService.getFolders();
-        allFoldersData = (res as GetFoldersResponse).data.folders;
-        setAllFolders(allFoldersData);
-      }
-      
-      const childFolders = allFoldersData.filter(folder => folder.parentId === parentId);
-      
-      setCurrentFolders(childFolders);
-      setCurrentParentId(parentId);
+  // Get selected folder from URL
+  const selectedFolderId = urlFolderId;
+  const selectedFolder = selectedFolderId && allFolders.length > 0 
+    ? allFolders.find(f => f.id === selectedFolderId) || null 
+    : null;
 
-      // Find parent folder for breadcrumb
-      const parentFolder = allFoldersData.find(f => f.id === parentId);
-      if (parentFolder) {
-        setBreadcrumb(prevBreadcrumb => {
-          // Check if this folder is already in the breadcrumb (going back)
-          const existingIndex = prevBreadcrumb.findIndex(item => item.id === parentFolder.id);
-          if (existingIndex >= 0) {
-            // If already exists, trim the breadcrumb up to this point
-            return prevBreadcrumb.slice(0, existingIndex + 1);
-          }
-          // Otherwise add to breadcrumb
-          return [...prevBreadcrumb, { id: parentFolder.id, name: parentFolder.name }];
-        });
-      }
-    } catch {
-      setNotification({ message: "Error loading folders!", type: "error" });
-    } finally {
-      setLoading(false);
-    }
-  }, [allFolders]);
-
-  // Load root folders on mount
+  // Load root folders on mount - only once
   useEffect(() => {
-    loadRootFolders();
-  }, [loadRootFolders]);
-
-  // Load cards for selected folder
-  const loadCardsForFolder = useCallback(async (folderId: string) => {
-    try {
-      const cardsRes = await apiService.getCardsByFolder(folderId);
-      setCardsByFolder(prev => ({
-        ...prev,
-        [folderId]: (cardsRes as any).data?.cards || []
-      }));
-    } catch {
-      // No cards found for folder - that's ok
-      setCardsByFolder(prev => ({
-        ...prev,
-        [folderId]: []
-      }));
-    }
+    // This will be handled by the URL effect when urlFolderId is null
   }, []);
 
-  // Load cards when folder is selected
+  // Load cards when folder is selected via URL
   useEffect(() => {
     if (selectedFolderId) {
-      loadCardsForFolder(selectedFolderId);
+      const loadCards = async () => {
+        try {
+          const cardsRes = await apiService.getCardsByFolder(selectedFolderId);
+          setCardsByFolder(prev => ({
+            ...prev,
+            [selectedFolderId]: (cardsRes as any).data?.cards || []
+          }));
+        } catch {
+          // No cards found for folder - that's ok
+          setCardsByFolder(prev => ({
+            ...prev,
+            [selectedFolderId]: []
+          }));
+        }
+      };
+      loadCards();
     }
-  }, [selectedFolderId, loadCardsForFolder]);
+  }, [selectedFolderId]); // Only depend on selectedFolderId
+
+  // Handle URL changes - when folderId changes, load folder content
+  useEffect(() => {
+    const loadFolderContent = async () => {
+      if (urlFolderId) {
+        // Load subfolders for the selected folder
+        setLoading(true);
+        try {
+          // Always load fresh from API to avoid stale state issues
+          const res = await apiService.getFolders();
+          const allFoldersData = (res as GetFoldersResponse).data.folders;
+          setAllFolders(allFoldersData);
+          
+          const childFolders = allFoldersData.filter(folder => folder.parentId === urlFolderId);
+          
+          setCurrentFolders(childFolders);
+          setCurrentParentId(urlFolderId);
+
+          // Build complete breadcrumb path from root to current folder
+          const breadcrumbPath: BreadcrumbItem[] = [];
+          let currentId: string | null = urlFolderId;
+          
+          while (currentId) {
+            const folder = allFoldersData.find(f => f.id === currentId);
+            if (folder) {
+              breadcrumbPath.unshift({ id: folder.id, name: folder.name });
+              currentId = folder.parentId;
+            } else {
+              break;
+            }
+          }
+          
+          setBreadcrumb(breadcrumbPath);
+        } catch {
+          setNotification({ message: "Error loading folders!", type: "error" });
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        // If no folder selected, show root folders
+        setLoading(true);
+        try {
+          const res = await apiService.getFolders();
+          const allFoldersData = (res as GetFoldersResponse).data.folders;
+          setAllFolders(allFoldersData);
+          
+          const rootFolders = allFoldersData.filter(folder => folder.parentId === null);
+          setCurrentFolders(rootFolders);
+          setCurrentParentId(null);
+          setBreadcrumb([]);
+        } catch {
+          setNotification({ message: "Error loading folders!", type: "error" });
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadFolderContent();
+  }, [urlFolderId]); // Only depend on urlFolderId
 
   // Handler functions for Aside component
   const handleFolderSelect = useCallback((folderId: string | null) => {
-    setSelectedFolderId(folderId);
-    
-    // Find and store the selected folder from allFolders
-    if (folderId && allFolders.length > 0) {
-      const folder = allFolders.find(f => f.id === folderId);
-      setSelectedFolder(folder || null);
-      // When a folder is selected, also show its subfolders
-      loadChildFolders(folderId);
-    } else {
-      setSelectedFolder(null);
-    }
-  }, [loadChildFolders, allFolders]);
-
-  // Handler for navigating into a folder
-  const handleFolderNavigate = useCallback((folderId: string) => {
-    setSelectedFolderId(null); // Clear selection when navigating to new folder level
-    setSelectedFolder(null); // Clear selected folder state too
-    loadChildFolders(folderId);
-  }, [loadChildFolders]);
+    // Only update the URL - the useEffect will handle loading data
+    navigateToFolder(folderId);
+  }, [navigateToFolder]);
 
   // Handler for breadcrumb navigation
   const handleBreadcrumbNavigate = useCallback((folderId: string | null) => {
-    setSelectedFolderId(null); // Clear selection when navigating via breadcrumb
-    setSelectedFolder(null); // Clear selected folder state too
-    if (folderId === null) {
-      // Go to root level
-      loadRootFolders();
-    } else {
-      // Go to specific folder in breadcrumb
-      loadChildFolders(folderId);
-    }
-  }, [loadRootFolders, loadChildFolders]);
+    // Breadcrumb navigation also selects the folder and shows its content
+    handleFolderSelect(folderId);
+  }, [handleFolderSelect]);
 
-  const handleSearch = useCallback((searchValue: string) => {
+  const handleSearch = useCallback(async (searchValue: string) => {
     setSearchTerm(searchValue);
-    // For now, search only filters the current level of folders
-    // A more advanced implementation would search across all folders
-  }, []);
+    
+    if (searchValue.trim() === '') {
+      // If search is cleared, reload the current folder context
+      const loadFolderContent = async () => {
+        setLoading(true);
+        try {
+          const res = await apiService.getFolders();
+          const allFoldersData = (res as GetFoldersResponse).data.folders;
+          setAllFolders(allFoldersData);
+          
+          if (urlFolderId) {
+            const childFolders = allFoldersData.filter(folder => folder.parentId === urlFolderId);
+            setCurrentFolders(childFolders);
+          } else {
+            const rootFolders = allFoldersData.filter(folder => folder.parentId === null);
+            setCurrentFolders(rootFolders);
+          }
+        } catch {
+          setNotification({ message: "Error loading folders!", type: "error" });
+        } finally {
+          setLoading(false);
+        }
+      };
+      loadFolderContent();
+    } else {
+      // Perform global search across all folders
+      setLoading(true);
+      try {
+        const searchRes = await apiService.searchFolders(searchValue.trim());
+        const searchResults = (searchRes as any).data?.folders || [];
+        setCurrentFolders(searchResults);
+        // Clear breadcrumb during search
+        setBreadcrumb([]);
+        setCurrentParentId(null);
+      } catch {
+        setNotification({ message: "Error searching folders!", type: "error" });
+        setCurrentFolders([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+  }, [urlFolderId]);
 
   const handleSort = useCallback((newSortOption: SortOption) => {
     setSortOption(newSortOption);
@@ -166,11 +203,23 @@ const CardManager = () => {
   const handleSaveFolder = async (folderName: string) => {
     setLoading(true);
     try {
+      let allFoldersData: FolderType[];
+      
       if (editingFolder && editingFolder.id) {
+        // Update existing folder
         await apiService.updateFolder(editingFolder.id, { name: folderName });
         setNotification({ message: "Folder updated!", type: "success" });
+        
+        // Reload all folders to get updated data
+        const res = await apiService.getFolders();
+        allFoldersData = (res as GetFoldersResponse).data.folders;
+        setAllFolders(allFoldersData);
+        
+        // The selected folder name should update automatically via selectedFolder calculation
+        // No need to change URL since we're updating the same folder
+        
       } else {
-        // Create folder at current level (parentId is currentParentId)
+        // Create new folder at current level (parentId is currentParentId)
         const now = new Date().toISOString();
         await apiService.createFolder({ 
           name: folderName, 
@@ -179,13 +228,14 @@ const CardManager = () => {
           lastOpenedAt: now
         });
         setNotification({ message: "Folder created!", type: "success" });
+        
+        // Reload all folders first to ensure we have fresh data
+        const res = await apiService.getFolders();
+        allFoldersData = (res as GetFoldersResponse).data.folders;
+        setAllFolders(allFoldersData);
       }
-      // Reload all folders first to ensure we have fresh data
-      const res = await apiService.getFolders();
-      const allFoldersData = (res as GetFoldersResponse).data.folders;
-      setAllFolders(allFoldersData);
       
-      // Then reload the current level folders
+      // Reload the current level folders for both create and update
       if (currentParentId === null) {
         const rootFolders = allFoldersData.filter(folder => folder.parentId === null);
         setCurrentFolders(rootFolders);
@@ -207,14 +257,26 @@ const CardManager = () => {
     if (editingFolder && editingFolder.id) {
       setLoading(true);
       try {
-        await apiService.deleteFolder(editingFolder.id);
+        const folderToDelete = editingFolder;
+        const folderId = folderToDelete.id!; // We know it's not null because of the if condition
+        
+        // If we're currently viewing the folder being deleted, navigate to parent
+        const isViewingDeletedFolder = selectedFolderId === folderId;
+        
+        await apiService.deleteFolder(folderId);
         setNotification({ message: "Folder deleted!", type: "success" });
+        
         // Reload all folders first to ensure we have fresh data
         const res = await apiService.getFolders();
         const allFoldersData = (res as GetFoldersResponse).data.folders;
         setAllFolders(allFoldersData);
         
-        // Then reload the current level folders
+        // If we were viewing the deleted folder, navigate to its parent
+        if (isViewingDeletedFolder) {
+          navigateToFolder(folderToDelete.parentId);
+        }
+        
+        // Reload the current level folders
         if (currentParentId === null) {
           const rootFolders = allFoldersData.filter(folder => folder.parentId === null);
           setCurrentFolders(rootFolders);
@@ -231,6 +293,23 @@ const CardManager = () => {
       }
     }
   };
+
+  // Load cards for a specific folder (used in CRUD operations)
+  const loadCardsForFolder = useCallback(async (folderId: string) => {
+    try {
+      const cardsRes = await apiService.getCardsByFolder(folderId);
+      setCardsByFolder(prev => ({
+        ...prev,
+        [folderId]: (cardsRes as any).data?.cards || []
+      }));
+    } catch {
+      // No cards found for folder - that's ok
+      setCardsByFolder(prev => ({
+        ...prev,
+        [folderId]: []
+      }));
+    }
+  }, []);
 
   // Card operations
   const handleAddCard: FolderProps["onAddCard"] = async (folderName, title, question, answer, tags) => {
@@ -325,16 +404,6 @@ const CardManager = () => {
   // Get the selected folder cards for display
   const selectedFolderCards = selectedFolderId ? (cardsByFolder[selectedFolderId] || []) : [];
 
-  // Update selectedFolder when allFolders is loaded and we have a selectedFolderId
-  useEffect(() => {
-    if (selectedFolderId && allFolders.length > 0 && !selectedFolder) {
-      const folder = allFolders.find(f => f.id === selectedFolderId);
-      if (folder) {
-        setSelectedFolder(folder);
-      }
-    }
-  }, [allFolders, selectedFolderId, selectedFolder]);
-
   return (
     <SC.ContentWrapper>
       <Aside
@@ -345,7 +414,6 @@ const CardManager = () => {
         searchTerm={searchTerm}
         sortOption={sortOption}
         onFolderSelect={handleFolderSelect}
-        onFolderNavigate={handleFolderNavigate}
         onBreadcrumbNavigate={handleBreadcrumbNavigate}
         onSearch={handleSearch}
         onSort={handleSort}

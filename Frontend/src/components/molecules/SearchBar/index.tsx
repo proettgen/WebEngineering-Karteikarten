@@ -15,14 +15,18 @@ const SearchBar: React.FC<SearchBarProps> = ({
   }, [initialValue]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+    const newValue = e.target.value;
+    setSearchTerm(newValue);
+    
+    // Trigger search immediately when input is cleared
+    if (newValue.trim() === '') {
+      onSearch('');
+    }
   };
 
   const triggerSearch = () => {
     const trimmedSearchTerm = searchTerm.trim();
-    if (trimmedSearchTerm !== "") {
-      onSearch(trimmedSearchTerm);
-    }
+    onSearch(trimmedSearchTerm);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -30,6 +34,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
       e.preventDefault(); // Prevent default if inside a form
       triggerSearch();
     }
+  };
+
+  const clearSearch = () => {
+    setSearchTerm('');
+    onSearch('');
   };
 
   const isInputFilled = searchTerm.trim() !== "";
@@ -49,17 +58,30 @@ const SearchBar: React.FC<SearchBarProps> = ({
         onKeyDown={handleKeyPress}
       />
       {isInputFilled && (
-        <Icon
-          size="m"
-          color="primary"
-          onClick={triggerSearch}
-          cursorStyle="pointer"
-          aria-label="Submit search"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
-            <path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z" />
-          </svg>
-        </Icon>
+        <>
+          <Icon
+            size="m"
+            color="textSecondary"
+            onClick={clearSearch}
+            cursorStyle="pointer"
+            aria-label="Clear search"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+              <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+            </svg>
+          </Icon>
+          <Icon
+            size="m"
+            color="primary"
+            onClick={triggerSearch}
+            cursorStyle="pointer"
+            aria-label="Submit search"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+              <path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z" />
+            </svg>
+          </Icon>
+        </>
       )}
     </SC.SearchBarContainer>
   );

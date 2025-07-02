@@ -185,36 +185,36 @@ export const SelectedFolderItem = styled(FolderItem)`
 `;
 
 /**
- * Styles for the Add Folder button.
+ * Modern add folder button (similar to card add button)
  */
 export const AddFolderButton = styled.button`
-  background-color: ${({ theme }) => theme.primary};
-  color: ${({ theme }) => theme.onPrimary};
-  border: none;
-  border-radius: 8px;
-  padding: 12px 16px;
-  display: flex;
+  background-color: transparent;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  border: 1px solid ${({ theme }) => theme.border};
+  color: ${({ theme }) => theme.onPrimary};
+  padding: 8px;
+  border-radius: 50%;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 16px;
-  transition: background-color 0.2s, transform 0.1s;
+  position: relative;
+  transition: background-color 0.2s, border-color 0.2s;
+  flex-shrink: 0;
 
   &:hover {
-    background-color: ${({ theme }) => theme.primaryHover || theme.primary};
-    transform: translateY(-1px);
+    background-color: ${({ theme }) => theme.background};
+    border-color: ${({ theme }) => theme.textSecondary};
   }
 
   &:active {
-    transform: translateY(0);
+    transform: scale(0.95);
   }
 
   svg {
-    width: 16px;
-    height: 16px;
-    fill: currentColor;
+    width: 20px;
+    height: 20px;
+    fill: ${({ theme }) => theme.onPrimary};
+    pointer-events: none;
   }
 `;
 
@@ -231,6 +231,24 @@ export const LoadingContainer = styled.div`
 `;
 
 /**
+ * Container for breadcrumb navigation and add folder button
+ */
+export const BreadcrumbSection = styled.div`
+  margin-bottom: 20px;
+`;
+
+/**
+ * Header containing breadcrumb and add folder button
+ */
+export const BreadcrumbHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 0;
+`;
+
+/**
  * Breadcrumb container
  */
 export const BreadcrumbContainer = styled.div`
@@ -238,7 +256,12 @@ export const BreadcrumbContainer = styled.div`
   flex-wrap: wrap;
   align-items: center;
   gap: 4px;
-  margin: 10px 0 15px;
+  padding: 10px 12px;
+  background-color: ${({ theme }) => theme.background};
+  border: 1px solid ${({ theme }) => theme.border};
+  border-radius: 6px;
+  flex: 1;
+  min-width: 0;
 `;
 
 /**
@@ -262,4 +285,62 @@ export const BreadcrumbItem = styled.span<{ $isActive?: boolean }>`
 export const BreadcrumbSeparator = styled.span`
   color: ${({ theme }) => theme.textSecondary};
   margin: 0 2px;
+`;
+
+/**
+ * Empty state container for when no folders are available
+ */
+export const EmptyStateContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  text-align: center;
+  background-color: ${({ theme }) => theme.background};
+  border: 1px dashed ${({ theme }) => theme.border};
+  border-radius: 12px;
+  margin: 20px 0;
+  min-height: 140px;
+  width: 100%;
+  box-sizing: border-box;
+`;
+
+/**
+ * Icon container for empty state
+ */
+export const EmptyStateIcon = styled.div`
+  margin-bottom: 16px;
+  color: ${({ theme }) => theme.textSecondary};
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+/**
+ * Text styling for empty state messages
+ */
+export const EmptyStateText = styled.p`
+  color: ${({ theme }) => theme.textPrimary};
+  font-size: ${({ theme }) => theme.fontSizes.medium};
+  font-weight: 500;
+  line-height: 1.5;
+  margin: 0 0 12px 0;
+  width: 100%;
+  word-wrap: break-word;
+  hyphens: auto;
+`;
+
+/**
+ * Subtitle for empty state
+ */
+export const EmptyStateSubtext = styled.p`
+  color: ${({ theme }) => theme.textSecondary};
+  font-size: ${({ theme }) => theme.fontSizes.small};
+  line-height: 1.4;
+  margin: 0;
+  opacity: 0.8;
+  width: 100%;
+  word-wrap: break-word;
 `;

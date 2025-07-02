@@ -32,6 +32,7 @@ export const CardSide = styled.div`
   justify-content: flex-start;
   box-sizing: border-box;
   overflow: hidden;
+  transform-style: preserve-3d;
 `;
 
 export const CardFront = styled(CardSide)``;
@@ -44,6 +45,9 @@ export const FlipButtonWrapper = styled.div`
   position: absolute;
   top: 16px;
   right: 16px;
+  z-index: 10;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
 `;
 
 export const EditButtonWrapper = styled.div`
