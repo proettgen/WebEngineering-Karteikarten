@@ -42,7 +42,7 @@ export const getAllCards = async (req: Request, res: Response, next: NextFunctio
         // Parse and validate query parameters
         const { folderId, tags, title, limit, offset, sortBy, order } = querySchema.parse(req.query);
         
-        // Use transformed pagination values directly (already converted to numbers by schema)
+        // Convert string pagination values to numbers (like in the old working version)
         const limitNum = limit ?? DEFAULT_LIMIT;
         const offsetNum = offset ?? DEFAULT_OFFSET;
         
@@ -123,10 +123,12 @@ export const createCard = async (req: Request, res: Response, next: NextFunction
             throw new AppError(`Folder with ID ${parsed.folderId} does not exist.`, 400);
         }
 
-        // Create card with optional tags defaulting to null
+        // Create card with optional tags defaulting to null and set defaults
         const card = await cardService.createCard({
             ...parsed,
-            tags: parsed.tags ?? null
+            tags: parsed.tags ?? null,
+            currentLearningLevel: parsed.currentLearningLevel ?? 0,
+            createdAt: parsed.createdAt ?? new Date().toISOString()
         });
 
         res.status(201).json({
@@ -155,8 +157,12 @@ export const updateCard = async (req: Request, res: Response, next: NextFunction
         // Validate UUID format
         idSchema.parse(id);
         
+        // Log the incoming request for debugging
+        console.log('updateCard called with id:', id, 'body:', req.body);
+        
         // Validate and parse update data
         const parsed = cardUpdateSchema.parse(req.body);
+        console.log('Parsed update data:', parsed);
         
         // If folderId is being changed, verify the new folder exists
         if (parsed.folderId) {
@@ -168,6 +174,7 @@ export const updateCard = async (req: Request, res: Response, next: NextFunction
 
         // Update card in service layer
         const card = await cardService.updateCard(id, parsed);
+        console.log('Service returned card:', card);
         
         if (!card) {
             throw new AppError(`Card with ID ${id} not found`, 404);
@@ -178,6 +185,7 @@ export const updateCard = async (req: Request, res: Response, next: NextFunction
             data: { card }
         });
     } catch (error) {
+        console.error('Error in updateCard controller:', error);
         next(error);
     }
 };
@@ -246,7 +254,8 @@ export const createCardInFolder = async (req: Request, res: Response, next: Next
             ...parsed,
             folderId,
             tags: parsed.tags ?? null,
-            createdAt: parsed.createdAt || new Date().toISOString()
+            currentLearningLevel: parsed.currentLearningLevel ?? 0,
+            createdAt: parsed.createdAt ?? new Date().toISOString()
         });
         res.status(201).json({
             status: 'success',
