@@ -1,9 +1,21 @@
 { 
     "version": 2, 
     "rewrites": [
+        {
+            "source": "/api/api-docs/swagger.json",
+            "destination": "/api/index"
+        },
+        {
+            "source": "/api/api-docs",
+            "destination": "/api/index"
+        },
+        { 
+            "source": "/api/(.*)", 
+            "destination": "/api/index" 
+        },
         { 
             "source": "/(.*)", 
-            "destination": "/api" 
+            "destination": "/api/index" 
         }
     ]
 }
