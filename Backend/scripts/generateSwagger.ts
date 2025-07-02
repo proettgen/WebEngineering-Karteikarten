@@ -189,12 +189,20 @@ const swaggerOptions = {
             description: 'Production server (Vercel)',
         },
         {
-            url: 'http://localhost:3001',
+            url: 'http://localhost:8080',
             description: 'Development server',
         },
         ],
         components: {
-        schemas: {
+  securitySchemes: {
+    bearerAuth: {
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      description: 'Enter JWT token in format: Bearer <token>'
+    }
+  },
+  schemas: {
             Card: {
             type: 'object',
             required: ['title', 'question', 'answer', 'folderId'],
