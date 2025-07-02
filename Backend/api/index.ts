@@ -1,4 +1,6 @@
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
+import { specs, swaggerUiOptions } from '../src/config/swagger';
 import folderRoutes from '../src/routes/folderRoutes';
 import cardRoutes from '../src/routes/cardRoutes';
 import { globalErrorHandler } from '../src/utils/errorHandler';
@@ -24,6 +26,10 @@ app.use((req, res, next) => {
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
+
+// Swagger Documentation
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, swaggerUiOptions));
 
 // Health check endpoint
 app.get("/", (_, res) => {
