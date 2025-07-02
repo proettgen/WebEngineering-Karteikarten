@@ -1,5 +1,4 @@
 import express from 'express';
-import { staticSwaggerSpec } from '../src/config/staticSwagger';
 import folderRoutes from '../src/routes/folderRoutes';
 import cardRoutes from '../src/routes/cardRoutes';
 import { globalErrorHandler } from '../src/utils/errorHandler';
@@ -28,8 +27,32 @@ app.use(express.json());
 
 // Swagger Documentation
 // JSON-Endpunkt für Swagger-Spec (funktioniert auf Vercel)
+import fs from 'fs';
+import path from 'path';
+import { staticSwaggerSpec } from '../src/config/staticSwagger.js';
+
+// ...existing code...
+
 app.get('/api-docs/swagger.json', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
+    
+    // Try to load generated swagger file (created by build script)
+    const generatedSwaggerPath = path.join(__dirname, '../src/config/generated-swagger.json');
+    
+    try {
+        if (fs.existsSync(generatedSwaggerPath)) {
+            const generatedSwagger = fs.readFileSync(generatedSwaggerPath, 'utf8');
+            const parsedSwagger = JSON.parse(generatedSwagger) as Record<string, unknown>;
+            console.log('📄 Serving generated Swagger documentation');
+            res.json(parsedSwagger);
+            return;
+        }
+    } catch (error) {
+        console.warn('⚠️  Failed to load generated swagger file:', error instanceof Error ? error.message : 'Unknown error');
+    }
+    
+    // Fallback to static spec if generated file doesn't exist or can't be parsed
+    console.log('📄 Serving static Swagger documentation (fallback)');
     res.json(staticSwaggerSpec);
 });
 

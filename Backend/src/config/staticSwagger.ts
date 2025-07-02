@@ -449,23 +449,36 @@ export const staticSwaggerSpec = {
         }
       }
     },
-    '/api/folders/{id}/cards': {
+    '/api/folders/search': {
       get: {
-        summary: 'Alle Karten in einem Ordner abrufen',
-        description: 'Lädt alle Karteikarten, die einem spezifischen Ordner zugeordnet sind',
-        tags: ['Folders', 'Cards'],
+        summary: 'Ordner nach Name durchsuchen',
+        description: 'Sucht Ordner basierend auf dem Namen (partielle Übereinstimmung)',
+        tags: ['Folders'],
         parameters: [
           {
-            in: 'path',
-            name: 'id',
+            in: 'query',
+            name: 'search',
             required: true,
-            schema: { type: 'string', format: 'uuid' },
-            description: 'ID des Ordners'
+            schema: { type: 'string' },
+            description: 'Suchbegriff für Ordnername',
+            example: 'JavaScript'
+          },
+          {
+            in: 'query',
+            name: 'limit',
+            schema: { type: 'integer', minimum: 1, maximum: 100, default: 20 },
+            description: 'Anzahl der Suchergebnisse pro Seite'
+          },
+          {
+            in: 'query',
+            name: 'offset',
+            schema: { type: 'integer', minimum: 0, default: 0 },
+            description: 'Anzahl der zu überspringenden Ergebnisse'
           }
         ],
         responses: {
           200: {
-            description: 'Liste der Karten im Ordner',
+            description: 'Suchergebnisse',
             content: {
               'application/json': {
                 schema: {
@@ -475,9 +488,17 @@ export const staticSwaggerSpec = {
                     data: {
                       type: 'object',
                       properties: {
-                        cards: {
+                        folders: {
                           type: 'array',
-                          items: { $ref: '#/components/schemas/Card' }
+                          items: { $ref: '#/components/schemas/Folder' }
+                        },
+                        pagination: {
+                          type: 'object',
+                          properties: {
+                            limit: { type: 'integer' },
+                            offset: { type: 'integer' },
+                            total: { type: 'integer' }
+                          }
                         }
                       }
                     }
@@ -487,18 +508,116 @@ export const staticSwaggerSpec = {
             }
           }
         }
-      },
-      post: {
-        summary: 'Neue Karte in einem Ordner erstellen',
-        description: 'Erstellt eine neue Karteikarte und ordnet sie automatisch dem angegebenen Ordner zu',
-        tags: ['Folders', 'Cards'],
+      }
+    },
+    '/api/folders/root': {
+      get: {
+        summary: 'Alle Hauptordner abrufen',
+        description: 'Lädt alle Ordner ohne übergeordneten Ordner (Hauptebene)',
+        tags: ['Folders'],
+        parameters: [
+          {
+            in: 'query',
+            name: 'limit',
+            schema: { type: 'integer', minimum: 1, maximum: 100, default: 20 },
+            description: 'Anzahl der Ordner pro Seite'
+          },
+          {
+            in: 'query',
+            name: 'offset',
+            schema: { type: 'integer', minimum: 0, default: 0 },
+            description: 'Anzahl der zu überspringenden Ordner'
+          }
+        ],
+        responses: {
+          200: {
+            description: 'Liste der Hauptordner',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    status: { type: 'string', example: 'success' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        folders: {
+                          type: 'array',
+                          items: { $ref: '#/components/schemas/Folder' }
+                        },
+                        pagination: {
+                          type: 'object',
+                          properties: {
+                            limit: { type: 'integer' },
+                            offset: { type: 'integer' },
+                            total: { type: 'integer' }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    '/api/folders/{id}': {
+      get: {
+        summary: 'Einzelnen Ordner abrufen',
+        description: 'Lädt einen spezifischen Ordner anhand seiner ID',
+        tags: ['Folders'],
         parameters: [
           {
             in: 'path',
             name: 'id',
             required: true,
             schema: { type: 'string', format: 'uuid' },
-            description: 'ID des Ordners, dem die Karte zugeordnet wird'
+            description: 'Eindeutige ID des Ordners'
+          }
+        ],
+        responses: {
+          200: {
+            description: 'Ordner erfolgreich geladen',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    status: { type: 'string', example: 'success' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        folder: { $ref: '#/components/schemas/Folder' }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          404: {
+            description: 'Ordner nicht gefunden',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/Error' }
+              }
+            }
+          }
+        }
+      },
+      put: {
+        summary: 'Ordner aktualisieren',
+        description: 'Aktualisiert einen bestehenden Ordner (partielle Updates möglich)',
+        tags: ['Folders'],
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: { type: 'string', format: 'uuid' },
+            description: 'Eindeutige ID des Ordners'
           }
         ],
         requestBody: {
@@ -507,44 +626,213 @@ export const staticSwaggerSpec = {
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['title', 'question', 'answer'],
                 properties: {
-                  title: {
+                  name: {
                     type: 'string',
-                    description: 'Titel der Karte',
-                    example: 'React Hooks'
+                    description: 'Neuer Name des Ordners'
                   },
-                  question: {
+                  parentId: {
                     type: 'string',
-                    description: 'Frage auf der Vorderseite',
-                    example: 'Was ist der Unterschied zwischen useState und useEffect?'
-                  },
-                  answer: {
-                    type: 'string',
-                    description: 'Antwort auf der Rückseite',
-                    example: 'useState verwaltet lokalen State, useEffect führt Seiteneffekte aus...'
-                  },
-                  tags: {
-                    type: 'array',
-                    items: { type: 'string' },
-                    description: 'Tags zur Kategorisierung',
-                    example: ['react', 'hooks', 'frontend']
-                  },
-                  currentLearningLevel: {
-                    type: 'integer',
-                    minimum: 1,
-                    maximum: 5,
-                    default: 1,
-                    description: 'Aktuelles Lernniveau (1-5)'
+                    format: 'uuid',
+                    description: 'Neue übergeordnete Ordner-ID',
+                    nullable: true
                   }
+                },
+                example: {
+                  name: 'JavaScript Fortgeschritten',
+                  parentId: null
                 }
               }
             }
           }
         },
         responses: {
-          201: {
-            description: 'Karte erfolgreich im Ordner erstellt',
+          200: {
+            description: 'Ordner erfolgreich aktualisiert',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    status: { type: 'string', example: 'success' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        folder: { $ref: '#/components/schemas/Folder' }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          400: {
+            description: 'Ungültige Eingabedaten',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/Error' }
+              }
+            }
+          },
+          404: {
+            description: 'Ordner nicht gefunden',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/Error' }
+              }
+            }
+          }
+        }
+      },
+      delete: {
+        summary: 'Ordner löschen',
+        description: 'Löscht einen Ordner dauerhaft (kaskadiert zu allen enthaltenen Karten)',
+        tags: ['Folders'],
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: { type: 'string', format: 'uuid' },
+            description: 'Eindeutige ID des zu löschenden Ordners'
+          }
+        ],
+        responses: {
+          204: { description: 'Ordner erfolgreich gelöscht' },
+          404: {
+            description: 'Ordner nicht gefunden',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/Error' }
+              }
+            }
+          }
+        }
+      }
+    },
+    '/api/folders/{id}/children': {
+      get: {
+        summary: 'Unterordner abrufen',
+        description: 'Lädt alle direkten Unterordner eines spezifischen Ordners',
+        tags: ['Folders'],
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: { type: 'string', format: 'uuid' },
+            description: 'ID des übergeordneten Ordners'
+          },
+          {
+            in: 'query',
+            name: 'limit',
+            schema: { type: 'integer', minimum: 1, maximum: 100, default: 20 },
+            description: 'Anzahl der Unterordner pro Seite'
+          },
+          {
+            in: 'query',
+            name: 'offset',
+            schema: { type: 'integer', minimum: 0, default: 0 },
+            description: 'Anzahl der zu überspringenden Unterordner'
+          }
+        ],
+        responses: {
+          200: {
+            description: 'Liste der Unterordner',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    status: { type: 'string', example: 'success' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        folders: {
+                          type: 'array',
+                          items: { $ref: '#/components/schemas/Folder' }
+                        },
+                        pagination: {
+                          type: 'object',
+                          properties: {
+                            limit: { type: 'integer' },
+                            offset: { type: 'integer' },
+                            total: { type: 'integer' }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          404: {
+            description: 'Übergeordneter Ordner nicht gefunden',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/Error' }
+              }
+            }
+          }
+        }
+      }
+    },
+    '/api/folders/{id}/cards/{cardId}': {
+      put: {
+        summary: 'Karte in einem Ordner aktualisieren',
+        description: 'Aktualisiert eine Karte und validiert, dass sie zum angegebenen Ordner gehört',
+        tags: ['Folders', 'Cards'],
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: { type: 'string', format: 'uuid' },
+            description: 'ID des Ordners'
+          },
+          {
+            in: 'path',
+            name: 'cardId',
+            required: true,
+            schema: { type: 'string', format: 'uuid' },
+            description: 'ID der zu aktualisierenden Karte'
+          }
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  title: { type: 'string', description: 'Neuer Titel der Karte' },
+                  question: { type: 'string', description: 'Neue Frage' },
+                  answer: { type: 'string', description: 'Neue Antwort' },
+                  tags: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Neue Tags'
+                  },
+                  currentLearningLevel: {
+                    type: 'integer',
+                    minimum: 1,
+                    maximum: 5,
+                    description: 'Neues Lernniveau'
+                  }
+                },
+                example: {
+                  title: 'React Hooks - Erweitert',
+                  currentLearningLevel: 3,
+                  tags: ['react', 'hooks', 'advanced']
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: {
+            description: 'Karte erfolgreich aktualisiert',
             content: {
               'application/json': {
                 schema: {
@@ -561,10 +849,67 @@ export const staticSwaggerSpec = {
                 }
               }
             }
+          },
+          400: {
+            description: 'Ungültige Eingabedaten oder Karte gehört nicht zum Ordner',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/Error' }
+              }
+            }
+          },
+          404: {
+            description: 'Ordner oder Karte nicht gefunden',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/Error' }
+              }
+            }
+          }
+        }
+      },
+      delete: {
+        summary: 'Karte aus einem Ordner löschen',
+        description: 'Löscht eine Karte und validiert, dass sie zum angegebenen Ordner gehört',
+        tags: ['Folders', 'Cards'],
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: { type: 'string', format: 'uuid' },
+            description: 'ID des Ordners'
+          },
+          {
+            in: 'path',
+            name: 'cardId',
+            required: true,
+            schema: { type: 'string', format: 'uuid' },
+            description: 'ID der zu löschenden Karte'
+          }
+        ],
+        responses: {
+          204: { description: 'Karte erfolgreich gelöscht' },
+          400: {
+            description: 'Karte gehört nicht zum angegebenen Ordner',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/Error' }
+              }
+            }
+          },
+          404: {
+            description: 'Ordner oder Karte nicht gefunden',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/Error' }
+              }
+            }
           }
         }
       }
-    }
+    },
+    // ...existing /api/folders/{id}/cards endpoints...
   },
   components: {
     schemas: {
