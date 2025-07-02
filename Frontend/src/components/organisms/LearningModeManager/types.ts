@@ -2,7 +2,8 @@
 // Folder beschreibt einen Ordner mit Karteikarten.
 export type Folder = {
   id: string; // Eindeutige ID des Ordners
-  cards: any[]; // Karten im Ordner (könnten CardType sein)
+  name: string; // Name des Ordners
+  cards?: any[]; // Karten im Ordner (optional, für Kompatibilität)
   // ggf. weitere Eigenschaften
 };
 

@@ -1,9 +1,7 @@
-/*
 import React from "react";
 import * as SC from "./styles";
 import Headline from "@/components/atoms/Headline";
 import { LearningModeTemplateProps } from "./types";
-*/
 /**
  * Template-Komponente für den Lernmodus.
  * Stellt das Layout, die Kopfzeile mit Timer und Box-Anzeige sowie einen Container für die jeweiligen Inhalte bereit.
@@ -14,14 +12,11 @@ import { LearningModeTemplateProps } from "./types";
  * - boxLevel: Aktuelle Box-Stufe (optional, für Anzeige)
  * - boxCount: Anzahl der Karten in der aktuellen Box (optional)
  */
-/*
 const formatTime = (seconds: number) => {
   const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
   const ss = String(seconds % 60).padStart(2, "0");
   return `${mm}:${ss}`;
 };
-*/
-/*
 const LearningModeTemplate = ({ children, elapsedSeconds, boxLevel, boxCount }: LearningModeTemplateProps & { boxLevel?: number; boxCount?: number }) => (
   <SC.Container>
     <SC.Header>
@@ -52,4 +47,3 @@ const LearningModeTemplate = ({ children, elapsedSeconds, boxLevel, boxCount }: 
 );
 
 export default LearningModeTemplate;
-*/
