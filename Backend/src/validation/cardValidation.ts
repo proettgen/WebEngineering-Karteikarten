@@ -82,6 +82,38 @@ export const cardSchema = z.object({
  */
 export const cardUpdateSchema = cardSchema.partial();
 
+/**
+ * Schema for validating card creation in folder context
+ *
+ * Omits folderId (provided by URL parameter) and makes optional fields
+ * truly optional with sensible defaults.
+ */
+export const cardCreateInFolderSchema = z.object({
+    title: z.string()
+        .min(MIN_CARD_CONTENT_LENGTH, 'Title must not be empty')
+        .max(MAX_CARD_TITLE_LENGTH, `Title must not exceed ${MAX_CARD_TITLE_LENGTH} characters`)
+        .trim(),
+    question: z.string()
+        .min(MIN_CARD_CONTENT_LENGTH, 'Question must not be empty')
+        .max(MAX_CARD_CONTENT_LENGTH, `Question must not exceed ${MAX_CARD_CONTENT_LENGTH} characters`)
+        .trim(),
+    answer: z.string()
+        .min(MIN_CARD_CONTENT_LENGTH, 'Answer must not be empty')
+        .max(MAX_CARD_CONTENT_LENGTH, `Answer must not exceed ${MAX_CARD_CONTENT_LENGTH} characters`)
+        .trim(),
+    currentLearningLevel: z.number()
+        .int('Learning level must be an integer')
+        .min(0, 'Learning level must be at least 0')
+        .max(MAX_LEARNING_LEVEL, `Learning level must not exceed ${MAX_LEARNING_LEVEL}`)
+        .optional()
+        .default(0),
+    createdAt: z.string().datetime('Invalid datetime format').optional(),
+    tags: z.array(z.string().trim().min(1, 'Tag must not be empty'))
+        .nullable()
+        .optional()
+        .transform(tags => tags?.filter(tag => tag.length > 0) || null),
+});
+
 // =============================================================================
 // QUERY PARAMETER SCHEMAS
 // =============================================================================

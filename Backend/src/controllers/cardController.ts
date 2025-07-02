@@ -12,7 +12,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as cardService from '../services/cardService';
 import * as folderService from '../services/folderService';
 import { AppError } from '../utils/AppError';
-import { cardSchema, cardUpdateSchema, cardFilterSchema, cardSortSchema } from '../validation/cardValidation';
+import { cardSchema, cardUpdateSchema, cardCreateInFolderSchema, cardFilterSchema, cardSortSchema } from '../validation/cardValidation';
 import { idSchema } from '../validation/common';
 import { paginationSchema } from '../validation/pagination';
 
@@ -240,8 +240,8 @@ export const createCardInFolder = async (req: Request, res: Response, next: Next
             throw new AppError(`Folder with ID ${folderId} does not exist.`, 404);
         }
 
-        // Parse request body without requiring folderId (we set it from params)
-        const parsed = cardSchema.omit({ folderId: true }).parse(req.body);
+        // Parse request body - use dedicated schema for folder context creation
+        const parsed = cardCreateInFolderSchema.parse(req.body);
         const card = await cardService.createCard({
             ...parsed,
             folderId,
