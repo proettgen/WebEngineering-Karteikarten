@@ -9,8 +9,9 @@ export interface FormField {
 }
 
 export interface AuthFormData {
-  username: string;
-  email?: string;
+  usernameOrEmail?: string;  // For login
+  username?: string;         // For register
+  email?: string;            // For register
   password: string;
   confirmPassword?: string;
 }

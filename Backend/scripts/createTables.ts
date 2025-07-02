@@ -8,24 +8,14 @@ const pool = new Pool({
 async function createTables(): Promise<void> {
   try {
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS folders (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        parent_id TEXT,
-        created_at TIMESTAMP,
-        last_opened_at TIMESTAMP
-      );
-      
-      CREATE TABLE IF NOT EXISTS cards (
-        id TEXT PRIMARY KEY,
-        title TEXT,
-        question TEXT NOT NULL,
-        answer TEXT NOT NULL,
-        current_learning_level INTEGER,
-        created_at TIMESTAMP,
-        tags TEXT[],
-        folder_id TEXT REFERENCES folders(id) ON DELETE CASCADE
-      );
+      CREATE TABLE IF NOT EXISTS users (
+      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+      username VARCHAR(20) NOT NULL UNIQUE,
+      email VARCHAR(255) NOT NULL UNIQUE,
+      password VARCHAR(100) NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
     `);
     console.log('Tabellen wurden erfolgreich angelegt!');
   } catch (err) {

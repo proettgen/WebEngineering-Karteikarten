@@ -15,14 +15,18 @@
     "format": "prettier --write src/**/*.ts"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "dotenv": "^16.5.0",
     "express": "latest",
+    "jsonwebtoken": "^9.0.2",
     "pg": "^8.16.2",
     "uuid": "^11.1.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/express": "latest",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.0.3",
     "@types/pg": "^8.15.4",
     "@types/uuid": "^10.0.0",

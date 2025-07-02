@@ -13,7 +13,7 @@ import * as SC from "./styles";
 const LoginTemplate: React.FC = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    username: "",
+    usernameOrEmail: "",
     password: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,7 +33,7 @@ const LoginTemplate: React.FC = () => {
 
       try {
         const response = await loginUser({
-          username: formData.username,
+          usernameOrEmail: formData.usernameOrEmail,
           password: formData.password,
         });
         // Handle successful login (store token, redirect, etc.)
@@ -49,7 +49,7 @@ const LoginTemplate: React.FC = () => {
   );
 
   const isButtonDisabled = 
-    !formData.username.trim() || 
+    !formData.usernameOrEmail.trim() || 
     !formData.password.trim() || 
     isSubmitting;
 
@@ -70,10 +70,10 @@ const LoginTemplate: React.FC = () => {
         </Headline>
 
         <AuthFormInput
-          name="username"
+          name="usernameOrEmail"
           type="text"
-          placeholder="Username"
-          field={createSimpleField(formData.username)}
+          placeholder="Username or Email"
+          field={createSimpleField(formData.usernameOrEmail)}
           onChange={handleChange}
           onBlur={() => {}} // No-op for login
           required

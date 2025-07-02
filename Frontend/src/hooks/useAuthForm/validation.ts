@@ -2,8 +2,8 @@ import { checkUsernameAvailability, checkEmailAvailability } from '@/services/au
 
 export const validateUsername = async (username: string): Promise<string | undefined> => {
   if (!username.trim()) return "Username is required.";
-  if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
-    return "Username can only contain letters, numbers, hyphens (-), and underscores (_).";
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    return "Username can only contain letters, numbers and underscores.";
   }
   if (username.length < 3) return "Username must be at least 3 characters long.";
   if (username.length > 20) return "Username cannot exceed 20 characters.";
@@ -39,6 +39,7 @@ export const validateEmail = async (email: string): Promise<string | undefined> 
 export const validatePassword = (password: string): string | undefined => {
   if (!password) return "Password is required.";
   if (password.length < 8) return "Password must be at least 8 characters long.";
+  if (password.length > 100) return "Password cannot exceed 100 characters.";
   if (!/[A-Z]/.test(password)) return "Password must contain at least one uppercase letter.";
   if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter.";
   if (!/[0-9]/.test(password)) return "Password must contain at least one number.";
