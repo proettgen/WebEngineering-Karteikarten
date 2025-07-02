@@ -42,7 +42,7 @@ app.use('/api/folders', folderRoutes);
 app.use('/api/cards', cardRoutes);
 
 // Swagger documentation routes
-app.get('/api-docs/swagger.json', (req, res) => {
+app.get('/api/api-docs/swagger.json', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET');
@@ -68,8 +68,8 @@ app.get('/api-docs/swagger.json', (req, res) => {
     res.json(staticSwaggerSpec);
 });
 
-app.get('/api-docs', (req, res) => {
-    const swaggerUrl = `https://petstore.swagger.io/?url=${encodeURIComponent('https://web-engineering-karteikarten.vercel.app/api-docs/swagger.json')}`;
+app.get('/api/api-docs', (req, res) => {
+    const swaggerUrl = `https://petstore.swagger.io/?url=${encodeURIComponent('https://web-engineering-karteikarten.vercel.app/api/api-docs/swagger.json')}`;
     res.redirect(swaggerUrl);
 });
 
