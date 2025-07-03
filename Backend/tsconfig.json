@@ -41,7 +41,9 @@
     "api/*.ts",
     "scripts/*.ts",
     "drizzle/**/*.ts",
-  "drizzle.config.ts"  ],
+    "drizzle.config.ts",
+    "tests/**/*.ts",
+    "eslint.config.mjs"  ],
   "exclude": [
     "node_modules",
     "dist"

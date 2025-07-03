@@ -10,7 +10,7 @@
 
 import { Pool } from 'pg';
 import { AppError } from '../utils/AppError';
-import { Card, CardFilter } from '../types';
+import { Card, CardServiceFilter } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
 // Database connection pool
@@ -29,7 +29,7 @@ const pool = new Pool({
  * @param filter - Filter criteria including pagination and sorting options
  * @returns Object containing cards array and total count
  */
-export const getAllCards = async (filter: CardFilter): Promise<{ cards: Card[]; total: number }> => {
+export const getAllCards = async (filter: CardServiceFilter): Promise<{ cards: Card[]; total: number }> => {
     const conditions: string[] = [];
     const values: unknown[] = [];
     let parameterIndex = 1;
@@ -54,9 +54,9 @@ export const getAllCards = async (filter: CardFilter): Promise<{ cards: Card[]; 
     // Construct WHERE clause if conditions exist
     const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
     
-    // Set default sorting options
-    const sortField = filter.sortField ?? 'created_at';
-    const sortOrder = filter.sortOrder ?? 'DESC';
+    // Set default sorting options and map frontend fields to database columns
+    const sortField = filter.sortBy === 'currentLearningLevel' ? 'current_learning_level' : 'created_at';
+    const sortOrder = filter.order?.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
     // Build main query with column aliases for camelCase transformation
     const mainQuery = `
