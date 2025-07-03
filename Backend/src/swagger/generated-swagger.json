@@ -751,8 +751,8 @@
     },
     "/api/cards": {
       "get": {
-        "summary": "Alle Karten mit erweiterten Filter- und Sortieroptionen abrufen",
-        "description": "Durchsucht alle Karten systemweit mit verschiedenen Filteroptionen",
+        "summary": "Get all cards with advanced filtering and sorting options",
+        "description": "Search all cards system-wide with various filtering options",
         "tags": [
           "Cards"
         ],
@@ -764,7 +764,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "Filter nach spezifischem Ordner"
+            "description": "Filter by specific folder"
           },
           {
             "in": "query",
@@ -772,7 +772,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filter nach Tags (kommagetrennt)",
+            "description": "Filter by tags (comma-separated)",
             "example": "javascript,frontend"
           },
           {
@@ -781,7 +781,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filter nach Titel (partielle Übereinstimmung)"
+            "description": "Filter by title (partial match)"
           },
           {
             "in": "query",
@@ -792,7 +792,7 @@
               "maximum": 100,
               "default": 20
             },
-            "description": "Anzahl der Karten pro Seite"
+            "description": "Number of cards per page"
           },
           {
             "in": "query",
@@ -802,7 +802,7 @@
               "minimum": 0,
               "default": 0
             },
-            "description": "Anzahl der zu überspringenden Karten für Paginierung"
+            "description": "Number of cards to skip for pagination"
           },
           {
             "in": "query",
@@ -814,7 +814,7 @@
                 "currentLearningLevel"
               ]
             },
-            "description": "Feld nach dem sortiert werden soll"
+            "description": "Field to sort by"
           },
           {
             "in": "query",
@@ -826,12 +826,12 @@
                 "desc"
               ]
             },
-            "description": "Sortierreihenfolge"
+            "description": "Sort order"
           }
         ],
         "responses": {
           "200": {
-            "description": "Liste der gefilterten Karten",
+            "description": "List of filtered cards",
             "content": {
               "application/json": {
                 "schema": {
@@ -872,7 +872,7 @@
             }
           },
           "400": {
-            "description": "Ungültige Parameter",
+            "description": "Invalid parameters",
             "content": {
               "application/json": {
                 "schema": {
@@ -884,8 +884,8 @@
         }
       },
       "post": {
-        "summary": "Neue Karte erstellen",
-        "description": "Erstellt eine neue Karteikarte und ordnet sie einem Ordner zu",
+        "summary": "Create new card",
+        "description": "Creates a new flashcard and assigns it to a folder",
         "tags": [
           "Cards"
         ],
@@ -904,30 +904,30 @@
                 "properties": {
                   "title": {
                     "type": "string",
-                    "description": "Titel der Karte",
+                    "description": "Card title",
                     "example": "JavaScript Closures"
                   },
                   "question": {
                     "type": "string",
-                    "description": "Frage auf der Vorderseite",
-                    "example": "Was ist ein Closure in JavaScript?"
+                    "description": "Question on the front side",
+                    "example": "What is a closure in JavaScript?"
                   },
                   "answer": {
                     "type": "string",
-                    "description": "Antwort auf der Rückseite",
-                    "example": "Ein Closure ist eine Funktion, die Zugriff auf Variablen aus ihrem äußeren Scope hat..."
+                    "description": "Answer on the back side",
+                    "example": "A closure is a function that has access to variables from its outer scope..."
                   },
                   "folderId": {
                     "type": "string",
                     "format": "uuid",
-                    "description": "ID des zugehörigen Ordners"
+                    "description": "ID of the associated folder"
                   },
                   "tags": {
                     "type": "array",
                     "items": {
                       "type": "string"
                     },
-                    "description": "Tags zur Kategorisierung",
+                    "description": "Tags for categorization",
                     "example": [
                       "javascript",
                       "closures",
@@ -939,7 +939,7 @@
                     "minimum": 1,
                     "maximum": 5,
                     "default": 1,
-                    "description": "Aktuelles Lernniveau (1-5)"
+                    "description": "Current learning level (1-5)"
                   }
                 }
               }
@@ -948,7 +948,7 @@
         },
         "responses": {
           "201": {
-            "description": "Karte erfolgreich erstellt",
+            "description": "Card successfully created",
             "content": {
               "application/json": {
                 "schema": {
@@ -972,7 +972,7 @@
             }
           },
           "400": {
-            "description": "Ungültige Eingabedaten",
+            "description": "Invalid input data",
             "content": {
               "application/json": {
                 "schema": {
@@ -982,7 +982,7 @@
             }
           },
           "404": {
-            "description": "Ordner nicht gefunden",
+            "description": "Folder not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -996,8 +996,8 @@
     },
     "/api/cards/{id}": {
       "get": {
-        "summary": "Einzelne Karte abrufen",
-        "description": "Lädt eine spezifische Karte anhand ihrer ID",
+        "summary": "Get single card",
+        "description": "Loads a specific card by its ID",
         "tags": [
           "Cards"
         ],
@@ -1010,12 +1010,12 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "Eindeutige ID der Karte"
+            "description": "Unique ID of the card"
           }
         ],
         "responses": {
           "200": {
-            "description": "Karte erfolgreich geladen",
+            "description": "Card successfully loaded",
             "content": {
               "application/json": {
                 "schema": {
@@ -1039,7 +1039,7 @@
             }
           },
           "404": {
-            "description": "Karte nicht gefunden",
+            "description": "Card not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1051,8 +1051,8 @@
         }
       },
       "put": {
-        "summary": "Karte aktualisieren",
-        "description": "Aktualisiert eine bestehende Karte (partielle Updates möglich)",
+        "summary": "Update card",
+        "description": "Updates an existing card (partial updates possible)",
         "tags": [
           "Cards"
         ],
@@ -1065,7 +1065,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "Eindeutige ID der Karte"
+            "description": "Unique ID of the card"
           }
         ],
         "requestBody": {
@@ -1077,33 +1077,33 @@
                 "properties": {
                   "title": {
                     "type": "string",
-                    "description": "Neuer Titel der Karte"
+                    "description": "Neuer Card title"
                   },
                   "question": {
                     "type": "string",
-                    "description": "Neue Frage"
+                    "description": "New question"
                   },
                   "answer": {
                     "type": "string",
-                    "description": "Neue Antwort"
+                    "description": "New answer"
                   },
                   "folderId": {
                     "type": "string",
                     "format": "uuid",
-                    "description": "Neue Ordner-ID"
+                    "description": "New folder ID"
                   },
                   "tags": {
                     "type": "array",
                     "items": {
                       "type": "string"
                     },
-                    "description": "Neue Tags"
+                    "description": "New tags"
                   },
                   "currentLearningLevel": {
                     "type": "integer",
                     "minimum": 1,
                     "maximum": 5,
-                    "description": "Neues Lernniveau"
+                    "description": "New learning level"
                   }
                 },
                 "example": {
@@ -1121,7 +1121,7 @@
         },
         "responses": {
           "200": {
-            "description": "Karte erfolgreich aktualisiert",
+            "description": "Card successfully updated",
             "content": {
               "application/json": {
                 "schema": {
@@ -1145,7 +1145,7 @@
             }
           },
           "400": {
-            "description": "Ungültige Eingabedaten",
+            "description": "Invalid input data",
             "content": {
               "application/json": {
                 "schema": {
@@ -1155,7 +1155,7 @@
             }
           },
           "404": {
-            "description": "Karte nicht gefunden",
+            "description": "Card not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1167,8 +1167,8 @@
         }
       },
       "delete": {
-        "summary": "Karte löschen",
-        "description": "Löscht eine Karte dauerhaft aus dem System",
+        "summary": "Delete card",
+        "description": "Permanently deletes a card from the system",
         "tags": [
           "Cards"
         ],
@@ -1181,15 +1181,15 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "Eindeutige ID der zu löschenden Karte"
+            "description": "Unique ID of the card to delete"
           }
         ],
         "responses": {
           "204": {
-            "description": "Karte erfolgreich gelöscht"
+            "description": "Card successfully deleted"
           },
           "404": {
-            "description": "Karte nicht gefunden",
+            "description": "Card not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1203,8 +1203,8 @@
     },
     "/api/folders": {
       "get": {
-        "summary": "Alle Ordner mit Paginierung abrufen",
-        "description": "Lädt alle verfügbaren Ordner mit optionaler Paginierung",
+        "summary": "Get all folders with pagination",
+        "description": "Loads all available folders with optional pagination",
         "tags": [
           "Folders"
         ],
@@ -1218,7 +1218,7 @@
               "maximum": 100,
               "default": 20
             },
-            "description": "Anzahl der Ordner pro Seite"
+            "description": "Number of folders per page"
           },
           {
             "in": "query",
@@ -1228,12 +1228,12 @@
               "minimum": 0,
               "default": 0
             },
-            "description": "Anzahl der zu überspringenden Ordner für Paginierung"
+            "description": "Number of folders to skip for pagination"
           }
         ],
         "responses": {
           "200": {
-            "description": "Liste aller Ordner",
+            "description": "List of all folders",
             "content": {
               "application/json": {
                 "schema": {
@@ -1274,7 +1274,7 @@
             }
           },
           "400": {
-            "description": "Ungültige Parameter",
+            "description": "Invalid parameters",
             "content": {
               "application/json": {
                 "schema": {
@@ -1286,8 +1286,8 @@
         }
       },
       "post": {
-        "summary": "Neuen Ordner erstellen",
-        "description": "Erstellt einen neuen Ordner (kann auch Unterordner sein)",
+        "summary": "Create new folder",
+        "description": "Creates a new folder (can also be a subfolder)",
         "tags": [
           "Folders"
         ],
@@ -1303,13 +1303,13 @@
                 "properties": {
                   "name": {
                     "type": "string",
-                    "description": "Name des Ordners",
+                    "description": "Folder name",
                     "example": "JavaScript Grundlagen"
                   },
                   "parentId": {
                     "type": "string",
                     "format": "uuid",
-                    "description": "ID des übergeordneten Ordners (optional für Unterordner)",
+                    "description": "ID of the parent folder (optional for subfolders)",
                     "nullable": true
                   }
                 }
@@ -1319,7 +1319,7 @@
         },
         "responses": {
           "201": {
-            "description": "Ordner erfolgreich erstellt",
+            "description": "Folder successfully created",
             "content": {
               "application/json": {
                 "schema": {
@@ -1343,7 +1343,7 @@
             }
           },
           "400": {
-            "description": "Ungültige Eingabedaten",
+            "description": "Invalid input data",
             "content": {
               "application/json": {
                 "schema": {
@@ -1353,7 +1353,7 @@
             }
           },
           "404": {
-            "description": "Übergeordneter Ordner nicht gefunden",
+            "description": "Übergeordneter Folder not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1367,8 +1367,8 @@
     },
     "/api/folders/search": {
       "get": {
-        "summary": "Ordner nach Name durchsuchen",
-        "description": "Sucht Ordner basierend auf dem Namen (partielle Übereinstimmung)",
+        "summary": "Search folders by name",
+        "description": "Searches folders based on their name (partial match)",
         "tags": [
           "Folders"
         ],
@@ -1380,7 +1380,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Suchbegriff für Ordnername",
+            "description": "Search term for folder name",
             "example": "JavaScript"
           },
           {
@@ -1392,7 +1392,7 @@
               "maximum": 100,
               "default": 20
             },
-            "description": "Anzahl der Suchergebnisse pro Seite"
+            "description": "Number of search results per page"
           },
           {
             "in": "query",
@@ -1402,12 +1402,12 @@
               "minimum": 0,
               "default": 0
             },
-            "description": "Anzahl der zu überspringenden Ergebnisse"
+            "description": "Number of results to skip"
           }
         ],
         "responses": {
           "200": {
-            "description": "Suchergebnisse",
+            "description": "Search results",
             "content": {
               "application/json": {
                 "schema": {
@@ -1448,7 +1448,7 @@
             }
           },
           "400": {
-            "description": "Suchbegriff fehlt oder ungültige Parameter",
+            "description": "Search term missing or invalid parameters",
             "content": {
               "application/json": {
                 "schema": {
@@ -1462,8 +1462,8 @@
     },
     "/api/folders/root": {
       "get": {
-        "summary": "Alle Hauptordner abrufen",
-        "description": "Lädt alle Ordner ohne übergeordneten Ordner (Hauptebene)",
+        "summary": "Get all root folders",
+        "description": "Loads all folders without parent folders (root level)",
         "tags": [
           "Folders"
         ],
@@ -1477,7 +1477,7 @@
               "maximum": 100,
               "default": 20
             },
-            "description": "Anzahl der Ordner pro Seite"
+            "description": "Number of folders per page"
           },
           {
             "in": "query",
@@ -1487,12 +1487,12 @@
               "minimum": 0,
               "default": 0
             },
-            "description": "Anzahl der zu überspringenden Ordner"
+            "description": "Number of folders to skip"
           }
         ],
         "responses": {
           "200": {
-            "description": "Liste der Hauptordner",
+            "description": "List of root folders",
             "content": {
               "application/json": {
                 "schema": {
@@ -1533,7 +1533,7 @@
             }
           },
           "400": {
-            "description": "Ungültige Parameter",
+            "description": "Invalid parameters",
             "content": {
               "application/json": {
                 "schema": {
@@ -1547,8 +1547,8 @@
     },
     "/api/folders/{id}": {
       "get": {
-        "summary": "Einzelnen Ordner abrufen",
-        "description": "Lädt einen spezifischen Ordner anhand seiner ID",
+        "summary": "Get single folder",
+        "description": "Loads a specific folder by its ID",
         "tags": [
           "Folders"
         ],
@@ -1561,12 +1561,12 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "Eindeutige ID des Ordners"
+            "description": "Unique ID of the folder"
           }
         ],
         "responses": {
           "200": {
-            "description": "Ordner erfolgreich geladen",
+            "description": "Folder successfully loaded",
             "content": {
               "application/json": {
                 "schema": {
@@ -1590,7 +1590,7 @@
             }
           },
           "404": {
-            "description": "Ordner nicht gefunden",
+            "description": "Folder not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1602,8 +1602,8 @@
         }
       },
       "put": {
-        "summary": "Ordner aktualisieren",
-        "description": "Aktualisiert einen bestehenden Ordner (partielle Updates möglich)",
+        "summary": "Update folder",
+        "description": "Updates an existing folder (partial updates possible)",
         "tags": [
           "Folders"
         ],
@@ -1616,7 +1616,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "Eindeutige ID des Ordners"
+            "description": "Unique ID of the folder"
           }
         ],
         "requestBody": {
@@ -1628,12 +1628,12 @@
                 "properties": {
                   "name": {
                     "type": "string",
-                    "description": "Neuer Name des Ordners"
+                    "description": "Neuer Folder name"
                   },
                   "parentId": {
                     "type": "string",
                     "format": "uuid",
-                    "description": "Neue übergeordnete Ordner-ID",
+                    "description": "New parent folder ID",
                     "nullable": true
                   }
                 },
@@ -1647,7 +1647,7 @@
         },
         "responses": {
           "200": {
-            "description": "Ordner erfolgreich aktualisiert",
+            "description": "Folder successfully updated",
             "content": {
               "application/json": {
                 "schema": {
@@ -1671,7 +1671,7 @@
             }
           },
           "400": {
-            "description": "Ungültige Eingabedaten",
+            "description": "Invalid input data",
             "content": {
               "application/json": {
                 "schema": {
@@ -1681,7 +1681,7 @@
             }
           },
           "404": {
-            "description": "Ordner nicht gefunden",
+            "description": "Folder not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1693,8 +1693,8 @@
         }
       },
       "delete": {
-        "summary": "Ordner löschen",
-        "description": "Löscht einen Ordner dauerhaft (kaskadiert zu allen enthaltenen Karten)",
+        "summary": "Delete folder",
+        "description": "Permanently deletes a folder (cascades to all contained cards)",
         "tags": [
           "Folders"
         ],
@@ -1707,15 +1707,15 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "Eindeutige ID des zu löschenden Ordners"
+            "description": "Unique ID of the folder to delete"
           }
         ],
         "responses": {
           "204": {
-            "description": "Ordner erfolgreich gelöscht"
+            "description": "Folder successfully deleted"
           },
           "404": {
-            "description": "Ordner nicht gefunden",
+            "description": "Folder not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1729,8 +1729,8 @@
     },
     "/api/folders/{id}/children": {
       "get": {
-        "summary": "Unterordner abrufen",
-        "description": "Lädt alle direkten Unterordner eines spezifischen Ordners",
+        "summary": "Get subfolders",
+        "description": "Loads all direct subfolders eines spezifischen Ordners",
         "tags": [
           "Folders"
         ],
@@ -1743,7 +1743,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "ID des übergeordneten Ordners"
+            "description": "ID of the parent folder"
           },
           {
             "in": "query",
@@ -1754,7 +1754,7 @@
               "maximum": 100,
               "default": 20
             },
-            "description": "Anzahl der Unterordner pro Seite"
+            "description": "Number of subfolders per page"
           },
           {
             "in": "query",
@@ -1764,12 +1764,12 @@
               "minimum": 0,
               "default": 0
             },
-            "description": "Anzahl der zu überspringenden Unterordner"
+            "description": "Number of subfolders to skip"
           }
         ],
         "responses": {
           "200": {
-            "description": "Liste der Unterordner",
+            "description": "List of subfolders",
             "content": {
               "application/json": {
                 "schema": {
@@ -1810,7 +1810,7 @@
             }
           },
           "404": {
-            "description": "Übergeordneter Ordner nicht gefunden",
+            "description": "Übergeordneter Folder not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1824,8 +1824,8 @@
     },
     "/api/folders/{id}/cards": {
       "get": {
-        "summary": "Alle Karten in einem Ordner abrufen",
-        "description": "Lädt alle Karteikarten, die einem spezifischen Ordner zugeordnet sind",
+        "summary": "Get all cards in a folder",
+        "description": "Loads all flashcards assigned to a specific folder",
         "tags": [
           "Folders",
           "Cards"
@@ -1839,7 +1839,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "ID des Ordners"
+            "description": "ID of the folder"
           },
           {
             "in": "query",
@@ -1850,7 +1850,7 @@
               "maximum": 100,
               "default": 20
             },
-            "description": "Anzahl der Karten pro Seite"
+            "description": "Number of cards per page"
           },
           {
             "in": "query",
@@ -1865,7 +1865,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Liste der Karten im Ordner",
+            "description": "List of cards in the folder",
             "content": {
               "application/json": {
                 "schema": {
@@ -1906,7 +1906,7 @@
             }
           },
           "404": {
-            "description": "Ordner nicht gefunden",
+            "description": "Folder not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1918,8 +1918,8 @@
         }
       },
       "post": {
-        "summary": "Neue Karte in einem Ordner erstellen",
-        "description": "Erstellt eine neue Karteikarte und ordnet sie automatisch dem angegebenen Ordner zu",
+        "summary": "Create new card in a folder",
+        "description": "Creates a new flashcard and automatically assigns it to the specified folder",
         "tags": [
           "Folders",
           "Cards"
@@ -1933,7 +1933,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "ID des Ordners, dem die Karte zugeordnet wird"
+            "description": "ID of the folder, dem die Karte zugeordnet wird"
           }
         ],
         "requestBody": {
@@ -1950,17 +1950,17 @@
                 "properties": {
                   "title": {
                     "type": "string",
-                    "description": "Titel der Karte",
+                    "description": "Card title",
                     "example": "React Hooks"
                   },
                   "question": {
                     "type": "string",
-                    "description": "Frage auf der Vorderseite",
+                    "description": "Question on the front side",
                     "example": "Was ist der Unterschied zwischen useState und useEffect?"
                   },
                   "answer": {
                     "type": "string",
-                    "description": "Antwort auf der Rückseite",
+                    "description": "Answer on the back side",
                     "example": "useState verwaltet lokalen State, useEffect führt Seiteneffekte aus..."
                   },
                   "tags": {
@@ -1968,7 +1968,7 @@
                     "items": {
                       "type": "string"
                     },
-                    "description": "Tags zur Kategorisierung",
+                    "description": "Tags for categorization",
                     "example": [
                       "react",
                       "hooks",
@@ -1980,7 +1980,7 @@
                     "minimum": 1,
                     "maximum": 5,
                     "default": 1,
-                    "description": "Aktuelles Lernniveau (1-5)"
+                    "description": "Current learning level (1-5)"
                   }
                 }
               }
@@ -1989,7 +1989,7 @@
         },
         "responses": {
           "201": {
-            "description": "Karte erfolgreich im Ordner erstellt",
+            "description": "Card successfully created in folder",
             "content": {
               "application/json": {
                 "schema": {
@@ -2013,7 +2013,7 @@
             }
           },
           "400": {
-            "description": "Ungültige Eingabedaten",
+            "description": "Invalid input data",
             "content": {
               "application/json": {
                 "schema": {
@@ -2023,7 +2023,7 @@
             }
           },
           "404": {
-            "description": "Ordner nicht gefunden",
+            "description": "Folder not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -2037,7 +2037,7 @@
     },
     "/api/folders/{id}/cards/{cardId}": {
       "put": {
-        "summary": "Karte in einem Ordner aktualisieren",
+        "summary": "Karte in einem Update folder",
         "description": "Aktualisiert eine Karte und validiert, dass sie zum angegebenen Ordner gehört",
         "tags": [
           "Folders",
@@ -2052,7 +2052,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "ID des Ordners"
+            "description": "ID of the folder"
           },
           {
             "in": "path",
@@ -2074,28 +2074,28 @@
                 "properties": {
                   "title": {
                     "type": "string",
-                    "description": "Neuer Titel der Karte"
+                    "description": "Neuer Card title"
                   },
                   "question": {
                     "type": "string",
-                    "description": "Neue Frage"
+                    "description": "New question"
                   },
                   "answer": {
                     "type": "string",
-                    "description": "Neue Antwort"
+                    "description": "New answer"
                   },
                   "tags": {
                     "type": "array",
                     "items": {
                       "type": "string"
                     },
-                    "description": "Neue Tags"
+                    "description": "New tags"
                   },
                   "currentLearningLevel": {
                     "type": "integer",
                     "minimum": 1,
                     "maximum": 5,
-                    "description": "Neues Lernniveau"
+                    "description": "New learning level"
                   }
                 },
                 "example": {
@@ -2113,7 +2113,7 @@
         },
         "responses": {
           "200": {
-            "description": "Karte erfolgreich aktualisiert",
+            "description": "Card successfully updated",
             "content": {
               "application/json": {
                 "schema": {
@@ -2137,7 +2137,7 @@
             }
           },
           "400": {
-            "description": "Ungültige Eingabedaten oder Karte gehört nicht zum Ordner",
+            "description": "Invalid input data oder Karte gehört nicht zum Ordner",
             "content": {
               "application/json": {
                 "schema": {
@@ -2147,7 +2147,7 @@
             }
           },
           "404": {
-            "description": "Ordner oder Karte nicht gefunden",
+            "description": "Ordner oder Card not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -2159,7 +2159,7 @@
         }
       },
       "delete": {
-        "summary": "Karte aus einem Ordner löschen",
+        "summary": "Karte aus einem Delete folder",
         "description": "Löscht eine Karte und validiert, dass sie zum angegebenen Ordner gehört",
         "tags": [
           "Folders",
@@ -2174,7 +2174,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "ID des Ordners"
+            "description": "ID of the folder"
           },
           {
             "in": "path",
@@ -2189,7 +2189,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Karte erfolgreich gelöscht"
+            "description": "Card successfully deleted"
           },
           "400": {
             "description": "Karte gehört nicht zum angegebenen Ordner",
@@ -2202,7 +2202,7 @@
             }
           },
           "404": {
-            "description": "Ordner oder Karte nicht gefunden",
+            "description": "Ordner oder Card not found",
             "content": {
               "application/json": {
                 "schema": {
