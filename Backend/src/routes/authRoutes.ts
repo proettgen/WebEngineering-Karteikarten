@@ -58,15 +58,14 @@ const router = express.Router();
  *                   description: "Error Status"
  *                   example: "fail"
  *                 message:
- *                  type: string
- *                  description: "Validation Error"
- *                  example: "Validation failed: Only letters, numbers, underscores allowed"
+ *                   type: string
+ *                   description: "Validation Error"
+ *                   example: "Validation failed: Only letters, numbers, underscores allowed"
  *       500:
  *         description: Server error
  *         content:
  *           application/json:
  *             schema:
- *               schema:
  *               type: object
  *               properties:
  *                 status:
@@ -74,9 +73,9 @@ const router = express.Router();
  *                   description: "Error Status"
  *                   example: "error"
  *                 message:
- *                  type: string
- *                  description: "Error Message"
- *                  example: "Database error while checking username availability"
+ *                   type: string
+ *                   description: "Error Message"
+ *                   example: "Database error while checking username availability"
  */
 router.post(
   "/check-username",
@@ -128,15 +127,14 @@ router.post(
  *                   description: "Error Status"
  *                   example: "fail"
  *                 message:
- *                  type: string
- *                  description: "Validation Error"
- *                  example: "Validation failed: email: Invalid email"
+ *                   type: string
+ *                   description: "Validation Error"
+ *                   example: "Validation failed: email: Invalid email"
  *       500:
  *         description: Server error
  *         content:
  *           application/json:
  *             schema:
- *               schema:
  *               type: object
  *               properties:
  *                 status:
@@ -144,9 +142,9 @@ router.post(
  *                   description: "Error Status"
  *                   example: "error"
  *                 message:
- *                  type: string
- *                  description: "Error Message"
- *                  example: "Database error while checking email availability"
+ *                   type: string
+ *                   description: "Error Message"
+ *                   example: "Database error while checking email availability"
  */
 router.post(
   "/check-email",
@@ -214,18 +212,40 @@ router.post(
  *                       type: string
  *                       format: date-time
  *                       example: "2024-05-01T10:30:00.000Z"
+ *                     updated_at:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2024-05-01T10:30:00.000Z"
  *       400:
  *         description: Invalid input data or username/email already exists
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: "Error Status"
+ *                   example: "fail"
+ *                 message:
+ *                   type: string
+ *                   description: "Error message"
+ *                   example: "Email already exists"
  *       500:
  *         description: Server error during registration
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: "Error Status"
+ *                   example: "error"
+ *                 message:
+ *                   type: string
+ *                   description: "Error message"
+ *                   example: "Database error during user registration"
  */
 router.post("/register", validateBody(registerBody), authController.register);
 
@@ -256,7 +276,7 @@ router.post("/register", validateBody(registerBody), authController.register);
  *                 example: "SecurePassword123!"
  *     responses:
  *       200:
- *         description: Login successfullll
+ *         description: Login successful
  *         content:
  *           application/json:
  *             schema:
@@ -285,19 +305,46 @@ router.post("/register", validateBody(registerBody), authController.register);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: "Error Status"
+ *                   example: "fail"
+ *                 message:
+ *                   type: string
+ *                   description: "Error message"
+ *                   example: "Invalid credentials"
  *       400:
  *         description: Invalid input format
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: "Error Status"
+ *                   example: "fail"
+ *                 message:
+ *                   type: string
+ *                   description: "Error message"
+ *                   example: "Validation failed: usernameOrEmail: Required, password: Required"
  *       500:
  *         description: Server error during login
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: "Error Status"
+ *                   example: "error"
+ *                 message:
+ *                   type: string
+ *                   description: "Error message"
+ *                   example: "Server error during login"
  */
 router.post("/login", validateBody(loginBody), authController.login);
 
@@ -349,19 +396,46 @@ router.post("/login", validateBody(loginBody), authController.login);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: "Error Status"
+ *                   example: "fail"
+ *                 message:
+ *                   type: string
+ *                   description: "Error message"
+ *                   example: "Unauthorized - No valid token provided"
  *       404:
- *         description: User not found
+ *         description: User Id not found
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: "Error Status"
+ *                   example: "fail"
+ *                 message:
+ *                   type: string
+ *                   description: "Error message"
+ *                   example: "User not found"
  *       500:
  *         description: Server error retrieving profile
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: "Error Status"
+ *                   example: "error"
+ *                 message:
+ *                   type: string
+ *                   description: "Error message"
+ *                   example: "Database error while fetching user profile"
  */
 router.get("/profile", authenticateJWT, authController.profile);
 

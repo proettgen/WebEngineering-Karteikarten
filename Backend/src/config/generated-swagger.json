@@ -236,7 +236,6 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "schema": null,
                   "type": "object",
                   "properties": {
                     "status": {
@@ -330,7 +329,6 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "schema": null,
                   "type": "object",
                   "properties": {
                     "status": {
@@ -425,6 +423,11 @@
                           "type": "string",
                           "format": "date-time",
                           "example": "2024-05-01T10:30:00.000Z"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-05-01T10:30:00.000Z"
                         }
                       }
                     }
@@ -438,7 +441,19 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Error Status",
+                      "example": "fail"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Error message",
+                      "example": "Email already exists"
+                    }
+                  }
                 }
               }
             }
@@ -448,7 +463,19 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Error Status",
+                      "example": "error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Error message",
+                      "example": "Database error during user registration"
+                    }
+                  }
                 }
               }
             }
@@ -493,7 +520,7 @@
         },
         "responses": {
           "200": {
-            "description": "Login successfullll",
+            "description": "Login successful",
             "content": {
               "application/json": {
                 "schema": {
@@ -533,7 +560,19 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Error Status",
+                      "example": "fail"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Error message",
+                      "example": "Validation failed: usernameOrEmail: Required, password: Required"
+                    }
+                  }
                 }
               }
             }
@@ -543,7 +582,19 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Error Status",
+                      "example": "fail"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Error message",
+                      "example": "Invalid credentials"
+                    }
+                  }
                 }
               }
             }
@@ -553,7 +604,19 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Error Status",
+                      "example": "error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Error message",
+                      "example": "Server error during login"
+                    }
+                  }
                 }
               }
             }
@@ -622,17 +685,41 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Error Status",
+                      "example": "fail"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Error message",
+                      "example": "Unauthorized - No valid token provided"
+                    }
+                  }
                 }
               }
             }
           },
           "404": {
-            "description": "User not found",
+            "description": "User Id not found",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Error Status",
+                      "example": "fail"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Error message",
+                      "example": "User not found"
+                    }
+                  }
                 }
               }
             }
@@ -642,7 +729,19 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Error Status",
+                      "example": "error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Error message",
+                      "example": "Database error while fetching user profile"
+                    }
+                  }
                 }
               }
             }

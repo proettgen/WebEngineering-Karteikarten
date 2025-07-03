@@ -90,38 +90,45 @@ export const registerUser = async (input: RegisterInput): Promise<UserRecord> =>
 export const loginUser = async (
   loginData: LoginInput
 ): Promise<AuthResponse> => {
-  const { usernameOrEmail, password } = loginData;
-  
-  const { rows } = await pool.query<UserRecord & { password: string }>(
-    `SELECT id, username, email, password FROM users 
-     WHERE username = $1 OR email = $1`,
-    [usernameOrEmail],
-  );
-  
-  if (rows.length === 0) {
-    throw new AppError("Invalid credentials", 401);
-  }
+  try {
+    const { usernameOrEmail, password } = loginData;
+    
+    const { rows } = await pool.query<UserRecord & { password: string }>(
+      `SELECT id, username, email, password FROM users 
+       WHERE username = $1 OR email = $1`,
+      [usernameOrEmail],
+    );
+    
+    if (rows.length === 0) {
+      throw new AppError("Invalid credentials", 401);
+    }
 
-  const user = rows[0];
-  const valid = await bcrypt.compare(password, user.password);
-  if (!valid) {
-    throw new AppError("Invalid credentials", 401);
-  }
+    const user = rows[0];
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) {
+      throw new AppError("Invalid credentials", 401);
+    }
 
-  const token = jwt.sign(
-    { userId: user.id },
-    JWT_SECRET,
-    { expiresIn: JWT_EXPIRES_IN },
-  );
-  
-  return {
-    token,
-    user: { 
-      id: user.id, 
-      username: user.username, 
-      email: user.email || undefined 
-    },
-  };
+    const token = jwt.sign(
+      { userId: user.id },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN },
+    );
+    
+    return {
+      token,
+      user: { 
+        id: user.id, 
+        username: user.username, 
+        email: user.email || undefined 
+      },
+    };
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError("Server error during login", 500);
+  }
 };
 
 // Get user profile by ID
