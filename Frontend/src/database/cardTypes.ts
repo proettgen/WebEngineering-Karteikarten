@@ -1,10 +1,3 @@
-/**
- * IMPORTANT: Type Synchronization Notice
- *
- * If you make changes to this file, please run `npm run sync-types` from the project root. (npm run sync-types) [Root]
- * This will copy the updated types to the Frontend for type safety and consistency.
- */
-
 export interface Card {
     id: string;
     title: string;
@@ -22,6 +15,6 @@ export interface CardFilter {
     title?: string;
     limit?: number;
     offset?: number;
-    sortField?: string;
-    sortOrder?: string;
+    sortBy?: string;
+    order?: string;
 }

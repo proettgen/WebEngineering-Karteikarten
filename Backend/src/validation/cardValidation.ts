@@ -29,9 +29,6 @@ const MAX_CARD_CONTENT_LENGTH = 2000;
 /** Maximum learning level value */
 const MAX_LEARNING_LEVEL = 5;
 
-/** Regular expression for pagination parameters (positive integers) */
-const PAGINATION_REGEX = /^\d+$/;
-
 // =============================================================================
 // CARD SCHEMAS
 // =============================================================================
@@ -133,8 +130,7 @@ export const cardCreateInFolderSchema = z.object({
  * - folderId: Optional UUID to filter by folder
  * - tags: Optional comma-separated tag string
  * - title: Optional title search string
- * - limit: Optional pagination limit (positive integer as string)
- * - offset: Optional pagination offset (positive integer as string)
+ * Note: limit and offset are handled by paginationSchema
  */
 export const cardFilterSchema = z.object({
     folderId: z.string()
@@ -145,12 +141,6 @@ export const cardFilterSchema = z.object({
         .optional(),
     title: z.string()
         .min(1, 'Title search parameter must not be empty')
-        .optional(),
-    limit: z.string()
-        .regex(PAGINATION_REGEX, 'Limit must be a positive integer')
-        .optional(),
-    offset: z.string()
-        .regex(PAGINATION_REGEX, 'Offset must be a positive integer')
         .optional(),
 });
 

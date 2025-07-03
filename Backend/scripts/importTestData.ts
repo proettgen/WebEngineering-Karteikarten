@@ -17,7 +17,7 @@ interface Card {
     title: string;
     question: string;
     answer: string;
-    currentLearingLevel: number;
+    currentLearningLevel: number;
     createdAt: string;
     tags: string[] | null;
 }
@@ -57,7 +57,7 @@ async function importCards() {
         card.title ?? null,
         card.question,
         card.answer,
-        card.currentLearingLevel ?? null,
+        card.currentLearningLevel ?? null,
         card.createdAt,
         card.tags ?? [],
         cardStack.folderId,

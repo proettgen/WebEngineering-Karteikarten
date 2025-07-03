@@ -39,7 +39,9 @@
     "src/**/*.ts",
     "src/**/*.json",
     "api/*.ts",
-    "scripts/*.ts"
+    "scripts/*.ts",
+    "tests/**/*.ts",
+    "eslint.config.mjs"
   ],
   "exclude": [
     "node_modules",

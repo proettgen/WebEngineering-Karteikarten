@@ -19,8 +19,6 @@ import { paginationSchema } from '../validation/pagination';
 // Constants for default values and configuration
 const DEFAULT_LIMIT = 20;
 const DEFAULT_OFFSET = 0;
-const DEFAULT_SORT_ORDER = 'DESC';
-const DEFAULT_SORT_FIELD = 'created_at';
 
 // Combined schema for query validation (filters + pagination + sorting)
 const querySchema = cardFilterSchema.merge(paginationSchema).merge(cardSortSchema);
@@ -46,10 +44,6 @@ export const getAllCards = async (req: Request, res: Response, next: NextFunctio
         const limitNum = limit ?? DEFAULT_LIMIT;
         const offsetNum = offset ?? DEFAULT_OFFSET;
         
-        // Map frontend sort field to database column name
-        const sortField = sortBy === 'currentLearningLevel' ? 'current_learning_level' : DEFAULT_SORT_FIELD;
-        const sortOrder = order?.toUpperCase() === 'ASC' ? 'ASC' : DEFAULT_SORT_ORDER;
-
         // Fetch cards from service layer
         const { cards, total } = await cardService.getAllCards({
             folderId,
@@ -57,8 +51,8 @@ export const getAllCards = async (req: Request, res: Response, next: NextFunctio
             title,
             limit: limitNum,
             offset: offsetNum,
-            sortField,
-            sortOrder
+            sortBy,
+            order
         });
 
         // Return standardized response format
