@@ -24,8 +24,8 @@ const router = express.Router();
  * @swagger
  * /api/cards:
  *   get:
- *     summary: Alle Karten mit erweiterten Filter- und Sortieroptionen abrufen
- *     description: Durchsucht alle Karten systemweit mit verschiedenen Filteroptionen
+ *     summary: Get all cards with advanced filtering and sorting options
+ *     description: Search all cards system-wide with various filtering options
  *     tags: [Cards]
  *     parameters:
  *       - in: query
@@ -33,18 +33,18 @@ const router = express.Router();
  *         schema:
  *           type: string
  *           format: uuid
- *         description: Filter nach spezifischem Ordner
+ *         description: Filter by specific folder
  *       - in: query
  *         name: tags
  *         schema:
  *           type: string
- *         description: Filter nach Tags (kommagetrennt)
+ *         description: Filter by tags (comma-separated)
  *         example: "javascript,frontend"
  *       - in: query
  *         name: title
  *         schema:
  *           type: string
- *         description: Filter nach Titel (partielle Übereinstimmung)
+ *         description: Filter by title (partial match)
  *       - in: query
  *         name: limit
  *         schema:
@@ -52,29 +52,29 @@ const router = express.Router();
  *           minimum: 1
  *           maximum: 100
  *           default: 20
- *         description: Anzahl der Karten pro Seite
+ *         description: Number of cards per page
  *       - in: query
  *         name: offset
  *         schema:
  *           type: integer
  *           minimum: 0
  *           default: 0
- *         description: Anzahl der zu überspringenden Karten für Paginierung
+ *         description: Number of cards to skip for pagination
  *       - in: query
  *         name: sortBy
  *         schema:
  *           type: string
  *           enum: [createdAt, currentLearningLevel]
- *         description: Feld nach dem sortiert werden soll
+ *         description: Field to sort by
  *       - in: query
  *         name: order
  *         schema:
  *           type: string
  *           enum: [asc, desc]
- *         description: Sortierreihenfolge
+ *         description: Sort order
  *     responses:
  *       200:
- *         description: Liste der gefilterten Karten
+ *         description: List of filtered cards
  *         content:
  *           application/json:
  *             schema:
@@ -100,7 +100,7 @@ const router = express.Router();
  *                         total:
  *                           type: integer
  *       400:
- *         description: Ungültige Parameter
+ *         description: Invalid parameters
  *         content:
  *           application/json:
  *             schema:
@@ -112,8 +112,8 @@ router.get('/', cardController.getAllCards);
  * @swagger
  * /api/cards:
  *   post:
- *     summary: Neue Karte erstellen
- *     description: Erstellt eine neue Karteikarte und ordnet sie einem Ordner zu
+ *     summary: Create new card
+ *     description: Creates a new flashcard and assigns it to a folder
  *     tags: [Cards]
  *     requestBody:
  *       required: true
@@ -129,35 +129,35 @@ router.get('/', cardController.getAllCards);
  *             properties:
  *               title:
  *                 type: string
- *                 description: Titel der Karte
+ *                 description: Card title
  *                 example: "JavaScript Closures"
  *               question:
  *                 type: string
- *                 description: Frage auf der Vorderseite
- *                 example: "Was ist ein Closure in JavaScript?"
+ *                 description: Question on the front side
+ *                 example: "What is a closure in JavaScript?"
  *               answer:
  *                 type: string
- *                 description: Antwort auf der Rückseite
- *                 example: "Ein Closure ist eine Funktion, die Zugriff auf Variablen aus ihrem äußeren Scope hat..."
+ *                 description: Answer on the back side
+ *                 example: "A closure is a function that has access to variables from its outer scope..."
  *               folderId:
  *                 type: string
  *                 format: uuid
- *                 description: ID des zugehörigen Ordners
+ *                 description: ID of the associated folder
  *               tags:
  *                 type: array
  *                 items:
  *                   type: string
- *                 description: Tags zur Kategorisierung
+ *                 description: Tags for categorization
  *                 example: ["javascript", "closures", "functions"]
  *               currentLearningLevel:
  *                 type: integer
  *                 minimum: 1
  *                 maximum: 5
  *                 default: 1
- *                 description: Aktuelles Lernniveau (1-5)
+ *                 description: Current learning level (1-5)
  *     responses:
  *       201:
- *         description: Karte erfolgreich erstellt
+ *         description: Card successfully created
  *         content:
  *           application/json:
  *             schema:
@@ -172,13 +172,13 @@ router.get('/', cardController.getAllCards);
  *                     card:
  *                       $ref: '#/components/schemas/Card'
  *       400:
- *         description: Ungültige Eingabedaten
+ *         description: Invalid input data
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       404:
- *         description: Ordner nicht gefunden
+ *         description: Folder not found
  *         content:
  *           application/json:
  *             schema:
@@ -194,8 +194,8 @@ router.post('/', cardController.createCard);
  * @swagger
  * /api/cards/{id}:
  *   get:
- *     summary: Einzelne Karte abrufen
- *     description: Lädt eine spezifische Karte anhand ihrer ID
+ *     summary: Get single card
+ *     description: Loads a specific card by its ID
  *     tags: [Cards]
  *     parameters:
  *       - in: path
@@ -204,10 +204,10 @@ router.post('/', cardController.createCard);
  *         schema:
  *           type: string
  *           format: uuid
- *         description: Eindeutige ID der Karte
+ *         description: Unique ID of the card
  *     responses:
  *       200:
- *         description: Karte erfolgreich geladen
+ *         description: Card successfully loaded
  *         content:
  *           application/json:
  *             schema:
@@ -222,14 +222,14 @@ router.post('/', cardController.createCard);
  *                     card:
  *                       $ref: '#/components/schemas/Card'
  *       404:
- *         description: Karte nicht gefunden
+ *         description: Card not found
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *   put:
- *     summary: Karte aktualisieren
- *     description: Aktualisiert eine bestehende Karte (partielle Updates möglich)
+ *     summary: Update card
+ *     description: Updates an existing card (partial updates possible)
  *     tags: [Cards]
  *     parameters:
  *       - in: path
@@ -238,7 +238,7 @@ router.post('/', cardController.createCard);
  *         schema:
  *           type: string
  *           format: uuid
- *         description: Eindeutige ID der Karte
+ *         description: Unique ID of the card
  *     requestBody:
  *       required: true
  *       content:
@@ -248,34 +248,34 @@ router.post('/', cardController.createCard);
  *             properties:
  *               title:
  *                 type: string
- *                 description: Neuer Titel der Karte
+ *                 description: Neuer Card title
  *               question:
  *                 type: string
- *                 description: Neue Frage
+ *                 description: New question
  *               answer:
  *                 type: string
- *                 description: Neue Antwort
+ *                 description: New answer
  *               folderId:
  *                 type: string
  *                 format: uuid
- *                 description: Neue Ordner-ID
+ *                 description: New folder ID
  *               tags:
  *                 type: array
  *                 items:
  *                   type: string
- *                 description: Neue Tags
+ *                 description: New tags
  *               currentLearningLevel:
  *                 type: integer
  *                 minimum: 1
  *                 maximum: 5
- *                 description: Neues Lernniveau
+ *                 description: New learning level
  *             example:
  *               title: "JavaScript Closures - Erweitert"
  *               currentLearningLevel: 3
  *               tags: ["javascript", "closures", "advanced"]
  *     responses:
  *       200:
- *         description: Karte erfolgreich aktualisiert
+ *         description: Card successfully updated
  *         content:
  *           application/json:
  *             schema:
@@ -290,20 +290,20 @@ router.post('/', cardController.createCard);
  *                     card:
  *                       $ref: '#/components/schemas/Card'
  *       400:
- *         description: Ungültige Eingabedaten
+ *         description: Invalid input data
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       404:
- *         description: Karte nicht gefunden
+ *         description: Card not found
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *   delete:
- *     summary: Karte löschen
- *     description: Löscht eine Karte dauerhaft aus dem System
+ *     summary: Delete card
+ *     description: Permanently deletes a card from the system
  *     tags: [Cards]
  *     parameters:
  *       - in: path
@@ -312,12 +312,12 @@ router.post('/', cardController.createCard);
  *         schema:
  *           type: string
  *           format: uuid
- *         description: Eindeutige ID der zu löschenden Karte
+ *         description: Unique ID of the card to delete
  *     responses:
  *       204:
- *         description: Karte erfolgreich gelöscht
+ *         description: Card successfully deleted
  *       404:
- *         description: Karte nicht gefunden
+ *         description: Card not found
  *         content:
  *           application/json:
  *             schema:

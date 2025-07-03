@@ -24,8 +24,8 @@ const router = express.Router();
  * @swagger
  * /api/folders:
  *   get:
- *     summary: Alle Ordner mit Paginierung abrufen
- *     description: Lädt alle verfügbaren Ordner mit optionaler Paginierung
+ *     summary: Get all folders with pagination
+ *     description: Loads all available folders with optional pagination
  *     tags: [Folders]
  *     parameters:
  *       - in: query
@@ -35,17 +35,17 @@ const router = express.Router();
  *           minimum: 1
  *           maximum: 100
  *           default: 20
- *         description: Anzahl der Ordner pro Seite
+ *         description: Number of folders per page
  *       - in: query
  *         name: offset
  *         schema:
  *           type: integer
  *           minimum: 0
  *           default: 0
- *         description: Anzahl der zu überspringenden Ordner für Paginierung
+ *         description: Number of folders to skip for pagination
  *     responses:
  *       200:
- *         description: Liste aller Ordner
+ *         description: List of all folders
  *         content:
  *           application/json:
  *             schema:
@@ -71,14 +71,14 @@ const router = express.Router();
  *                         total:
  *                           type: integer
  *       400:
- *         description: Ungültige Parameter
+ *         description: Invalid parameters
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *   post:
- *     summary: Neuen Ordner erstellen
- *     description: Erstellt einen neuen Ordner (kann auch Unterordner sein)
+ *     summary: Create new folder
+ *     description: Creates a new folder (can also be a subfolder)
  *     tags: [Folders]
  *     requestBody:
  *       required: true
@@ -91,16 +91,16 @@ const router = express.Router();
  *             properties:
  *               name:
  *                 type: string
- *                 description: Name des Ordners
+ *                 description: Folder name
  *                 example: "JavaScript Grundlagen"
  *               parentId:
  *                 type: string
  *                 format: uuid
- *                 description: ID des übergeordneten Ordners (optional für Unterordner)
+ *                 description: ID of the parent folder (optional for subfolders)
  *                 nullable: true
  *     responses:
  *       201:
- *         description: Ordner erfolgreich erstellt
+ *         description: Folder successfully created
  *         content:
  *           application/json:
  *             schema:
@@ -115,13 +115,13 @@ const router = express.Router();
  *                     folder:
  *                       $ref: '#/components/schemas/Folder'
  *       400:
- *         description: Ungültige Eingabedaten
+ *         description: Invalid input data
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       404:
- *         description: Übergeordneter Ordner nicht gefunden
+ *         description: Übergeordneter Folder not found
  *         content:
  *           application/json:
  *             schema:
@@ -140,8 +140,8 @@ router
  * @swagger
  * /api/folders/search:
  *   get:
- *     summary: Ordner nach Name durchsuchen
- *     description: Sucht Ordner basierend auf dem Namen (partielle Übereinstimmung)
+ *     summary: Search folders by name
+ *     description: Searches folders based on their name (partial match)
  *     tags: [Folders]
  *     parameters:
  *       - in: query
@@ -149,7 +149,7 @@ router
  *         required: true
  *         schema:
  *           type: string
- *         description: Suchbegriff für Ordnername
+ *         description: Search term for folder name
  *         example: "JavaScript"
  *       - in: query
  *         name: limit
@@ -158,17 +158,17 @@ router
  *           minimum: 1
  *           maximum: 100
  *           default: 20
- *         description: Anzahl der Suchergebnisse pro Seite
+ *         description: Number of search results per page
  *       - in: query
  *         name: offset
  *         schema:
  *           type: integer
  *           minimum: 0
  *           default: 0
- *         description: Anzahl der zu überspringenden Ergebnisse
+ *         description: Number of results to skip
  *     responses:
  *       200:
- *         description: Suchergebnisse
+ *         description: Search results
  *         content:
  *           application/json:
  *             schema:
@@ -194,7 +194,7 @@ router
  *                         total:
  *                           type: integer
  *       400:
- *         description: Suchbegriff fehlt oder ungültige Parameter
+ *         description: Search term missing or invalid parameters
  *         content:
  *           application/json:
  *             schema:
@@ -206,8 +206,8 @@ router.get('/search', folderController.searchFolders);
  * @swagger
  * /api/folders/root:
  *   get:
- *     summary: Alle Hauptordner abrufen
- *     description: Lädt alle Ordner ohne übergeordneten Ordner (Hauptebene)
+ *     summary: Get all root folders
+ *     description: Loads all folders without parent folders (root level)
  *     tags: [Folders]
  *     parameters:
  *       - in: query
@@ -217,17 +217,17 @@ router.get('/search', folderController.searchFolders);
  *           minimum: 1
  *           maximum: 100
  *           default: 20
- *         description: Anzahl der Ordner pro Seite
+ *         description: Number of folders per page
  *       - in: query
  *         name: offset
  *         schema:
  *           type: integer
  *           minimum: 0
  *           default: 0
- *         description: Anzahl der zu überspringenden Ordner
+ *         description: Number of folders to skip
  *     responses:
  *       200:
- *         description: Liste der Hauptordner
+ *         description: List of root folders
  *         content:
  *           application/json:
  *             schema:
@@ -253,7 +253,7 @@ router.get('/search', folderController.searchFolders);
  *                         total:
  *                           type: integer
  *       400:
- *         description: Ungültige Parameter
+ *         description: Invalid parameters
  *         content:
  *           application/json:
  *             schema:
@@ -265,8 +265,8 @@ router.get('/root', folderController.getRootFolders);
  * @swagger
  * /api/folders/{id}:
  *   get:
- *     summary: Einzelnen Ordner abrufen
- *     description: Lädt einen spezifischen Ordner anhand seiner ID
+ *     summary: Get single folder
+ *     description: Loads a specific folder by its ID
  *     tags: [Folders]
  *     parameters:
  *       - in: path
@@ -275,10 +275,10 @@ router.get('/root', folderController.getRootFolders);
  *         schema:
  *           type: string
  *           format: uuid
- *         description: Eindeutige ID des Ordners
+ *         description: Unique ID of the folder
  *     responses:
  *       200:
- *         description: Ordner erfolgreich geladen
+ *         description: Folder successfully loaded
  *         content:
  *           application/json:
  *             schema:
@@ -293,14 +293,14 @@ router.get('/root', folderController.getRootFolders);
  *                     folder:
  *                       $ref: '#/components/schemas/Folder'
  *       404:
- *         description: Ordner nicht gefunden
+ *         description: Folder not found
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *   put:
- *     summary: Ordner aktualisieren
- *     description: Aktualisiert einen bestehenden Ordner (partielle Updates möglich)
+ *     summary: Update folder
+ *     description: Updates an existing folder (partial updates possible)
  *     tags: [Folders]
  *     parameters:
  *       - in: path
@@ -309,7 +309,7 @@ router.get('/root', folderController.getRootFolders);
  *         schema:
  *           type: string
  *           format: uuid
- *         description: Eindeutige ID des Ordners
+ *         description: Unique ID of the folder
  *     requestBody:
  *       required: true
  *       content:
@@ -319,18 +319,18 @@ router.get('/root', folderController.getRootFolders);
  *             properties:
  *               name:
  *                 type: string
- *                 description: Neuer Name des Ordners
+ *                 description: Neuer Folder name
  *               parentId:
  *                 type: string
  *                 format: uuid
- *                 description: Neue übergeordnete Ordner-ID
+ *                 description: New parent folder ID
  *                 nullable: true
  *             example:
  *               name: "JavaScript Fortgeschritten"
  *               parentId: null
  *     responses:
  *       200:
- *         description: Ordner erfolgreich aktualisiert
+ *         description: Folder successfully updated
  *         content:
  *           application/json:
  *             schema:
@@ -345,20 +345,20 @@ router.get('/root', folderController.getRootFolders);
  *                     folder:
  *                       $ref: '#/components/schemas/Folder'
  *       400:
- *         description: Ungültige Eingabedaten
+ *         description: Invalid input data
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       404:
- *         description: Ordner nicht gefunden
+ *         description: Folder not found
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *   delete:
- *     summary: Ordner löschen
- *     description: Löscht einen Ordner dauerhaft (kaskadiert zu allen enthaltenen Karten)
+ *     summary: Delete folder
+ *     description: Permanently deletes a folder (cascades to all contained cards)
  *     tags: [Folders]
  *     parameters:
  *       - in: path
@@ -367,12 +367,12 @@ router.get('/root', folderController.getRootFolders);
  *         schema:
  *           type: string
  *           format: uuid
- *         description: Eindeutige ID des zu löschenden Ordners
+ *         description: Unique ID of the folder to delete
  *     responses:
  *       204:
- *         description: Ordner erfolgreich gelöscht
+ *         description: Folder successfully deleted
  *       404:
- *         description: Ordner nicht gefunden
+ *         description: Folder not found
  *         content:
  *           application/json:
  *             schema:
@@ -388,8 +388,8 @@ router
  * @swagger
  * /api/folders/{id}/children:
  *   get:
- *     summary: Unterordner abrufen
- *     description: Lädt alle direkten Unterordner eines spezifischen Ordners
+ *     summary: Get subfolders
+ *     description: Loads all direct subfolders eines spezifischen Ordners
  *     tags: [Folders]
  *     parameters:
  *       - in: path
@@ -398,7 +398,7 @@ router
  *         schema:
  *           type: string
  *           format: uuid
- *         description: ID des übergeordneten Ordners
+ *         description: ID of the parent folder
  *       - in: query
  *         name: limit
  *         schema:
@@ -406,17 +406,17 @@ router
  *           minimum: 1
  *           maximum: 100
  *           default: 20
- *         description: Anzahl der Unterordner pro Seite
+ *         description: Number of subfolders per page
  *       - in: query
  *         name: offset
  *         schema:
  *           type: integer
  *           minimum: 0
  *           default: 0
- *         description: Anzahl der zu überspringenden Unterordner
+ *         description: Number of subfolders to skip
  *     responses:
  *       200:
- *         description: Liste der Unterordner
+ *         description: List of subfolders
  *         content:
  *           application/json:
  *             schema:
@@ -442,7 +442,7 @@ router
  *                         total:
  *                           type: integer
  *       404:
- *         description: Übergeordneter Ordner nicht gefunden
+ *         description: Übergeordneter Folder not found
  *         content:
  *           application/json:
  *             schema:
@@ -458,8 +458,8 @@ router.get('/:id/children', folderController.getChildFolders);
  * @swagger
  * /api/folders/{id}/cards:
  *   get:
- *     summary: Alle Karten in einem Ordner abrufen
- *     description: Lädt alle Karteikarten, die einem spezifischen Ordner zugeordnet sind
+ *     summary: Get all cards in a folder
+ *     description: Loads all flashcards assigned to a specific folder
  *     tags: [Folders, Cards]
  *     parameters:
  *       - in: path
@@ -468,7 +468,7 @@ router.get('/:id/children', folderController.getChildFolders);
  *         schema:
  *           type: string
  *           format: uuid
- *         description: ID des Ordners
+ *         description: ID of the folder
  *       - in: query
  *         name: limit
  *         schema:
@@ -476,7 +476,7 @@ router.get('/:id/children', folderController.getChildFolders);
  *           minimum: 1
  *           maximum: 100
  *           default: 20
- *         description: Anzahl der Karten pro Seite
+ *         description: Number of cards per page
  *       - in: query
  *         name: offset
  *         schema:
@@ -486,7 +486,7 @@ router.get('/:id/children', folderController.getChildFolders);
  *         description: Anzahl der zu überspringenden Karten
  *     responses:
  *       200:
- *         description: Liste der Karten im Ordner
+ *         description: List of cards in the folder
  *         content:
  *           application/json:
  *             schema:
@@ -512,14 +512,14 @@ router.get('/:id/children', folderController.getChildFolders);
  *                         total:
  *                           type: integer
  *       404:
- *         description: Ordner nicht gefunden
+ *         description: Folder not found
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *   post:
- *     summary: Neue Karte in einem Ordner erstellen
- *     description: Erstellt eine neue Karteikarte und ordnet sie automatisch dem angegebenen Ordner zu
+ *     summary: Create new card in a folder
+ *     description: Creates a new flashcard and automatically assigns it to the specified folder
  *     tags: [Folders, Cards]
  *     parameters:
  *       - in: path
@@ -528,7 +528,7 @@ router.get('/:id/children', folderController.getChildFolders);
  *         schema:
  *           type: string
  *           format: uuid
- *         description: ID des Ordners, dem die Karte zugeordnet wird
+ *         description: ID of the folder, dem die Karte zugeordnet wird
  *     requestBody:
  *       required: true
  *       content:
@@ -542,31 +542,31 @@ router.get('/:id/children', folderController.getChildFolders);
  *             properties:
  *               title:
  *                 type: string
- *                 description: Titel der Karte
+ *                 description: Card title
  *                 example: "React Hooks"
  *               question:
  *                 type: string
- *                 description: Frage auf der Vorderseite
+ *                 description: Question on the front side
  *                 example: "Was ist der Unterschied zwischen useState und useEffect?"
  *               answer:
  *                 type: string
- *                 description: Antwort auf der Rückseite
+ *                 description: Answer on the back side
  *                 example: "useState verwaltet lokalen State, useEffect führt Seiteneffekte aus..."
  *               tags:
  *                 type: array
  *                 items:
  *                   type: string
- *                 description: Tags zur Kategorisierung
+ *                 description: Tags for categorization
  *                 example: ["react", "hooks", "frontend"]
  *               currentLearningLevel:
  *                 type: integer
  *                 minimum: 1
  *                 maximum: 5
  *                 default: 1
- *                 description: Aktuelles Lernniveau (1-5)
+ *                 description: Current learning level (1-5)
  *     responses:
  *       201:
- *         description: Karte erfolgreich im Ordner erstellt
+ *         description: Card successfully created in folder
  *         content:
  *           application/json:
  *             schema:
@@ -581,13 +581,13 @@ router.get('/:id/children', folderController.getChildFolders);
  *                     card:
  *                       $ref: '#/components/schemas/Card'
  *       400:
- *         description: Ungültige Eingabedaten
+ *         description: Invalid input data
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       404:
- *         description: Ordner nicht gefunden
+ *         description: Folder not found
  *         content:
  *           application/json:
  *             schema:
@@ -600,7 +600,7 @@ router.post('/:id/cards', cardController.createCardInFolder);
  * @swagger
  * /api/folders/{id}/cards/{cardId}:
  *   put:
- *     summary: Karte in einem Ordner aktualisieren
+ *     summary: Karte in einem Update folder
  *     description: Aktualisiert eine Karte und validiert, dass sie zum angegebenen Ordner gehört
  *     tags: [Folders, Cards]
  *     parameters:
@@ -610,7 +610,7 @@ router.post('/:id/cards', cardController.createCardInFolder);
  *         schema:
  *           type: string
  *           format: uuid
- *         description: ID des Ordners
+ *         description: ID of the folder
  *       - in: path
  *         name: cardId
  *         required: true
@@ -627,30 +627,30 @@ router.post('/:id/cards', cardController.createCardInFolder);
  *             properties:
  *               title:
  *                 type: string
- *                 description: Neuer Titel der Karte
+ *                 description: Neuer Card title
  *               question:
  *                 type: string
- *                 description: Neue Frage
+ *                 description: New question
  *               answer:
  *                 type: string
- *                 description: Neue Antwort
+ *                 description: New answer
  *               tags:
  *                 type: array
  *                 items:
  *                   type: string
- *                 description: Neue Tags
+ *                 description: New tags
  *               currentLearningLevel:
  *                 type: integer
  *                 minimum: 1
  *                 maximum: 5
- *                 description: Neues Lernniveau
+ *                 description: New learning level
  *             example:
  *               title: "React Hooks - Erweitert"
  *               currentLearningLevel: 3
  *               tags: ["react", "hooks", "advanced"]
  *     responses:
  *       200:
- *         description: Karte erfolgreich aktualisiert
+ *         description: Card successfully updated
  *         content:
  *           application/json:
  *             schema:
@@ -665,19 +665,19 @@ router.post('/:id/cards', cardController.createCardInFolder);
  *                     card:
  *                       $ref: '#/components/schemas/Card'
  *       400:
- *         description: Ungültige Eingabedaten oder Karte gehört nicht zum Ordner
+ *         description: Invalid input data oder Karte gehört nicht zum Ordner
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       404:
- *         description: Ordner oder Karte nicht gefunden
+ *         description: Ordner oder Card not found
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *   delete:
- *     summary: Karte aus einem Ordner löschen
+ *     summary: Karte aus einem Delete folder
  *     description: Löscht eine Karte und validiert, dass sie zum angegebenen Ordner gehört
  *     tags: [Folders, Cards]
  *     parameters:
@@ -687,7 +687,7 @@ router.post('/:id/cards', cardController.createCardInFolder);
  *         schema:
  *           type: string
  *           format: uuid
- *         description: ID des Ordners
+ *         description: ID of the folder
  *       - in: path
  *         name: cardId
  *         required: true
@@ -697,7 +697,7 @@ router.post('/:id/cards', cardController.createCardInFolder);
  *         description: ID der zu löschenden Karte
  *     responses:
  *       204:
- *         description: Karte erfolgreich gelöscht
+ *         description: Card successfully deleted
  *       400:
  *         description: Karte gehört nicht zum angegebenen Ordner
  *         content:
@@ -705,7 +705,7 @@ router.post('/:id/cards', cardController.createCardInFolder);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       404:
- *         description: Ordner oder Karte nicht gefunden
+ *         description: Ordner oder Card not found
  *         content:
  *           application/json:
  *             schema:
