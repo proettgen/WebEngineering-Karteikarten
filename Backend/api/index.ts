@@ -109,3 +109,6 @@ if (process.env.NODE_ENV !== "production") {
 
   startServer(8080);
 }
+
+// Export for Vercel serverless functions
+export default app;
