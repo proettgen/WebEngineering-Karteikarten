@@ -19,7 +19,7 @@
 
 // STEP 2: Generate documentation
 // - Command: npm run generate-swagger
-// - This creates: src/config/generated-swagger.json
+// - This creates: src/swagger/generated-swagger.json
 // - Run this BEFORE every commit and deployment!
 
 // STEP 3: Commit and deploy
@@ -126,15 +126,15 @@ router.post('/cards', cardController.createCard);
 
 // IMPORTANT FILES:
 // - src/routes/*.ts → Write JSDoc comments here
-// - src/config/generated-swagger.json → Generated file (commit this!)
-// - src/config/staticSwagger.ts → Fallback if generation fails
+// - src/swagger/generated-swagger.json → Generated file (commit this!)
+// - src/swagger/staticSwagger.ts → Fallback if generation fails
 // - api/index.ts → Serves documentation at /api/api-docs/swagger.json
 
 //  DEPLOYMENT CHECKLIST:
 // □ Updated JSDoc comments for changed/new endpoints
 // □ Ran npm run generate-swagger
 // □ Committed generated-swagger.json
-// □ Tested locally at http://localhost:3001/api/docs
+// □ Tested locally at http://localhost:8080/api/docs
 // □ Pushed to repository
 // □ Verified docs at production URL
 
@@ -169,8 +169,7 @@ router.post('/cards', cardController.createCard);
 import swaggerJsdoc from "swagger-jsdoc";
 import { writeFileSync } from "fs";
 import { join } from "path";
-import { swaggerOptions } from "../src/config/swaggerOptions";
-
+import { swaggerOptions } from "../src/swagger/swaggerOptions";
 
 /**
  * Generate static swagger.json file
@@ -184,7 +183,7 @@ function generateSwaggerJson(): void {
     const specs = swaggerJsdoc(swaggerOptions);
 
     // Write to static file that Vercel can serve
-    const outputPath = join(__dirname, "../src/config/generated-swagger.json");
+    const outputPath = join(__dirname, "../src/swagger/generated-swagger.json");
     writeFileSync(outputPath, JSON.stringify(specs, null, 2));
 
     console.log(" Swagger documentation generated successfully!");

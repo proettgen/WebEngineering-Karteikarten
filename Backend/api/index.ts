@@ -52,7 +52,7 @@ app.get("/api/api-docs/swagger.json", (req, res) => {
   // Try to load generated swagger file (created by build script)
   const generatedSwaggerPath = path.join(
     __dirname,
-    "../src/config/generated-swagger.json",
+    "../src/swagger/generated-swagger.json",
   );
 
   try {

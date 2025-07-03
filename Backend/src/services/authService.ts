@@ -1,13 +1,14 @@
-import { Pool } from "pg";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { RegisterInput, LoginInput, AuthResponse, UserRecord } from "../types/authTypes";
+import { eq, or } from "drizzle-orm";
+import { db } from "../db";
+import { users } from "../../drizzle/schema";
+import { RegisterInput, LoginInput, AuthResponse , ProfileResponse } from "../types/authTypes";
 import { AppError } from "../utils/AppError";
 
 dotenv.config();
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const SALT_ROUNDS = 12;
 
 // validation for JWT_SECRET
@@ -22,11 +23,13 @@ export const isUsernameAvailable = async (
   username: string,
 ): Promise<boolean> => {
   try {
-    const { rowCount } = await pool.query(
-      "SELECT 1 FROM users WHERE username = $1",
-      [username],
-    );
-    return rowCount === 0;
+    const result = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.username, username))
+      .limit(1);
+    
+    return result.length === 0;
   } catch (error) {
     console.error("Database error checking username availability:", error);
     throw new AppError("Database error while checking username availability", 500);
@@ -36,11 +39,13 @@ export const isUsernameAvailable = async (
 export const isEmailAvailable = async (email: string): Promise<boolean> => {
   if (!email) return true;
   try {
-    const { rowCount } = await pool.query(
-      "SELECT 1 FROM users WHERE email = $1",
-      [email],
-    );
-    return rowCount === 0;
+    const result = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
+    
+    return result.length === 0;
   } catch (error) {
     console.error("Database error checking Email availability:", error);
     throw new AppError("Database error while checking email availability", 500);
@@ -48,7 +53,7 @@ export const isEmailAvailable = async (email: string): Promise<boolean> => {
 };
 
 // Register new user
-export const registerUser = async (input: RegisterInput): Promise<UserRecord> => {
+export const registerUser = async (input: RegisterInput): Promise<ProfileResponse> => {
   try {
     // Check if username already exists
     const usernameAvailable = await isUsernameAvailable(input.username);
@@ -65,18 +70,25 @@ export const registerUser = async (input: RegisterInput): Promise<UserRecord> =>
     }
 
     const hashed = await bcrypt.hash(input.password, SALT_ROUNDS);
-    const { rows } = await pool.query<UserRecord>(
-      `INSERT INTO users (username, email, password)
-       VALUES ($1, $2, $3)
-         RETURNING id, username, email, created_at`,
-      [input.username, input.email || null, hashed],
-    );
+    const result = await db
+      .insert(users)
+      .values({
+        username: input.username,
+        email: input.email || null,
+        password: hashed,
+      })
+      .returning({
+        id: users.id,
+        username: users.username,
+        email: users.email,
+        created_at: users.createdAt,
+      });
     
-    if (rows.length === 0) {
+    if (result.length === 0) {
       throw new AppError("Failed to create user", 500);
     }
     
-    return rows[0];
+    return result[0] as ProfileResponse;
   } catch (error) {
     // Re-throw AppError instances, wrap others
     if (error instanceof AppError) {
@@ -93,17 +105,25 @@ export const loginUser = async (
   try {
     const { usernameOrEmail, password } = loginData;
     
-    const { rows } = await pool.query<UserRecord & { password: string }>(
-      `SELECT id, username, email, password FROM users 
-       WHERE username = $1 OR email = $1`,
-      [usernameOrEmail],
-    );
+    const result = await db
+      .select({
+        id: users.id,
+        username: users.username,
+        email: users.email,
+        password: users.password,
+      })
+      .from(users)
+      .where(or(
+        eq(users.username, usernameOrEmail),
+        eq(users.email, usernameOrEmail)
+      ))
+      .limit(1);
     
-    if (rows.length === 0) {
+    if (result.length === 0) {
       throw new AppError("Invalid credentials", 401);
     }
 
-    const user = rows[0];
+    const user = result[0];
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
       throw new AppError("Invalid credentials", 401);
@@ -132,19 +152,25 @@ export const loginUser = async (
 };
 
 // Get user profile by ID
-export const getUserProfile = async (userId: string): Promise<UserRecord> => {
+export const getUserProfile = async (userId: string): Promise<ProfileResponse> => {
   try {
-    const { rows } = await pool.query<UserRecord>(
-      `SELECT id, username, email, created_at, updated_at 
-       FROM users WHERE id = $1`,
-      [userId],
-    );
+    const result = await db
+      .select({
+        id: users.id,
+        username: users.username,
+        email: users.email,
+        created_at: users.createdAt,
+        updated_at: users.updatedAt,
+      })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
     
-    if (rows.length === 0) {
+    if (result.length === 0) {
       throw new AppError("User not found", 404);
     }
     
-    return rows[0];
+    return result[0] as ProfileResponse;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;

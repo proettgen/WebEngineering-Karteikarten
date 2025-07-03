@@ -39,8 +39,9 @@
     "src/**/*.ts",
     "src/**/*.json",
     "api/*.ts",
-    "scripts/*.ts"
-  ],
+    "scripts/*.ts",
+    "drizzle/**/*.ts",
+  "drizzle.config.ts"  ],
   "exclude": [
     "node_modules",
     "dist"

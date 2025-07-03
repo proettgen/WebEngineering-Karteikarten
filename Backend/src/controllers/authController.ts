@@ -78,8 +78,8 @@ export const profile = async (
       id: user.id,
       username: user.username,
       email: user.email || undefined,
-      created_at: user.created_at.toISOString(),
-      updated_at: user.updated_at.toISOString()
+      created_at: user.created_at,
+      updated_at: user.updated_at
     };
     
     // Validate the response structure
