@@ -51,13 +51,32 @@ const router = express.Router();
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: "Error Status"
+ *                   example: "fail"
+ *                 message:
+ *                  type: string
+ *                  description: "Validation Error"
+ *                  example: "Validation failed: Only letters, numbers, underscores allowed"
  *       500:
  *         description: Server error
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: "Error Status"
+ *                   example: "error"
+ *                 message:
+ *                  type: string
+ *                  description: "Error Message"
+ *                  example: "Database error while checking username availability"
  */
 router.post(
   "/check-username",
@@ -102,13 +121,32 @@ router.post(
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: "Error Status"
+ *                   example: "fail"
+ *                 message:
+ *                  type: string
+ *                  description: "Validation Error"
+ *                  example: "Validation failed: email: Invalid email"
  *       500:
  *         description: Server error
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: "Error Status"
+ *                   example: "error"
+ *                 message:
+ *                  type: string
+ *                  description: "Error Message"
+ *                  example: "Database error while checking email availability"
  */
 router.post(
   "/check-email",
@@ -218,7 +256,7 @@ router.post("/register", validateBody(registerBody), authController.register);
  *                 example: "SecurePassword123!"
  *     responses:
  *       200:
- *         description: Login successful
+ *         description: Login successfullll
  *         content:
  *           application/json:
  *             schema:

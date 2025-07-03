@@ -1,5 +1,7 @@
 # API Documentation Workflow
 
+# THIS SHOULD BE IN THE WIKI
+
 ## Overview
 This project uses automated Swagger/OpenAPI documentation generation from JSDoc comments in the source code. This ensures the API documentation is always up-to-date and synchronized with the actual implementation.
 
@@ -97,7 +99,6 @@ This creates `src/config/generated-swagger.json` which must be committed to vers
 |------|---------|-----------------|
 | `src/routes/*.ts` | Source code with JSDoc | ✏️ Write/update JSDoc comments |
 | `src/config/generated-swagger.json` | Generated docs | ✅ Commit to version control |
-| `src/config/staticSwagger.ts` | Fallback docs | 🔄 Backup (rarely modified) |
 | `scripts/generateSwagger.ts` | Generator script | 🛠️ Run before deployment |
 | `api/index.ts` | API server | 🌐 Serves docs at `/api/api-docs/swagger.json` |
 

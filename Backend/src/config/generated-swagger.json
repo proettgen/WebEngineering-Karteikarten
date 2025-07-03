@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "WebEngineering Karteikarten API",
+    "title": "WebEngineering Flashcards API",
     "version": "1.0.0",
-    "description": "Eine REST API für die Verwaltung von Karteikarten und Ordnern",
+    "description": "A REST API for managing flashcards and folders",
     "contact": {
       "name": "API Support",
       "email": "support@karteikarten-app.com"
@@ -41,41 +41,41 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Eindeutige ID der Karteikarte",
+            "description": "Unique ID of the flashcard",
             "example": "1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a"
           },
           "title": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "description": "Titel der Karteikarte",
+            "description": "Title of the flashcard",
             "example": "JavaScript Closures"
           },
           "question": {
             "type": "string",
             "minLength": 1,
             "maxLength": 2000,
-            "description": "Frage der Karteikarte",
-            "example": "Was ist eine Closure in JavaScript?"
+            "description": "Question on the flashcard",
+            "example": "What is a closure in JavaScript?"
           },
           "answer": {
             "type": "string",
             "minLength": 1,
             "maxLength": 2000,
-            "description": "Antwort der Karteikarte",
-            "example": "Eine Closure ist eine Funktion, die Zugriff auf Variablen aus ihrem äußeren Scope hat."
+            "description": "Answer on the flashcard",
+            "example": "A closure is a function that has access to variables from its outer scope."
           },
           "currentLearningLevel": {
             "type": "integer",
             "minimum": 0,
             "maximum": 5,
-            "description": "Aktueller Lernlevel (0-5)",
+            "description": "Current learning level (0-5)",
             "example": 2
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
-            "description": "Erstellungsdatum",
+            "description": "Creation date",
             "example": "2024-05-01T08:00:00.000Z"
           },
           "tags": {
@@ -84,7 +84,7 @@
               "type": "string"
             },
             "nullable": true,
-            "description": "Tags zur Kategorisierung",
+            "description": "Tags for categorization",
             "example": [
               "javascript",
               "frontend",
@@ -94,7 +94,7 @@
           "folderId": {
             "type": "string",
             "format": "uuid",
-            "description": "ID des zugehörigen Ordners",
+            "description": "ID of the associated folder",
             "example": "c6f8fb2b-a33f-46da-941d-9832b6212395"
           }
         }
@@ -108,33 +108,33 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Eindeutige ID des Ordners",
+            "description": "Unique ID of the folder",
             "example": "c6f8fb2b-a33f-46da-941d-9832b6212395"
           },
           "name": {
             "type": "string",
             "minLength": 1,
             "maxLength": 100,
-            "description": "Name des Ordners",
-            "example": "JavaScript Grundlagen"
+            "description": "Name of the folder",
+            "example": "JavaScript Basics"
           },
           "parentId": {
             "type": "string",
             "format": "uuid",
             "nullable": true,
-            "description": "ID des übergeordneten Ordners",
+            "description": "ID of the parent folder",
             "example": "parent-folder-uuid"
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
-            "description": "Erstellungsdatum",
+            "description": "Creation date",
             "example": "2024-05-01T08:00:00.000Z"
           },
           "lastOpenedAt": {
             "type": "string",
             "format": "date-time",
-            "description": "Letztes Öffnungsdatum",
+            "description": "Last opened date",
             "example": "2024-05-15T14:30:00.000Z"
           }
         }
@@ -144,20 +144,17 @@
         "properties": {
           "status": {
             "type": "string",
-            "example": "error"
+            "enum": [
+              "fail",
+              "error"
+            ],
+            "description": "Error status (fail = client error, error = server error)",
+            "example": "fail"
           },
           "message": {
             "type": "string",
-            "example": "Validation failed"
-          },
-          "errors": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "example": [
-              "Title must not be empty"
-            ]
+            "description": "Error message",
+            "example": "Something went wrong"
           }
         }
       }
@@ -217,7 +214,19 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Error Status",
+                      "example": "fail"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Validation Error",
+                      "example": "Validation failed: Only letters, numbers, underscores allowed"
+                    }
+                  }
                 }
               }
             }
@@ -227,7 +236,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "schema": null,
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Error Status",
+                      "example": "error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Error Message",
+                      "example": "Database error while checking username availability"
+                    }
+                  }
                 }
               }
             }
@@ -286,7 +308,19 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Error Status",
+                      "example": "fail"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Validation Error",
+                      "example": "Validation failed: email: Invalid email"
+                    }
+                  }
                 }
               }
             }
@@ -296,7 +330,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "schema": null,
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Error Status",
+                      "example": "error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Error Message",
+                      "example": "Database error while checking email availability"
+                    }
+                  }
                 }
               }
             }
@@ -446,7 +493,7 @@
         },
         "responses": {
           "200": {
-            "description": "Login successful",
+            "description": "Login successfullll",
             "content": {
               "application/json": {
                 "schema": {
