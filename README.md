@@ -46,7 +46,7 @@ The following scripts are available for frontend-development and production work
 - `npm run dev`  
   Starts the development server using Next.js with Turbopack enabled at [http://localhost:3000](http://localhost:3000).
 
-  Starts the Backend express.js at [http://localhost:3001](http://localhost:3001).
+  Starts the Backend express.js at [http://localhost:3001](http://localhost:8080).
 
 - `npm run build`  
   Builds the application for production.
