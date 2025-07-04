@@ -9,15 +9,12 @@
  * - Support for nested folder structures and navigation
  */
 
-import { Pool } from 'pg';
 import { AppError } from '../utils/AppError';
 import { Folder } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-
-// Database connection pool
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-});
+import { db } from '../db/index';
+import { folders } from '../../drizzle/schema';
+import { eq, ilike, sql, desc, asc, isNull, count } from 'drizzle-orm';
 
 /**
  * Retrieves all folders with pagination support
@@ -33,24 +30,30 @@ const pool = new Pool({
 export const getAllFolders = async (limit = 20, offset = 0): Promise<{ folders: Folder[]; total: number }> => {
     try {
         // Query for folders with pagination
-        const foldersQuery = `
-            SELECT id, name, parent_id AS "parentId", created_at AS "createdAt", last_opened_at AS "lastOpenedAt"
-            FROM folders
-            ORDER BY created_at DESC
-            LIMIT $1 OFFSET $2
-        `;
-        
-        const foldersResult = await pool.query<Folder>(foldersQuery, [limit, offset]);
+        const folderResults = await db
+            .select({
+                id: folders.id,
+                name: folders.name,
+                parentId: folders.parentId,
+                createdAt: folders.createdAt,
+                lastOpenedAt: folders.lastOpenedAt
+            })
+            .from(folders)
+            .orderBy(desc(folders.createdAt))
+            .limit(limit)
+            .offset(offset);
         
         // Query for total count
-        const countQuery = 'SELECT COUNT(*) FROM folders';
-        const countResult = await pool.query<{ count: string }>(countQuery);
+        const countResult = await db
+            .select({ count: sql<number>`count(*)` })
+            .from(folders);
         
         return {
-            folders: foldersResult.rows,
-            total: parseInt(countResult.rows[0].count, 10)
+            folders: folderResults as Folder[],
+            total: countResult[0]?.count ?? 0
         };
-    } catch {
+    } catch (error) {
+        console.error('Error fetching all folders:', error);
         throw new AppError('Could not retrieve folder data from database.', 500);
     }
 };
@@ -64,16 +67,21 @@ export const getAllFolders = async (limit = 20, offset = 0): Promise<{ folders: 
  */
 export const getFolderById = async (id: string): Promise<Folder | null> => {
     try {
-        const query = `
-            SELECT id, name, parent_id AS "parentId", created_at AS "createdAt", last_opened_at AS "lastOpenedAt" 
-            FROM folders
-            WHERE id = $1
-        `;
+        const result = await db
+            .select({
+                id: folders.id,
+                name: folders.name,
+                parentId: folders.parentId,
+                createdAt: folders.createdAt,
+                lastOpenedAt: folders.lastOpenedAt
+            })
+            .from(folders)
+            .where(eq(folders.id, id))
+            .limit(1);
         
-        const result = await pool.query<Folder>(query, [id]);
-        
-        return result.rows[0] ?? null;
-    } catch {
+        return result[0] ? result[0] as Folder : null;
+    } catch (error) {
+        console.error('Error fetching folder by ID:', error);
         throw new AppError('Could not retrieve folder from database.', 500);
     }
 };
@@ -92,24 +100,26 @@ export const createFolder = async (folder: Omit<Folder, 'id'>): Promise<Folder> 
     try {
         const folderId = uuidv4();
         
-        const insertQuery = `
-            INSERT INTO folders (id, name, parent_id, created_at, last_opened_at)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id, name, parent_id AS "parentId", created_at AS "createdAt", last_opened_at AS "lastOpenedAt"
-        `;
+        const result = await db
+            .insert(folders)
+            .values({
+                id: folderId,
+                name: folder.name,
+                parentId: folder.parentId,
+                createdAt: folder.createdAt,
+                lastOpenedAt: folder.lastOpenedAt
+            })
+            .returning({
+                id: folders.id,
+                name: folders.name,
+                parentId: folders.parentId,
+                createdAt: folders.createdAt,
+                lastOpenedAt: folders.lastOpenedAt
+            });
         
-        const values = [
-            folderId,
-            folder.name,
-            folder.parentId,
-            folder.createdAt,
-            folder.lastOpenedAt
-        ];
-        
-        const result = await pool.query<Folder>(insertQuery, values);
-        
-        return result.rows[0];
-    } catch {
+        return result[0] as Folder;
+    } catch (error) {
+        console.error('Error creating folder:', error);
         throw new AppError('Could not create folder.', 500);
     }
 };
@@ -127,27 +137,19 @@ export const createFolder = async (folder: Omit<Folder, 'id'>): Promise<Folder> 
  */
 export const updateFolder = async (id: string, folder: Partial<Folder>): Promise<Folder | null> => {
     try {
-        const updateQuery = `
-            UPDATE folders
-            SET name = COALESCE($2, name),
-                parent_id = COALESCE($3, parent_id),
-                created_at = COALESCE($4, created_at),
-                last_opened_at = COALESCE($5, last_opened_at)
-            WHERE id = $1
-            RETURNING id, name, parent_id AS "parentId", created_at AS "createdAt", last_opened_at AS "lastOpenedAt"
-        `;
+        const updateData: Partial<typeof folders.$inferInsert> = {};
         
-        const values = [
-            id,
-            folder.name,
-            folder.parentId,
-            folder.createdAt,
-            folder.lastOpenedAt
-        ];
+        if (folder.name !== undefined) updateData.name = folder.name;
+        if (folder.parentId !== undefined) updateData.parentId = folder.parentId;
+        if (folder.createdAt !== undefined) updateData.createdAt = folder.createdAt;
+        if (folder.lastOpenedAt !== undefined) updateData.lastOpenedAt = folder.lastOpenedAt;
         
-        const result = await pool.query<Folder>(updateQuery, values);
+        const result = await db.update(folders)
+            .set(updateData)
+            .where(eq(folders.id, id))
+            .returning();
         
-        return result.rows[0] ?? null;
+        return result[0] ?? null;
     } catch {
         throw new AppError('Could not update folder.', 500);
     }
@@ -164,8 +166,7 @@ export const updateFolder = async (id: string, folder: Partial<Folder>): Promise
  */
 export const deleteFolder = async (id: string): Promise<void> => {
     try {
-        const deleteQuery = 'DELETE FROM folders WHERE id = $1';
-        await pool.query(deleteQuery, [id]);
+        await db.delete(folders).where(eq(folders.id, id));
     } catch {
         throw new AppError('Could not delete folder.', 500);
     }
@@ -190,23 +191,21 @@ export const deleteFolder = async (id: string): Promise<void> => {
 export const getRootFolders = async (limit = 20, offset = 0): Promise<{ folders: Folder[]; total: number }> => {
     try {
         // Query for root folders (parent_id IS NULL) with pagination
-        const foldersQuery = `
-            SELECT id, name, parent_id AS "parentId", created_at AS "createdAt", last_opened_at AS "lastOpenedAt"
-            FROM folders
-            WHERE parent_id IS NULL
-            ORDER BY name ASC
-            LIMIT $1 OFFSET $2
-        `;
-        
-        const foldersResult = await pool.query<Folder>(foldersQuery, [limit, offset]);
+        const foldersResult = await db.select()
+            .from(folders)
+            .where(isNull(folders.parentId))
+            .orderBy(asc(folders.name))
+            .limit(limit)
+            .offset(offset);
         
         // Count total root folders
-        const countQuery = 'SELECT COUNT(*) FROM folders WHERE parent_id IS NULL';
-        const countResult = await pool.query<{ count: string }>(countQuery);
+        const countResult = await db.select({ count: count() })
+            .from(folders)
+            .where(isNull(folders.parentId));
         
         return {
-            folders: foldersResult.rows,
-            total: parseInt(countResult.rows[0].count, 10)
+            folders: foldersResult,
+            total: countResult[0].count
         };
     } catch {
         throw new AppError('Could not retrieve root folders from database.', 500);
@@ -228,23 +227,21 @@ export const getRootFolders = async (limit = 20, offset = 0): Promise<{ folders:
 export const getChildFolders = async (parentId: string, limit = 20, offset = 0): Promise<{ folders: Folder[]; total: number }> => {
     try {
         // Query for child folders with specific parent_id
-        const foldersQuery = `
-            SELECT id, name, parent_id AS "parentId", created_at AS "createdAt", last_opened_at AS "lastOpenedAt"
-            FROM folders
-            WHERE parent_id = $1
-            ORDER BY name ASC
-            LIMIT $2 OFFSET $3
-        `;
-        
-        const foldersResult = await pool.query<Folder>(foldersQuery, [parentId, limit, offset]);
+        const foldersResult = await db.select()
+            .from(folders)
+            .where(eq(folders.parentId, parentId))
+            .orderBy(asc(folders.name))
+            .limit(limit)
+            .offset(offset);
         
         // Count total child folders for this parent
-        const countQuery = 'SELECT COUNT(*) FROM folders WHERE parent_id = $1';
-        const countResult = await pool.query<{ count: string }>(countQuery, [parentId]);
+        const countResult = await db.select({ count: count() })
+            .from(folders)
+            .where(eq(folders.parentId, parentId));
         
         return {
-            folders: foldersResult.rows,
-            total: parseInt(countResult.rows[0].count, 10)
+            folders: foldersResult,
+            total: countResult[0].count
         };
     } catch {
         throw new AppError('Could not retrieve child folders from database.', 500);
@@ -262,10 +259,12 @@ export const getChildFolders = async (parentId: string, limit = 20, offset = 0):
  */
 export const folderExists = async (folderId: string): Promise<boolean> => {
     try {
-        const query = 'SELECT 1 FROM folders WHERE id = $1';
-        const result = await pool.query(query, [folderId]);
+        const result = await db.select({ id: folders.id })
+            .from(folders)
+            .where(eq(folders.id, folderId))
+            .limit(1);
         
-        return result.rows.length > 0;
+        return result.length > 0;
     } catch {
         return false;
     }
@@ -288,23 +287,21 @@ export const searchFolders = async (searchTerm: string, limit = 20, offset = 0):
         const searchPattern = `%${searchTerm}%`;
         
         // Query for folders matching search term
-        const foldersQuery = `
-            SELECT id, name, parent_id AS "parentId", created_at AS "createdAt", last_opened_at AS "lastOpenedAt"
-            FROM folders
-            WHERE LOWER(name) LIKE LOWER($1)
-            ORDER BY name ASC
-            LIMIT $2 OFFSET $3
-        `;
-        
-        const foldersResult = await pool.query<Folder>(foldersQuery, [searchPattern, limit, offset]);
+        const foldersResult = await db.select()
+            .from(folders)
+            .where(ilike(folders.name, searchPattern))
+            .orderBy(asc(folders.name))
+            .limit(limit)
+            .offset(offset);
         
         // Count total matching folders
-        const countQuery = 'SELECT COUNT(*) FROM folders WHERE LOWER(name) LIKE LOWER($1)';
-        const countResult = await pool.query<{ count: string }>(countQuery, [searchPattern]);
+        const countResult = await db.select({ count: count() })
+            .from(folders)
+            .where(ilike(folders.name, searchPattern));
         
         return {
-            folders: foldersResult.rows,
-            total: parseInt(countResult.rows[0].count, 10)
+            folders: foldersResult,
+            total: countResult[0].count
         };
     } catch {
         throw new AppError('Could not search folders in database.', 500);

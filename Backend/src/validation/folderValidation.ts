@@ -49,7 +49,8 @@ export const folderSchema = z.object({
     createdAt: z.string()
         .datetime('Invalid datetime format for createdAt'),
     lastOpenedAt: z.string()
-        .datetime('Invalid datetime format for lastOpenedAt'),
+        .datetime('Invalid datetime format for lastOpenedAt')
+        .nullable(),
 });
 
 /**

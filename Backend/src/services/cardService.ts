@@ -8,15 +8,12 @@
  * - Complex queries for card statistics and learning features
  */
 
-import { Pool } from 'pg';
 import { AppError } from '../utils/AppError';
 import { Card, CardServiceFilter } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-
-// Database connection pool
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-});
+import { db } from '../db/index';
+import { cards } from '../../drizzle/schema';
+import { eq, and, ilike, sql, desc, asc } from 'drizzle-orm';
 
 /**
  * Retrieves cards with advanced filtering, sorting, and pagination
@@ -30,59 +27,63 @@ const pool = new Pool({
  * @returns Object containing cards array and total count
  */
 export const getAllCards = async (filter: CardServiceFilter): Promise<{ cards: Card[]; total: number }> => {
-    const conditions: string[] = [];
-    const values: unknown[] = [];
-    let parameterIndex = 1;
+    try {
+        // Build WHERE conditions
+        const conditions = [];
+        
+        if (filter.folderId) {
+            conditions.push(eq(cards.folderId, filter.folderId));
+        }
+        
+        if (filter.title) {
+            conditions.push(ilike(cards.title, `%${filter.title}%`));
+        }
+        
+        if (filter.tags) {
+            const tagList = filter.tags.split(',').map(tag => tag.trim());
+            // PostgreSQL array overlap operator
+            conditions.push(sql`${cards.tags} && ${tagList}`);
+        }
 
-    // Build dynamic WHERE conditions based on provided filters
-    if (filter.folderId) {
-        conditions.push(`folder_id = $${parameterIndex++}`);
-        values.push(filter.folderId);
+        // Combine conditions with AND
+        const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+        
+        // Set sorting options
+        const sortField = filter.sortBy === 'currentLearningLevel' ? cards.currentLearningLevel : cards.createdAt;
+        const sortOrder = filter.order?.toUpperCase() === 'ASC' ? asc(sortField) : desc(sortField);
+        
+        // Execute main query
+        const cardResults = await db
+            .select({
+                id: cards.id,
+                title: cards.title,
+                question: cards.question,
+                answer: cards.answer,
+                currentLearningLevel: cards.currentLearningLevel,
+                createdAt: cards.createdAt,
+                tags: cards.tags,
+                folderId: cards.folderId
+            })
+            .from(cards)
+            .where(whereClause)
+            .orderBy(sortOrder)
+            .limit(filter.limit ?? 20)
+            .offset(filter.offset ?? 0);
+
+        // Execute count query
+        const countResult = await db
+            .select({ count: sql<number>`count(*)` })
+            .from(cards)
+            .where(whereClause);
+
+        return {
+            cards: cardResults as Card[],
+            total: countResult[0]?.count ?? 0
+        };
+    } catch (error) {
+        console.error('Error fetching cards:', error);
+        throw new AppError('Could not retrieve cards from database.', 500);
     }
-    
-    if (filter.title) {
-        conditions.push(`LOWER(title) LIKE $${parameterIndex++}`);
-        values.push(`%${filter.title.toLowerCase()}%`);
-    }
-    
-    if (filter.tags) {
-        const tagList = filter.tags.split(',').map(tag => tag.trim());
-        conditions.push(`tags && $${parameterIndex++}::text[]`);
-        values.push(tagList);
-    }
-
-    // Construct WHERE clause if conditions exist
-    const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    
-    // Set default sorting options and map frontend fields to database columns
-    const sortField = filter.sortBy === 'currentLearningLevel' ? 'current_learning_level' : 'created_at';
-    const sortOrder = filter.order?.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
-
-    // Build main query with column aliases for camelCase transformation
-    const mainQuery = `
-        SELECT id, title, question, answer, current_learning_level AS "currentLearningLevel",
-            created_at AS "createdAt", tags, folder_id AS "folderId"
-        FROM cards
-        ${whereClause}
-        ORDER BY ${sortField} ${sortOrder}
-        LIMIT $${parameterIndex++} OFFSET $${parameterIndex}
-    `;
-    
-    // Add pagination parameters
-    values.push(filter.limit ?? 20, filter.offset ?? 0);
-
-    // Execute main query to get cards
-    const cardData = await pool.query<Card>(mainQuery, values);
-
-    // Execute count query for total results (excluding pagination parameters)
-    const countQuery = `SELECT COUNT(*) FROM cards ${whereClause}`;
-    const countValues = values.slice(0, values.length - 2); // Remove limit and offset
-    const countResult = await pool.query<{ count: string }>(countQuery, countValues);
-
-    return {
-        cards: cardData.rows,
-        total: parseInt(countResult.rows[0].count, 10)
-    };
 };
 
 /**
@@ -94,17 +95,24 @@ export const getAllCards = async (filter: CardServiceFilter): Promise<{ cards: C
  */
 export const getCardById = async (id: string): Promise<Card | null> => {
     try {
-        const query = `
-            SELECT id, title, question, answer, current_learning_level AS "currentLearningLevel",
-                created_at AS "createdAt", tags, folder_id AS "folderId"
-            FROM cards
-            WHERE id = $1
-        `;
+        const result = await db
+            .select({
+                id: cards.id,
+                title: cards.title,
+                question: cards.question,
+                answer: cards.answer,
+                currentLearningLevel: cards.currentLearningLevel,
+                createdAt: cards.createdAt,
+                tags: cards.tags,
+                folderId: cards.folderId
+            })
+            .from(cards)
+            .where(eq(cards.id, id))
+            .limit(1);
         
-        const result = await pool.query<Card>(query, [id]);
-        
-        return result.rows[0] ?? null;
-    } catch {
+        return result[0] ? result[0] as Card : null;
+    } catch (error) {
+        console.error('Error fetching card by ID:', error);
         throw new AppError('Could not retrieve card from database.', 500);
     }
 };
@@ -123,28 +131,32 @@ export const createCard = async (card: Omit<Card, 'id'>): Promise<Card> => {
     try {
         const cardId = uuidv4();
         
-        const insertQuery = `
-            INSERT INTO cards (id, title, question, answer, current_learning_level, created_at, tags, folder_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-            RETURNING id, title, question, answer, current_learning_level AS "currentLearningLevel",
-                    created_at AS "createdAt", tags, folder_id AS "folderId"
-        `;
+        const result = await db
+            .insert(cards)
+            .values({
+                id: cardId,
+                title: card.title,
+                question: card.question,
+                answer: card.answer,
+                currentLearningLevel: card.currentLearningLevel,
+                createdAt: card.createdAt,
+                tags: card.tags,
+                folderId: card.folderId,
+            })
+            .returning({
+                id: cards.id,
+                title: cards.title,
+                question: cards.question,
+                answer: cards.answer,
+                currentLearningLevel: cards.currentLearningLevel,
+                createdAt: cards.createdAt,
+                tags: cards.tags,
+                folderId: cards.folderId
+            });
         
-        const values = [
-            cardId,
-            card.title,
-            card.question,
-            card.answer,
-            card.currentLearningLevel,
-            card.createdAt,
-            card.tags,
-            card.folderId,
-        ];
-        
-        const result = await pool.query<Card>(insertQuery, values);
-        
-        return result.rows[0];
-    } catch {
+        return result[0] as Card;
+    } catch (error) {
+        console.error('Error creating card:', error);
         throw new AppError('Could not create card.', 500);
     }
 };
@@ -162,34 +174,30 @@ export const createCard = async (card: Omit<Card, 'id'>): Promise<Card> => {
  */
 export const updateCard = async (id: string, card: Partial<Card>): Promise<Card | null> => {
     try {
-        const updateQuery = `
-            UPDATE cards
-            SET title = COALESCE($2, title),
-                question = COALESCE($3, question),
-                answer = COALESCE($4, answer),
-                current_learning_level = COALESCE($5, current_learning_level),
-                created_at = COALESCE($6, created_at),
-                tags = COALESCE($7, tags),
-                folder_id = COALESCE($8, folder_id)
-            WHERE id = $1
-            RETURNING id, title, question, answer, current_learning_level AS "currentLearningLevel",
-                    created_at AS "createdAt", tags, folder_id AS "folderId"
-        `;
+        const result = await db
+            .update(cards)
+            .set({
+                title: card.title,
+                question: card.question,
+                answer: card.answer,
+                currentLearningLevel: card.currentLearningLevel,
+                createdAt: card.createdAt,
+                tags: card.tags,
+                folderId: card.folderId,
+            })
+            .where(eq(cards.id, id))
+            .returning({
+                id: cards.id,
+                title: cards.title,
+                question: cards.question,
+                answer: cards.answer,
+                currentLearningLevel: cards.currentLearningLevel,
+                createdAt: cards.createdAt,
+                tags: cards.tags,
+                folderId: cards.folderId
+            });
         
-        const values = [
-            id,
-            card.title,
-            card.question,
-            card.answer,
-            card.currentLearningLevel,
-            card.createdAt,
-            card.tags,
-            card.folderId,
-        ];
-        
-        const result = await pool.query<Card>(updateQuery, values);
-        
-        return result.rows[0] ?? null;
+        return result[0] ? result[0] as Card : null;
     } catch (error) {
         console.error('Error updating card:', error);
         throw new AppError(
@@ -210,9 +218,11 @@ export const updateCard = async (id: string, card: Partial<Card>): Promise<Card 
  */
 export const deleteCard = async (id: string): Promise<void> => {
     try {
-        const deleteQuery = 'DELETE FROM cards WHERE id = $1';
-        await pool.query(deleteQuery, [id]);
-    } catch {
+        await db
+            .delete(cards)
+            .where(eq(cards.id, id));
+    } catch (error) {
+        console.error('Error deleting card:', error);
         throw new AppError('Could not delete card.', 500);
     }
 };
@@ -229,18 +239,24 @@ export const deleteCard = async (id: string): Promise<void> => {
  */
 export const getCardsByFolder = async (folderId: string): Promise<Card[]> => {
     try {
-        const query = `
-            SELECT id, title, question, answer, current_learning_level AS "currentLearningLevel",
-                created_at AS "createdAt", tags, folder_id AS "folderId"
-            FROM cards
-            WHERE folder_id = $1
-            ORDER BY created_at DESC
-        `;
+        const result = await db
+            .select({
+                id: cards.id,
+                title: cards.title,
+                question: cards.question,
+                answer: cards.answer,
+                currentLearningLevel: cards.currentLearningLevel,
+                createdAt: cards.createdAt,
+                tags: cards.tags,
+                folderId: cards.folderId
+            })
+            .from(cards)
+            .where(eq(cards.folderId, folderId))
+            .orderBy(desc(cards.createdAt));
         
-        const result = await pool.query<Card>(query, [folderId]);
-        
-        return result.rows;
-    } catch {
+        return result as Card[];
+    } catch (error) {
+        console.error('Error fetching cards by folder:', error);
         throw new AppError('Could not retrieve cards for folder.', 500);
     }
 };

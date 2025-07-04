@@ -3,7 +3,7 @@ export interface Folder {
   name: string;
   parentId: string | null;
   createdAt: string;
-  lastOpenedAt: string;
+  lastOpenedAt: string | null;
 }
 
 export interface FolderData {

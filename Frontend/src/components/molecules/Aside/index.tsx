@@ -42,9 +42,12 @@ const FolderNavigationAside: React.FC<AsideProps> = ({
           (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
       case "lastUsed":
-        return sorted.sort(
-          (a, b) => new Date(b.lastOpenedAt).getTime() - new Date(a.lastOpenedAt).getTime()
-        );
+        return sorted.sort((a, b) => {
+          // Handle null values: folders without lastOpenedAt go to the end
+          const aTime = a.lastOpenedAt ? new Date(a.lastOpenedAt).getTime() : 0;
+          const bTime = b.lastOpenedAt ? new Date(b.lastOpenedAt).getTime() : 0;
+          return bTime - aTime;
+        });
       default:
         return sorted;
     }

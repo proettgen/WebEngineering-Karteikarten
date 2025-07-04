@@ -27,7 +27,7 @@ export type FolderUpdateInput = z.infer<typeof folderUpdateSchema>;
 
 // Full Folder entity (extends inferred type with database fields)
 export interface Folder extends BaseEntity, FolderInput {
-  lastOpenedAt: string;
+  lastOpenedAt: string | null;
   // All other fields come from FolderInput via Zod inference
 }
 
