@@ -3,13 +3,25 @@ import { request } from "./httpClient";
 // Folder-API
 export const cardAndFolderService = {
   // Folders
-  getFolders: (_params?: {
+  getFolders: (params?: {
     search?: string;
     limit?: number;
     offset?: number;
     sortBy?: string;
     order?: string;
-  }) => request("/folders"),
+  }) => {
+    // Use a high limit to get all folders by default (can be overridden)
+    const queryParams: Record<string, string> = {
+      limit: (params?.limit || 1000).toString(),
+      offset: (params?.offset || 0).toString()
+    };
+    if (params?.search) queryParams.search = params.search;
+    if (params?.sortBy) queryParams.sortBy = params.sortBy;
+    if (params?.order) queryParams.order = params.order;
+    
+    const query = "?" + new URLSearchParams(queryParams).toString();
+    return request(`/folders${query}`);
+  },
   searchFolders: (
     searchTerm: string,
     params?: { limit?: number; offset?: number },
