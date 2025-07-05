@@ -12,7 +12,7 @@ export const cardAndFolderService = {
   }) => {
     // Use a high limit to get all folders by default (can be overridden)
     const queryParams: Record<string, string> = {
-      limit: (params?.limit || 1000).toString(),
+      limit: (params?.limit || 100).toString(),
       offset: (params?.offset || 0).toString()
     };
     if (params?.search) queryParams.search = params.search;
