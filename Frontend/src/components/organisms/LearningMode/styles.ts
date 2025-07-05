@@ -1,5 +1,29 @@
 import styled from "styled-components";
 
+/**
+ * Styled Components für die LearningMode-Komponente (Organism).
+ *
+ * Diese Datei enthält alle Layout- und Style-Elemente, die im Lernmodus für die Anzeige und Interaktion mit einer Karte verwendet werden.
+ *
+ * Die Komponenten werden in index.tsx importiert und dort für das Layout genutzt.
+ *
+ * Übersicht der Styled Components:
+ * - Container: Wrapper für die gesamte Lernmodus-Ansicht
+ * - Title: Überschrift für den Kartentitel
+ * - Question: Frage-Text auf der Karte
+ * - Answer: Antwort-Text auf der Karte
+ * - LearningContainer: Wrapper für Karte und Buttons
+ * - ButtonContainer: (optional) Wrapper für Buttons unter der Karte
+ * - TopRow: Zeile für den Zurück-Button
+ * - ButtonRow: Zeile für Bewertungs- und Navigationsbuttons
+ * - HintArea: Bereich für Flip-Hinweis
+ * - HintWrapper: Wrapper für den Hinweistext
+ *
+ * Verwandte Dateien:
+ * - ../LearningMode/index.tsx: Verwendet diese Styled Components
+ * - ../LearningMode/types.ts: Typdefinitionen für Props und Karten
+ */
+
 // Container für die gesamte Lernmodus-Ansicht
 export const Container = styled.div`
   padding: 20px;
@@ -39,7 +63,7 @@ export const LearningContainer = styled.div`
   margin: 0 auto;
 `;
 
-// Container für Buttons unter der Karte
+// Container für Buttons unter der Karte (optional, aktuell nicht genutzt)
 export const ButtonContainer = styled.div`
   display: flex;
   gap: 10px;
@@ -61,9 +85,12 @@ export const ButtonRow = styled.div`
   margin-top: 20px;
 `;
 
-// Wrapper für Flip-Hinweis oder Icons
+// Wrapper für den Hinweistext oder Icons
 export const HintWrapper = styled.span`
   display: inline-block;
+  color: ${({ theme }) => theme.deny};
+  font-size: 1rem;
+  margin-top: 4px;
 `;
 
 // Bereich für Flip-Hinweis unter der Karte

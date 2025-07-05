@@ -1,5 +1,19 @@
 import styled from "styled-components";
 
+/**
+ * Styled Components für die LearningModeManager-Komponente (Organism).
+ *
+ * Diese Datei enthält Styles für die Anzeige des Abschlussbildschirms und die Anordnung der Buttons im Lernmodus-Manager.
+ *
+ * Übersicht der Styled Components:
+ * - CongratsWrapper: Wrapper für die Glückwunsch-/Abschlussanzeige nach Abschluss des Lernens
+ * - ButtonRow: Zeile für Buttons (z.B. Neustart, Zurück)
+ *
+ * Verwandte Dateien:
+ * - ../LearningModeManager/index.tsx: Verwendet diese Styled Components
+ * - ../LearningModeManager/types.ts: Typdefinitionen für Props und State
+ */
+
 // Wrapper für die Glückwunsch-Anzeige nach Abschluss des Lernens
 export const CongratsWrapper = styled.div`
   display: flex;

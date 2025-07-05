@@ -1,4 +1,18 @@
-// Typen für den LearningModeManager
+/**
+ * Typdefinitionen für die LearningModeManager-Komponente (Organism).
+ *
+ * Diese Datei enthält die zentralen Typen für die Verwaltung des Lernvorgangs einer Box.
+ *
+ * Übersicht der Typen:
+ * - Folder: Beschreibt einen Ordner mit Karteikarten
+ * - LearningModeManagerProps: Props für die LearningModeManager-Komponente (siehe ../LearningModeManager/index.tsx)
+ * - LearningModeManagerState: (optional) State-Interface für Klassenkomponenten
+ *
+ * Cross-Referenzen:
+ * - ../LearningModeManager/index.tsx: Verwendet diese Typen für Props und State
+ * - ../LearningModeManager/styles.ts: Styled Components für das Layout
+ */
+
 // Folder beschreibt einen Ordner mit Karteikarten.
 export type Folder = {
   id: string; // Eindeutige ID des Ordners

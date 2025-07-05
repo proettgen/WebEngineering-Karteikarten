@@ -3,14 +3,19 @@ import * as SC from "./styles";
 import Headline from "@/components/atoms/Headline";
 import { LearningModeTemplateProps } from "./types";
 /**
- * Template-Komponente für den Lernmodus.
- * Stellt das Layout, die Kopfzeile mit Timer und Box-Anzeige sowie einen Container für die jeweiligen Inhalte bereit.
+ * Template-Komponente für den Lernmodus (Layout-Wrapper).
+ *
+ * Diese Komponente stellt das Layout für den Lernmodus bereit:
+ * - Kopfzeile mit Titel, Timer und Box-Anzeige
+ * - Container für die jeweiligen Inhalte (children)
  *
  * Props:
- * - children: Die eigentlichen Inhalte (z.B. Karte, Auswahl, Buttons)
- * - elapsedSeconds: Bisher vergangene Zeit im Lernmodus (optional)
+ * - children: Die eigentlichen Inhalte (z.B. Auswahl, Karte, Buttons)
+ * - elapsedSeconds: Bisher vergangene Zeit im Lernmodus (optional, für Timer-Anzeige)
  * - boxLevel: Aktuelle Box-Stufe (optional, für Anzeige)
  * - boxCount: Anzahl der Karten in der aktuellen Box (optional)
+ *
+ * Diese Komponente enthält keine eigene Logik, sondern dient nur als Layout-Wrapper für die Inhalte.
  */
 const formatTime = (seconds: number) => {
   const mm = String(Math.floor(seconds / 60)).padStart(2, "0");

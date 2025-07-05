@@ -7,17 +7,36 @@ import Text from "@/components/atoms/Text";
 import LearningModeTemplate from "@/components/templates/LearningModeTemplate";
 import { CardType, LearningModeProps } from "./types";
 /**
- * LearningMode-Komponente
- * Diese Komponente steuert den Ablauf des Lernmodus für Karteikarten.
- * Sie zeigt jeweils eine zufällige Karte aus dem aktuellen Kartenstapel an und ermöglicht das Markieren als richtig/falsch sowie das Blättern zur nächsten Karte.
+ * Organism-Komponente für die Interaktion mit einer einzelnen Lernkarte im Lernmodus.
  *
- * Props:
+ * Diese Komponente ist Teil des "LearningMode"-Features und wird von der übergeordneten Komponente
+ * LearningModeManager (siehe ../LearningModeManager/index.tsx) verwendet. Sie ist für die Anzeige und Interaktion
+ * mit einer einzelnen Karte zuständig (Frage/Antwort, Flip, Bewertung, Navigation zur nächsten Karte).
+ *
+ * Wichtige Verantwortlichkeiten:
+ * - Zeigt eine zufällige Karte aus dem aktuellen Kartenstapel an (props.cards)
+ * - Ermöglicht das Umdrehen der Karte (Frage <-> Antwort)
+ * - Bewertet die Karte als richtig/falsch (Buttons), ruft dazu das Callback onEvaluate auf
+ * - Navigiert zur nächsten Karte (onNextCard)
+ * - Zeigt einen Flip-Hinweis an, falls die Karte noch nicht umgedreht wurde
+ * - Zeigt einen Zurück-Button, um den Lernmodus zu verlassen (onBack)
+ *
+ * Props (siehe ./types.ts für Details):
  * - elapsedSeconds: Zeit, die im Lernmodus bereits vergangen ist (für Timer-Anzeige)
  * - cards: Array der zu lernenden Karten (nur Karten der aktuellen Box)
  * - onEvaluate: Callback, wenn eine Karte als richtig/falsch bewertet wird
  * - onNextCard: Callback, wenn zur nächsten Karte gewechselt wird
  * - onBack: Callback, um den Lernmodus zu verlassen
  * - boxLevel: Aktuelle Box-Stufe (0-3)
+ *
+ * Diese Komponente ist rein für die UI und Interaktion mit einer Karte zuständig, aber nicht für das Laden oder Bewerten der Karten im Backend.
+ * Die Logik für das Laden und Bewerten der Karten liegt in LearningModeManager (../LearningModeManager/index.tsx).
+ *
+ * Verwendete Hilfsdateien:
+ * - ./styles.ts: Styled Components für das Layout und Styling
+ * - ./types.ts: Typdefinitionen für Props und Karten
+ * - ../LearningModeManager/index.tsx: Übergeordnete Logik für den Lernmodus einer Box
+ * - @/components/templates/LearningModeTemplate: Layout-Wrapper für den Lernmodus (Header, Timer, Box-Anzeige)
  */
 const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack, boxLevel }: LearningModeProps) => {
   // State für die aktuell angezeigte Karte (wird zufällig aus dem Stapel gewählt)

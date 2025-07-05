@@ -1,4 +1,17 @@
-// Typen für den Lernmodus
+/**
+ * Typdefinitionen für die LearningMode-Komponente (Organism).
+ *
+ * Diese Datei enthält die zentralen Typen für die Anzeige und Interaktion mit Karteikarten im Lernmodus.
+ *
+ * Übersicht der Typen:
+ * - CardType: Beschreibt eine einzelne Karteikarte, wie sie im Lernmodus verwendet wird
+ * - LearningModeProps: Props für die LearningMode-Komponente (siehe ../LearningMode/index.tsx)
+ *
+ * Cross-Referenzen:
+ * - ../LearningMode/index.tsx: Verwendet diese Typen für Props und Karten
+ * - ../LearningMode/styles.ts: Styled Components für das Layout
+ */
+
 // CardType beschreibt eine einzelne Karteikarte, wie sie im Lernmodus verwendet wird.
 export type CardType = {
   id: string; // Eindeutige ID der Karte

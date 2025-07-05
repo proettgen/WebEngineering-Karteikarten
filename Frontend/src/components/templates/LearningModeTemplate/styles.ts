@@ -1,5 +1,23 @@
 import styled from "styled-components";
 
+/**
+ * Styled Components für das LearningModeTemplate (Template-Komponente).
+ *
+ * Diese Datei enthält Styles für das Layout des Lernmodus-Templates, insbesondere für Header, Timer und Box-Anzeige.
+ *
+ * Übersicht der Styled Components:
+ * - Container: Wrapper für die gesamte Seite im Lernmodus
+ * - Header: Kopfzeile mit Titel, Timer und Box-Anzeige
+ * - Title: Titel-Überschrift (optional)
+ * - Timer: Timer-Anzeige
+ * - TimerRow: Zeile für Timer und Icon
+ * - BoxLevel: Anzeige der aktuellen Box-Stufe
+ *
+ * Verwandte Dateien:
+ * - ./index.tsx: Verwendet diese Styled Components
+ * - ./types.ts: Typdefinitionen für Props
+ */
+
 // Container für die gesamte Seite im Lernmodus
 export const Container = styled.div`
   background-color: ${({ theme }) => theme.background};
@@ -18,7 +36,7 @@ export const Header = styled.div`
   background: transparent;
 `;
 
-// Titel-Überschrift
+// Titel-Überschrift (optional, kann für eigene Titel genutzt werden)
 export const Title = styled.h1`
   margin: 0 0 0 16px;
 `;

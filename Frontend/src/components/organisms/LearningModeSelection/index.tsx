@@ -11,26 +11,33 @@ import { LearningModeSelectionStep } from "./types";
 import { Folder } from "@/database/folderTypes";
 
 /**
- * LearningModeSelection-Komponente
+ * Organism-Komponente für den gesamten Lernmodus.
  *
- * Diese Komponente steuert den gesamten Auswahl- und Navigationsprozess für den Lernmodus:
+ * Diese Komponente steuert den kompletten Ablauf des Lernmodus:
  * - Schrittweises Vorgehen: Start → Ordnerauswahl → Box-Auswahl → Lernen
+ * - Navigation zwischen den Schritten (State-Management)
  * - Timer-Logik für die Lernzeit
+ * - Laden der Ordner und Karten per API
  * - Übergabe der gewählten Parameter an den LearningModeManager
  *
  * State:
  * - step: aktueller Schritt im Auswahlprozess ("start", "select-folder", "select-box", "learn")
  * - selectedFolder: aktuell ausgewählter Ordner
  * - selectedBox: aktuell ausgewählte Box (0-3)
- * - elapsedSeconds: bisher vergangene Zeit im Lernmodus
+ * - elapsedSeconds: bisher vergangene Zeit im Lernmodus (für Timer)
  * - resetTrigger: erzwingt Remount des LearningModeManagers bei Neustart
  * - timerRef: Referenz auf das Timer-Interval
+ * - folders, loadingFolders, error: State für die Ordnerauswahl
+ * - boxCounts, loadingCards: State für die Box-Auswahl
  *
  * Die Komponente rendert je nach Schritt unterschiedliche UI:
  * - Start: Begrüßung und Start-Button
- * - Ordnerauswahl: Liste aller Ordner
+ * - Ordnerauswahl: Liste aller Ordner (FolderList)
  * - Box-Auswahl: Auswahl der Box (1-4) mit Kartenanzahl
- * - Lernen: Übergabe an LearningModeManager
+ * - Lernen: Übergabe an LearningModeManager (Lernvorgang für eine Box)
+ *
+ * Diese Komponente ist der zentrale Organism für den Lernmodus und kapselt die gesamte Seitenlogik.
+ * Sie nutzt das LearningModeTemplate als Layout-Wrapper.
  */
 
 const LearningModeSelection = () => {

@@ -11,12 +11,22 @@ import * as SC from "./styles";
 const clampBox = (level: number) => Math.max(0, Math.min(3, level)); // Hilfsfunktion: begrenzt Box-Level auf 0-3
 const LAST_BOX = 3; // Maximale Box-Stufe
 /**
- * LearningModeManager-Komponente
- * Steuert den Ablauf des Lernvorgangs für einen Ordner und eine bestimmte Box-Stufe.
- * - Lädt und filtert die Karten für die aktuelle Box
- * - Verarbeitet Bewertungen (richtig/falsch) und verschiebt Karten entsprechend
- * - Erkennt, wenn alle Karten in der letzten Box sind (Lernziel erreicht)
- * - Bietet Funktionen zum Neustart und Rückkehr zur Auswahl
+ * Organism-Komponente für den eigentlichen Lernvorgang einer Box.
+ *
+ * Diese Komponente übernimmt die Logik für das Lernen der Karten in einer bestimmten Box eines Ordners:
+ * - Lädt und filtert die Karten für die aktuelle Box (API-Aufruf)
+ * - Verarbeitet Bewertungen (richtig/falsch) und verschiebt Karten in die nächste/andere Box (API-Aufruf)
+ * - Erkennt, wenn alle Karten in der letzten Box sind (Lernziel erreicht) und zeigt eine Abschlussanzeige
+ * - Bietet Funktionen zum Neustart (alle Karten zurücksetzen) und Rückkehr zur Auswahl
+ *
+ * State:
+ * - cards: Karten in der aktuellen Box
+ * - loadingCards, error: Lade- und Fehlerstatus
+ * - isCompleted, completedTime: Abschlussstatus und benötigte Zeit
+ * - resetKey: Schlüssel zum Erzwingen eines Remounts (z.B. nach Reset)
+ *
+ * Diese Komponente bindet die Komponente LearningMode ein und gibt ihr die Karten und Callbacks.
+ * Sie ist für die gesamte Logik des Lernvorgangs einer Box zuständig.
  */
 const LearningModeManager = ({
   folder,
