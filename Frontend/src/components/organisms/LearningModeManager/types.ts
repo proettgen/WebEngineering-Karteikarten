@@ -24,7 +24,7 @@ export type Folder = {
 // Props für die LearningModeManager-Komponente
 export type LearningModeManagerProps = {
   folder: Folder; // Aktuell ausgewählter Ordner
-  boxLevel: number; // Aktuelle Box-Stufe (0-3)
+  currentLearningLevel: number; // Aktuelles Lernlevel/Box-Stufe (0-3)
   elapsedSeconds: number; // Bisher vergangene Zeit im Lernmodus
   onBack: () => void; // Callback für Zurück-Button
   onRestart?: () => void; // Callback für Neustart des Lernmodus

@@ -27,7 +27,7 @@ import { CardType, LearningModeProps } from "./types";
  * - onEvaluate: Callback, wenn eine Karte als richtig/falsch bewertet wird
  * - onNextCard: Callback, wenn zur nächsten Karte gewechselt wird
  * - onBack: Callback, um den Lernmodus zu verlassen
- * - boxLevel: Aktuelle Box-Stufe (0-3)
+ * - currentLearningLevel: Aktuelles Lernlevel/Box-Stufe (0-3)
  *
  * Diese Komponente ist rein für die UI und Interaktion mit einer Karte zuständig, aber nicht für das Laden oder Bewerten der Karten im Backend.
  * Die Logik für das Laden und Bewerten der Karten liegt in LearningModeManager (../LearningModeManager/index.tsx).
@@ -38,7 +38,7 @@ import { CardType, LearningModeProps } from "./types";
  * - ../LearningModeManager/index.tsx: Übergeordnete Logik für den Lernmodus einer Box
  * - @/components/templates/LearningModeTemplate: Layout-Wrapper für den Lernmodus (Header, Timer, Box-Anzeige)
  */
-const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack, boxLevel }: LearningModeProps) => {
+const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack, currentLearningLevel }: LearningModeProps) => {
   // State für die aktuell angezeigte Karte (wird zufällig aus dem Stapel gewählt)
   const [currentCard, setCurrentCard] = useState<CardType | null>(
     cards.length > 0 ? cards[Math.floor(Math.random() * cards.length)] : null
@@ -116,10 +116,10 @@ const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack, b
   };
 
   // Anzahl Karten in der aktuellen Box berechnen (für Anzeige im Template)
-  const boxCardCount = cards.filter(card => (card.boxLevel ?? 0) === boxLevel).length;
+  const boxCardCount = cards.filter(card => (card.currentLearningLevel ?? 0) === currentLearningLevel).length;
 
   return (
-    <LearningModeTemplate elapsedSeconds={elapsedSeconds} boxLevel={boxLevel} boxCount={boxCardCount}>
+    <LearningModeTemplate elapsedSeconds={elapsedSeconds} currentLearningLevel={currentLearningLevel} boxCount={boxCardCount}>
       <SC.Container>
         {onBack && (
           <SC.TopRow>

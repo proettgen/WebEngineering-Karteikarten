@@ -285,9 +285,13 @@ export const updateCardInFolder = async (req: Request, res: Response, next: Next
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { folderId: _, ...updateDataWithoutFolderId } = parsed;
         const updateData = { ...updateDataWithoutFolderId, folderId };
-        
+
+        // Logging entfernt
+
         const card = await cardService.updateCard(cardId, updateData);
-        
+
+        // Logging entfernt
+
         if (!card) {
             throw new AppError(`Failed to update card with ID ${cardId}`, 500);
         }

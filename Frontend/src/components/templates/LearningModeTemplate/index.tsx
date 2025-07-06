@@ -12,7 +12,7 @@ import { LearningModeTemplateProps } from "./types";
  * Props:
  * - children: Die eigentlichen Inhalte (z.B. Auswahl, Karte, Buttons)
  * - elapsedSeconds: Bisher vergangene Zeit im Lernmodus (optional, für Timer-Anzeige)
- * - boxLevel: Aktuelle Box-Stufe (optional, für Anzeige)
+ * - currentLearningLevel: Aktuelles Lernlevel/Box-Stufe (optional, für Anzeige)
  * - boxCount: Anzahl der Karten in der aktuellen Box (optional)
  *
  * Diese Komponente enthält keine eigene Logik, sondern dient nur als Layout-Wrapper für die Inhalte.
@@ -22,13 +22,13 @@ const formatTime = (seconds: number) => {
   const ss = String(seconds % 60).padStart(2, "0");
   return `${mm}:${ss}`;
 };
-const LearningModeTemplate = ({ children, elapsedSeconds, boxLevel, boxCount }: LearningModeTemplateProps & { boxLevel?: number; boxCount?: number }) => (
+const LearningModeTemplate = ({ children, elapsedSeconds, currentLearningLevel, boxCount }: LearningModeTemplateProps & { currentLearningLevel?: number; boxCount?: number }) => (
   <SC.Container>
     <SC.Header>
       <Headline size="md">Learning Mode</Headline>
-      {typeof boxLevel === "number" && (
+      {typeof currentLearningLevel === "number" && (
         <SC.BoxLevel>
-          {`Box ${boxLevel + 1}${typeof boxCount === "number" ? ` (${boxCount})` : ""}`}
+          {`Box ${currentLearningLevel + 1}${typeof boxCount === "number" ? ` (${boxCount})` : ""}`}
         </SC.BoxLevel>
       )}
       {typeof elapsedSeconds === "number" && (

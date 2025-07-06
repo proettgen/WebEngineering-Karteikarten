@@ -44,7 +44,7 @@ const LearningModeSelection = () => {
   // Alle States und Effects müssen immer auf oberster Ebene stehen!
   const [step, setStep] = useState<LearningModeSelectionStep>("start");
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
-  const [selectedBox, setSelectedBox] = useState<number | null>(null);
+  const [selectedLearningLevel, setSelectedLearningLevel] = useState<number | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [resetTrigger, setResetTrigger] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -80,8 +80,8 @@ const LearningModeSelection = () => {
         .then((res: any) => {
           const cards = res.data.cards || [];
           const counts = [0, 1, 2, 3].map(
-            (box) =>
-              cards.filter((card: any) => (card.boxLevel ?? 0) === box).length,
+            (level) =>
+              cards.filter((card: any) => (card.currentLearningLevel ?? 0) === level).length,
           );
           setBoxCounts(counts);
         })
@@ -113,17 +113,17 @@ const LearningModeSelection = () => {
   }, [step]);
 
   // Schritt: Lernen (LearningModeManager einbinden)
-  if (step === "learn" && selectedFolder && selectedBox !== null) {
+  if (step === "learn" && selectedFolder && selectedLearningLevel !== null) {
     return (
       <LearningModeManager
         folder={selectedFolder}
-        boxLevel={selectedBox}
+        currentLearningLevel={selectedLearningLevel}
         elapsedSeconds={elapsedSeconds}
         onBack={() => {
           setStep("select-box");
         }}
         onRestart={() => {
-          setSelectedBox(0);
+          setSelectedLearningLevel(0);
           setElapsedSeconds(0);
           setResetTrigger((t) => t + 1);
         }}
@@ -131,7 +131,7 @@ const LearningModeSelection = () => {
           setStep("select-folder");
           setElapsedSeconds(0);
         }}
-        key={resetTrigger + ":" + selectedFolder.id + ":" + selectedBox}
+        key={resetTrigger + ":" + selectedFolder.id + ":" + selectedLearningLevel}
       />
     );
   }
@@ -146,21 +146,21 @@ const LearningModeSelection = () => {
             <p>Loading cards ...</p>
           ) : (
             <SC.BoxButtonRow>
-              {[0, 1, 2, 3].map((box) => (
+              {[0, 1, 2, 3].map((level) => (
                 <Button
-                  key={box}
+                  key={level}
                   $variant="primary"
                   onClick={() => {
-                    setSelectedBox(box);
+                    setSelectedLearningLevel(level);
                     setStep("learn");
                   }}
                 >
-                  {`Box ${box + 1} (${boxCounts[box]})`}
+                  {`Box ${level + 1} (${boxCounts[level]})`}
                 </Button>
               ))}
             </SC.BoxButtonRow>
           )}
-          <Button $variant="secondary" onClick={() => setStep("select-folder")}>
+          <Button $variant="secondary" onClick={() => setStep("select-folder")}> 
             Back
           </Button>
         </SC.CenteredColumn>
