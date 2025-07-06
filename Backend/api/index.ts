@@ -1,6 +1,7 @@
 import express from "express";
 import folderRoutes from "../src/routes/folderRoutes";
 import cardRoutes from "../src/routes/cardRoutes";
+import analyticsRoutes from "../src/routes/analyticsRoutes";
 import { globalErrorHandler } from "../src/utils/errorHandler";
 import { AppError } from "../src/utils/AppError";
 import fs from "fs";
@@ -41,6 +42,7 @@ app.get("/", (_, res) => {
 app.use("/api/folders", folderRoutes);
 app.use("/api/cards", cardRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 // Swagger documentation routes
 app.get("/api/api-docs/swagger.json", (req, res) => {

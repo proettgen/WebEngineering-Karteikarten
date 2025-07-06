@@ -38,3 +38,13 @@ export const users = pgTable("users", {
 	unique("users_username_unique").on(table.username),
 	unique("users_email_unique").on(table.email),
 ]);
+
+export const analytics = pgTable("analytics", {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    totalLearningTime: integer("total_learning_time").default(0).notNull(), // Sekunden
+    totalCardsLearned: integer("total_cards_learned").default(0).notNull(),
+    totalCorrect: integer("total_correct").default(0).notNull(),
+    totalWrong: integer("total_wrong").default(0).notNull(),
+    resets: integer("resets").default(0).notNull(),
+    updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().notNull(),
+});

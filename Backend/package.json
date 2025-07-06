@@ -16,7 +16,6 @@
     "format": "prettier --write src/**/*.ts",
     "db:push": "drizzle-kit push",
     "db:pull": "drizzle-kit introspect"
-    
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
@@ -28,6 +27,7 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^11.1.0",
+    "webengineering-karteikarten-root": "file:..",
     "zod": "^3.25.67"
   },
   "devDependencies": {
