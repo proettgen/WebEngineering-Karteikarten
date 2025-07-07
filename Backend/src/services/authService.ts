@@ -245,8 +245,7 @@ export const updateUserProfile = async ({
 
   // Check if any changes are actually being made
   let changes = 0;
-  const updateData: { username?: string; email?: string; password?: string } =
-    {};
+  const updateData: { username?: string; email?: string; password?: string;} = {};
 
   if (username && username !== user.username) {
     updateData.username = username;
@@ -274,6 +273,7 @@ export const updateUserProfile = async ({
       400,
     );
   }
+
 
   // Update user
   const updatedArr = await db

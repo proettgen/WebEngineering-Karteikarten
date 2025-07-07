@@ -9,4 +9,5 @@ export interface AuthFormInputProps {
   onChange: (_event: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur: (_event: React.FocusEvent<HTMLInputElement>) => void;
   required?: boolean;
+  skipValidation?: boolean; // New prop to skip validation for optional fields
 }

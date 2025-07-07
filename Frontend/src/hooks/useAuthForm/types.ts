@@ -12,12 +12,14 @@ export interface AuthFormData {
   usernameOrEmail?: string;  // For login
   username?: string;         // For register
   email?: string;            // For register
-  password: string;
+  password?: string;         // For login/register (optional for profile mode)
   confirmPassword?: string;
+  newPassword?: string;      // For profile
+  currentPassword?: string;  // For profile
 }
 
 export interface UseAuthFormConfig {
-  mode: 'login' | 'register';
+  mode: 'login' | 'register' | 'profile';
   initialValues: AuthFormData;
   onSubmit: (_data: AuthFormData) => Promise<void>;
 }

@@ -10,15 +10,18 @@ const AuthFormInput: React.FC<AuthFormInputProps> = ({
   field,
   onChange,
   onBlur,
-  required = false
+  required = false,
+  skipValidation = false
 }) => {
   const showError = field.touched && !!field.error;
   const showSuccess = Boolean(
     field.touched && 
     field.success && 
     !field.error && 
+    !skipValidation &&
     (type === 'email' ? field.value.trim() : !!field.value.trim())
   );
+  
   return (
     <SC.InputWrapper>
       <SC.Input

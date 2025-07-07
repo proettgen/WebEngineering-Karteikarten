@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { getProfile, logoutUser, deleteUser } from "@/services/authService";
 import * as SC from "./styles";
 import { Profile } from "./types";
+import Text from "@/components/atoms/Text";
 import ProfileView from "@/components/organisms/ProfileView";
 import ProfileEdit from "@/components/organisms/ProfileEditor";
 
@@ -74,7 +75,7 @@ const ProfileTemplate: React.FC = () => {
         await logoutUser();
         await checkLogin();
       } catch {
-        ""
+        //
       }
     };
   
@@ -82,7 +83,7 @@ const ProfileTemplate: React.FC = () => {
   if (loading || isLoggedIn === null || !profile) {
     return (
       <SC.PageWrapper>
-        <div>Loading...</div>
+        <Text size="large">Loading...</Text>
       </SC.PageWrapper>
     );
   }

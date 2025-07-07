@@ -18,12 +18,6 @@ export const HeaderSection = styled.div`
   text-align: center;
 `;
 
-export const MessageContainer = styled.div`
-  padding: 12px 16px;
-  border-radius: 8px;
-  background-color: ${({ theme }) => theme.surface}15;
-`;
-
 export const InfoSection = styled.div`
   display: flex;
   flex-direction: column;
@@ -80,4 +74,8 @@ export const ButtonRow = styled.div`
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
+  > button {
+    flex: 1;
+    width: 120px;
+  }
 `;
