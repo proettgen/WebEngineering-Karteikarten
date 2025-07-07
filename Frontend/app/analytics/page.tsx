@@ -1,14 +1,56 @@
 
-'use client';
-import React, { useEffect, useState } from 'react';
-import { getAnalytics, updateAnalytics } from '../../src/services/analyticsService';
-import type { Analytics } from '../../src/database/analyticsTypes';
-import Headline from '../../src/components/atoms/Headline';
-import Button from '../../src/components/atoms/Button';
-import Text from '../../src/components/atoms/Text';
-import Input from '../../src/components/atoms/Input';
 
+"use client";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { getAnalytics, updateAnalytics } from "../../src/services/analyticsService";
+import type { Analytics } from "../../src/database/analyticsTypes";
+import Headline from "../../src/components/atoms/Headline";
+import Button from "../../src/components/atoms/Button";
+import Text from "../../src/components/atoms/Text";
+import Input from "../../src/components/atoms/Input";
+import { useAuth } from "../../src/context/AuthContext";
+/**
+ * AnalyticsPage (Frontend)
+ *
+ * Zeigt die Lernstatistiken (Analytics) des Nutzers an und ermöglicht deren Bearbeitung.
+ *
+ * Hinweise für Einsteiger:
+ * - Diese Seite ist nur für eingeloggte Nutzer zugänglich (authentifiziert).
+ * - Die Daten werden über das Analytics-Service geladen (siehe src/services/analyticsService.ts).
+ * - Die Typisierung erfolgt über src/database/analyticsTypes.ts.
+ *
+ * Querverweise:
+ * - src/services/analyticsService.ts: API-Aufrufe
+ * - src/database/analyticsTypes.ts: Typdefinition
+ * - src/components/molecules/NavigationBar/index.tsx: Einbindung in die Navigation
+ */
+
+/**
+ * AnalyticsPage (Frontend)
+ *
+ * Zeigt die Lernstatistiken (Analytics) des Nutzers an und ermöglicht deren Bearbeitung.
+ *
+ * Hinweise für Einsteiger:
+ * - Diese Seite ist nur für eingeloggte Nutzer zugänglich (authentifiziert).
+ * - Die Daten werden über das Analytics-Service geladen (siehe src/services/analyticsService.ts).
+ * - Die Typisierung erfolgt über src/database/analyticsTypes.ts.
+ *
+ * Querverweise:
+ * - src/services/analyticsService.ts: API-Aufrufe
+ * - src/database/analyticsTypes.ts: Typdefinition
+ * - src/components/molecules/NavigationBar/index.tsx: Einbindung in die Navigation
+ */
 export default function AnalyticsPage() {
+  const { isLoggedIn } = useAuth();
+  const router = useRouter();
+  // Authentifizierungsschutz: Weiterleitung, falls nicht eingeloggt
+  useEffect(() => {
+    if (isLoggedIn === false) {
+      router.replace("/login");
+    }
+  }, [isLoggedIn, router]);
+
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [edit, setEdit] = useState(false);
   const [form, setForm] = useState({

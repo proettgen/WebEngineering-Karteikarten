@@ -9,10 +9,15 @@ const NavigationBar: React.FC<NavBarProps> = () => {
   const pathname = usePathname();
   const { isLoggedIn } = useAuth();
 
+  // Navigationslinks für die Hauptseiten der App
+  // "always: true" bedeutet, dass der Link immer angezeigt wird (auch wenn der Nutzer nicht eingeloggt ist)
+  // "always: false" bedeutet, dass der Link nur für eingeloggte Nutzer sichtbar ist
+  // Füge hier "Analytics" als geschützte Seite hinzu
   const links = [
     { href: "/", label: "Home", always: true },
     { href: "/cards", label: "Cards", always: false },
     { href: "/learn", label: "Learn", always: false },
+    { href: "/analytics", label: "Analytics", always: false },
     { href: "/how-to", label: "How-To", always: true },
     { href: "/profile", label: "Profile", always: false },
   ];

@@ -1,6 +1,27 @@
+/**
+ * Analytics Controller
+ *
+ * Diese Datei enthält die HTTP-Controller für alle Analytics-Endpunkte.
+ * Sie nimmt HTTP-Anfragen entgegen, ruft die Service-Methoden auf und sendet die HTTP-Antworten zurück.
+ *
+ * Hinweise für Einsteiger:
+ * - Controller sind für die HTTP-spezifische Logik zuständig (z.B. Statuscodes, Fehlerbehandlung).
+ * - Die eigentliche Datenbanklogik steckt im Service (siehe src/services/analyticsService.ts).
+ * - Die Controller werden in den Routen (src/routes/analyticsRoutes.ts) verwendet.
+ *
+ * Querverweise:
+ * - src/services/analyticsService.ts: Geschäftslogik für Analytics
+ * - src/routes/analyticsRoutes.ts: Routing der Analytics-Endpunkte
+ * - drizzle/schema.ts: Datenbankschema
+ */
+
 import * as analyticsService from '../services/analyticsService';
 import { Request, Response, NextFunction } from 'express';
 
+/**
+ * GET /api/analytics
+ * Gibt die aktuellen Analytics-Daten zurück.
+ */
 export const getAnalytics = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await analyticsService.getAnalytics();
@@ -14,6 +35,10 @@ export const getAnalytics = async (req: Request, res: Response, next: NextFuncti
   }
 };
 
+/**
+ * POST /api/analytics
+ * Legt einen neuen Analytics-Datensatz an.
+ */
 export const createAnalytics = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await analyticsService.createAnalytics(req.body as Omit<import('../types/analyticsTypes').Analytics, 'id' | 'updatedAt'>);
@@ -23,6 +48,10 @@ export const createAnalytics = async (req: Request, res: Response, next: NextFun
   }
 };
 
+/**
+ * PUT /api/analytics/:id
+ * Aktualisiert einen Analytics-Datensatz anhand der ID.
+ */
 export const updateAnalytics = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
@@ -37,6 +66,10 @@ export const updateAnalytics = async (req: Request, res: Response, next: NextFun
   }
 };
 
+/**
+ * DELETE /api/analytics/:id
+ * Löscht einen Analytics-Datensatz anhand der ID.
+ */
 export const deleteAnalytics = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;

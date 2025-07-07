@@ -39,12 +39,26 @@ export const users = pgTable("users", {
 	unique("users_email_unique").on(table.email),
 ]);
 
+/**
+ * Analytics Tabelle (drizzle-orm)
+ *
+ * Definiert die Struktur der Analytics-Tabelle in der Datenbank.
+ *
+ * Hinweise für Einsteiger:
+ * - Die Felder entsprechen dem Analytics-Typ (siehe src/types/analyticsTypes.ts).
+ * - Die Tabelle ist aktuell global, d.h. nicht benutzerspezifisch.
+ * - Für Userbindung müsste eine userId-Spalte ergänzt werden.
+ *
+ * Querverweise:
+ * - src/types/analyticsTypes.ts: TypeScript-Typ
+ * - src/services/analyticsService.ts: Service-Logik
+ */
 export const analytics = pgTable("analytics", {
-    id: uuid().defaultRandom().primaryKey().notNull(),
-    totalLearningTime: integer("total_learning_time").default(0).notNull(), // Sekunden
-    totalCardsLearned: integer("total_cards_learned").default(0).notNull(),
-    totalCorrect: integer("total_correct").default(0).notNull(),
-    totalWrong: integer("total_wrong").default(0).notNull(),
-    resets: integer("resets").default(0).notNull(),
-    updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().notNull(),
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	totalLearningTime: integer("total_learning_time").default(0).notNull(), // Sekunden
+	totalCardsLearned: integer("total_cards_learned").default(0).notNull(),
+	totalCorrect: integer("total_correct").default(0).notNull(),
+	totalWrong: integer("total_wrong").default(0).notNull(),
+	resets: integer("resets").default(0).notNull(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().notNull(),
 });

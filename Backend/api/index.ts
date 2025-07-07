@@ -53,6 +53,7 @@ app.get("/", (_, res) => {
 app.use("/api/folders", folderRoutes);
 app.use("/api/cards", cardRoutes);
 app.use("/api/auth", authRoutes);
+// Analytics-Routen: Stellt die Endpunkte für Lernstatistiken bereit (siehe src/routes/analyticsRoutes.ts)
 app.use("/api/analytics", analyticsRoutes);
 
 // Swagger documentation routes
