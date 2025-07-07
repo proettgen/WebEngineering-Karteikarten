@@ -535,7 +535,7 @@ router.patch(
  *             schema:
  *               type: object
  *               properties:
- *                 valid:
+ *                 validLogin:
  *                   type: boolean
  *                   description: "True if the login is valid, false otherwise"
  *                   example: true

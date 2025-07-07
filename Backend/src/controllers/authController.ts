@@ -168,6 +168,9 @@ export const logout = (
   res: Response,
 ) => {
   res.clearCookie("authToken", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
     path: "/",
   });
   res.status(200).json({ message: "Logged out successfully" });
