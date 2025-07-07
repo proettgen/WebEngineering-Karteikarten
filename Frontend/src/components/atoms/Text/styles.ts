@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import { textWeight } from "./types";
-import { fontSizes } from "@/components/templates/ThemeWrapper/types";
+import { FontSizes } from "@/components/templates/ThemeWrapper/types";
 import { ThemeColors } from "../Icon/types";
 
 const sm = () => css`
@@ -24,7 +24,7 @@ const xl = () => css`
 `;
 
 export const Text = styled.span<{
-  $size: fontSizes;
+  $size: FontSizes;
   $colorKey: ThemeColors;
   $weight: textWeight;
 }>`

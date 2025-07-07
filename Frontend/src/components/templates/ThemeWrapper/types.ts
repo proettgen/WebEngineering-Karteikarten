@@ -17,6 +17,6 @@ export type ThemeType = {
   };
 };
 
-export type fontSizes = keyof ThemeType["fontSizes"];
+export type FontSizes = keyof ThemeType["fontSizes"];
 
-export type availableThemes = "lightTheme" | "darkTheme";
+export type AvailableThemes = "lightTheme" | "darkTheme";

@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { ThemeType } from "@/components/templates/ThemeWrapper/types";
 
-export type ThemeColors = Exclude<keyof ThemeType, "fontSizes">;
+export type ThemeColors = Exclude<keyof ThemeType, "FontSizes">;
 
 export type IconSize = "s" | "m" | "l" | "xl";
 

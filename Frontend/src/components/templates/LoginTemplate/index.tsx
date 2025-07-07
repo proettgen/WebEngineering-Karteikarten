@@ -1,7 +1,6 @@
 // index.tsx
 import React, { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { loginUser } from "@/services/authService";
+import { loginUser, logoutUser } from "@/services/authService";
 import AuthFormInput from "@/components/atoms/AuthFormInput";
 import Link from "@/components/atoms/Link";
 import Button from "@/components/atoms/Button";
@@ -9,14 +8,29 @@ import Text from "@/components/atoms/Text";
 import Icon from "@/components/atoms/Icon";
 import Headline from "@/components/atoms/Headline";
 import * as SC from "./styles";
+import { useAuth } from "@/context/AuthContext";
 
 const LoginTemplate: React.FC = () => {
-  const router = useRouter();
+  const { isLoggedIn, checkLogin } = useAuth();
   const [formData, setFormData] = useState({
     usernameOrEmail: "",
     password: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<{ usernameOrEmail?: string; password?: string }>({});
+  const [fieldsTouched, setFieldsTouched] = useState<{ usernameOrEmail: boolean; password: boolean }>({
+    usernameOrEmail: false,
+    password: false,
+  });
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      await checkLogin();
+    } catch {
+      ""
+    }
+  };
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,6 +38,18 @@ const LoginTemplate: React.FC = () => {
       setFormData((prev) => ({
         ...prev,
         [name]: value,
+      }));
+      setFieldErrors({}); // Clear errors on change
+    },
+    [],
+  );
+
+  const handleBlur = useCallback(
+    (event: React.FocusEvent<HTMLInputElement>) => {
+      const { name } = event.target;
+      setFieldsTouched((prev) => ({
+        ...prev,
+        [name]: true,
       }));
     },
     [],
@@ -33,22 +59,43 @@ const LoginTemplate: React.FC = () => {
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       setIsSubmitting(true);
+      setFieldErrors({});
+      setFieldsTouched({ usernameOrEmail: true, password: true }); // Mark as touched on submit
 
       try {
-        const response = await loginUser({
+        await loginUser({
           usernameOrEmail: formData.usernameOrEmail,
           password: formData.password,
         });
-        // Handle successful login (store token, redirect, etc.)
-        localStorage.setItem("authToken", response.token);
-        router.push("/");
-      } catch {
-        //TODO: show error to user
+        await checkLogin();
+      } catch (error: any) {
+        if (
+          typeof error?.message === "string" &&
+          (error.message.includes("401") || error.message.includes("400"))
+        ) {
+          setFieldErrors({
+            usernameOrEmail: "‎ ",
+            password: "Invalid identifier or password",
+          });
+          setFieldsTouched({
+            usernameOrEmail: true,
+            password: true,
+          });
+        } else {
+          setFieldErrors({
+            usernameOrEmail: undefined,
+            password: "An unexpected error occurred.",
+          });
+          setFieldsTouched({
+            usernameOrEmail: true,
+            password: true,
+          });
+        }
       } finally {
         setIsSubmitting(false);
       }
     },
-    [router, formData],
+    [formData, checkLogin],
   );
 
   const isButtonDisabled =
@@ -56,14 +103,46 @@ const LoginTemplate: React.FC = () => {
     !formData.password.trim() ||
     isSubmitting;
 
-  // Create simple field objects for the AuthFormInput component
-  const createSimpleField = (value: string) => ({
-    value,
-    error: undefined,
-    touched: false,
+  // Helper to create the field object for AuthFormInput
+  const createField = (name: "usernameOrEmail" | "password") => ({
+    value: formData[name],
+    error: fieldErrors[name],
+    touched: fieldsTouched[name],
     success: false,
     loading: false,
   });
+
+  if (isLoggedIn === null) {
+    return (
+      <SC.PageWrapper>
+        <SC.FormContainer>
+          <Headline weight="bold" tag="h1" size="lg">
+            Checking login status...
+          </Headline>
+          <Text size="medium" color="textSecondary">
+            Please wait while we verify your session.
+          </Text>
+        </SC.FormContainer>
+      </SC.PageWrapper>
+    );
+  }
+
+  if (isLoggedIn) {
+    return (
+      <SC.PageWrapper>
+        <SC.FormContainer>
+          <Headline weight="bold" tag="h1" size="lg">
+            You are logged in!
+          </Headline>
+          <Button onClick={handleLogout}>
+            <Text size="medium" color="textPrimary">
+              Logout
+            </Text>
+          </Button>
+        </SC.FormContainer>
+      </SC.PageWrapper>
+    );
+  }
 
   return (
     <SC.PageWrapper>
@@ -76,9 +155,9 @@ const LoginTemplate: React.FC = () => {
           name="usernameOrEmail"
           type="text"
           placeholder="Username or Email"
-          field={createSimpleField(formData.usernameOrEmail)}
+          field={createField("usernameOrEmail")}
           onChange={handleChange}
-          onBlur={() => {}} // No-op for login
+          onBlur={handleBlur}
           required
         />
 
@@ -86,9 +165,9 @@ const LoginTemplate: React.FC = () => {
           name="password"
           type="password"
           placeholder="Password"
-          field={createSimpleField(formData.password)}
+          field={createField("password")}
           onChange={handleChange}
-          onBlur={() => {}} // No-op for login
+          onBlur={handleBlur}
           required
         />
 

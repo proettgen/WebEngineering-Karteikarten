@@ -3,31 +3,33 @@ import jwt from "jsonwebtoken";
 import { AppError } from "../utils/AppError";
 import { AuthenticatedRequest } from "../types/authTypes";
 import * as authService from "../services/authService";
-
-type JwtPayload = {
-  userId: string;
-  iat: number;
-  exp: number;
-};
+import { jwtPayloadSchema } from "../validation/authValidation";
 
 export const authenticateJWT: RequestHandler = async (
   req: AuthenticatedRequest,
   _res: Response,
   next: NextFunction,
 ): Promise<void> => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+  const token = req.cookies?.authToken;
+
+  if (!token) {
     next(new AppError("Unauthorized - No valid token provided", 401));
     return;
   }
-  
-  const token = authHeader.split(" ")[1];
+
+  if (!req.cookies) {
+    next(new AppError("Unauthorized - No cookies found", 401));
+    return;
+  }
+
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-    
-    // Get fresh user data from database
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    const payload = jwtPayloadSchema.parse(decoded); // Throws if invalid
+
     const user = await authService.getUserProfile(payload.userId);
-    
+
     req.user = {
       id: user.id,
       username: user.username,

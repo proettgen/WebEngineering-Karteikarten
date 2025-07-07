@@ -7,13 +7,24 @@ import fs from "fs";
 import path from "path";
 import "dotenv/config";
 import authRoutes from "../src/routes/authRoutes";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
+
 // CORS middleware - MUST be before other routes
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  const allowedOrigins = [
+    "http://localhost:3000",
+    "https://proettgen.github.io",
+    "https://proettgen.github.io/WebEngineering-Karteikarten/",
+  ];
+  const origin = req.headers.origin;
+  if (origin && allowedOrigins.some((o) => origin.startsWith(o))) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   // Handle preflight OPTIONS requests
@@ -25,7 +36,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Middleware to parse JSON request bodies
+app.use(cookieParser());
 app.use(express.json());
 
 // Health check endpoint
@@ -43,7 +54,7 @@ app.use("/api/cards", cardRoutes);
 app.use("/api/auth", authRoutes);
 
 // Swagger documentation routes
-app.get("/api/api-docs/swagger.json", (req, res) => {
+app.get("/api/api-docs/swagger.json", (_req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET");
@@ -74,13 +85,13 @@ app.get("/api/api-docs/swagger.json", (req, res) => {
   }
 });
 
-app.get("/api/api-docs", (req, res) => {
+app.get("/api/api-docs", (_req, res) => {
   const swaggerUrl = `https://petstore.swagger.io/?url=${encodeURIComponent("https://web-engineering-karteikarten.vercel.app/api/api-docs/swagger.json")}`;
   res.redirect(swaggerUrl);
 });
 
 // Catch-all route for 404 Not Found errors
-app.all("*", (req, res, next) => {
+app.all("*", (req, _res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 

@@ -8,6 +8,7 @@ import {
   checkEmailBody,
   registerBody,
   loginBody,
+  updateProfileBody,
 } from "../validation/authValidation";
 
 const router = express.Router();
@@ -438,5 +439,188 @@ router.post("/login", validateBody(loginBody), authController.login);
  *                   example: "Database error while fetching user profile"
  */
 router.get("/profile", authenticateJWT, authController.profile);
+
+/**
+ * @swagger
+ * /api/auth/delete:
+ *   delete:
+ *     summary: Delete your own user account
+ *     description: Deletes the authenticated user's account
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       204:
+ *         description: User deleted successfully
+ *       401:
+ *         description: Unauthorized or invalid token
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
+router.delete(
+  "/delete",
+  authenticateJWT,
+  authController.deleteMyAccount,
+);
+
+/**
+ * @swagger
+ * /api/auth/update:
+ *   patch:
+ *     summary: Update your profile (username, email, or password)
+ *     description: Change username, email, or password. Requires current password for verification.
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 minLength: 3
+ *                 maxLength: 20
+ *                 example: "new_username"
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "new.email@example.com"
+ *               newPassword:
+ *                 type: string
+ *                 minLength: 6
+ *                 example: "NewPassword123!"
+ *               currentPassword:
+ *                 type: string
+ *                 minLength: 6
+ *                 example: "CurrentPassword!"
+ *             required: [currentPassword]
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *       400:
+ *         description: Validation error or no changes provided
+ *       401:
+ *         description: Unauthorized or wrong password
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
+router.patch(
+  "/update",
+  authenticateJWT,
+  validateBody(updateProfileBody),
+  authController.updateProfile,
+);
+
+/**
+ * @swagger
+ * /api/auth/valid-login:
+ *   get:
+ *     summary: Check if the current login is valid
+ *     description: Validates the current login session using the provided JWT
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Valid login session
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 valid:
+ *                   type: boolean
+ *                   description: "True if the login is valid, false otherwise"
+ *                   example: true
+ *       401:
+ *         description: Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: "Error Status"
+ *                   example: "fail"
+ *                 message:
+ *                   type: string
+ *                   description: "Error message"
+ *                   example: "Invalid or expired token"
+ *       500:
+ *         description: Server error during validation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: "Error Status"
+ *                   example: "error"
+ *                 message:
+ *                   type: string
+ *                   description: "Error message"
+ *                   example: "Server error during login validation"
+ */
+router.get("/valid-login", authenticateJWT, authController.validLogin);
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: User logout
+ *     description: Logs out the authenticated user, invalidating the JWT token
+ *     tags: [Authentication]
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Logout successful"
+ *       401:
+ *         description: Unauthorized or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: "Error Status"
+ *                   example: "fail"
+ *                 message:
+ *                   type: string
+ *                   description: "Error message"
+ *                   example: "Unauthorized - No valid token provided"
+ *       500:
+ *         description: Server error during logout
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: "Error Status"
+ *                   example: "error"
+ *                 message:
+ *                   type: string
+ *                   description: "Error message"
+ *                   example: "Server error during logout"
+ */
+router.post("/logout", authController.logout);
 
 export default router;

@@ -22,9 +22,9 @@ export const NavBar = styled.nav`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.border};
+    background: ${({ theme }) => theme.textSecondary};
     border-radius: 3px;
-    border: ${({ theme }) => theme.border};
+    border: ${({ theme }) => theme.textPrimary};
   }
 
   > a {

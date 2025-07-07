@@ -12,8 +12,12 @@ export const emailSchema = z.string().email({ message: "Invalid email" });
 
 export const passwordSchema = z
   .string()
-  .min(6, { message: "Password must be at least 6 characters" })
-  .max(100, { message: "Password must be at most 100 characters" });
+  .min(8, { message: "Password must be at least 8 characters long." })
+  .max(100, { message: "Password cannot exceed 100 characters." })
+  .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter." })
+  .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter." })
+  .regex(/[0-9]/, { message: "Password must contain at least one number." })
+  .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one symbol." });
 
 // Request body schemas
 export const checkUsernameBody = z.object({ username: usernameSchema });
@@ -28,6 +32,13 @@ export const registerBody = z.object({
 export const loginBody = z.object({
   usernameOrEmail: z.string().min(1, "Username or email is required"),
   password: passwordSchema,
+});
+
+export const updateProfileBody = z.object({
+  username: usernameSchema.optional(),
+  email: emailSchema.optional(),
+  newPassword: passwordSchema.optional(),
+  currentPassword: passwordSchema,
 });
 
 // Response schemas
@@ -47,4 +58,10 @@ export const userRecordSchema = z.object({
   password: z.string().max(100),
   created_at: z.date(),
   updated_at: z.date(),
+});
+
+export const jwtPayloadSchema = z.object({
+  userId: z.string(),
+  iat: z.number(),
+  exp: z.number(),
 });

@@ -31,8 +31,7 @@ export const Button = styled.button<{
   }};
 
   &:hover:not(:disabled) {
-    opacity: 0.9;
-    transform: translateY(-2px);
+    opacity: 0.85;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
 

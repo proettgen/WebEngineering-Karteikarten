@@ -2,7 +2,7 @@ import { LinkProps as NextLinkProps } from "next/link";
 import { ThemeType } from "@/components/templates/ThemeWrapper/types";
 import React from "react";
 
-export type ColorOptions = Exclude<keyof ThemeType, "fontSizes">;
+export type ColorOptions = Exclude<keyof ThemeType, "FontSizes">;
 
 export type SizeOptions = keyof ThemeType["fontSizes"];
 

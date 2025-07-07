@@ -4,7 +4,7 @@ import React from "react";
 export type HeadlineSize = "xs" | "sm" | "md" | "lg" | "xl" | "xxl";
 export type HeadlineWeight = "regular" | "bold";
 
-type ThemeColors = Exclude<keyof ThemeType, "fontSizes">;
+type ThemeColors = Exclude<keyof ThemeType, "FontSizes">;
 
 export interface IProps {
   children: React.ReactNode;
