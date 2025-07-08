@@ -57,32 +57,26 @@ export interface ProfileUpdateInput {
  * Login success response
  */
 export interface LoginResponse {
-  status: 'success';
-  message: string;
-  data: {
-    user: User;
-  };
+  user: User;
 }
 
 /**
  * Registration success response
  */
 export interface RegisterResponse {
-  status: 'success';
-  message: string;
-  data: {
-    user: User;
-  };
+  user: User;
 }
 
 /**
- * Profile response
+ * Profile response (user data directly)
  */
-export interface ProfileResponse {
-  status: 'success';
-  data: {
-    user: User;
-  };
+export interface ProfileResponse extends User {}
+
+/**
+ * Profile update response
+ */
+export interface ProfileUpdateResponse {
+  user: User;
 }
 
 /**

@@ -7,7 +7,10 @@ import type {
   LoginResponse,
   RegisterResponse,
   ProfileResponse,
-  ProfileUpdateInput
+  ProfileUpdateResponse,
+  ProfileUpdateInput,
+  LoginInput,
+  RegisterInput
 } from '@/database/authTypes';
 
 // API call to check username availability
@@ -30,30 +33,40 @@ export const checkEmailAvailability = async (email: string): Promise<boolean> =>
 
 // API call to register a new user
 export const registerUser = async (userData: AuthFormData): Promise<RegisterResponse> => {
+  // Convert AuthFormData to RegisterInput format
+  const registerData: RegisterInput = {
+    username: userData.username!,
+    email: userData.email || undefined,
+    password: userData.password!,
+  };
+  
   const data = await request<RegisterResponse>('/auth/register', {
     method: 'POST',
-    body: JSON.stringify({
-      username: userData.username,
-      email: userData.email || undefined,
-      password: userData.password,
-    }),
+    body: JSON.stringify(registerData),
   });
   return data;
 };
 
 // API call to login user
 export const loginUser = async (data: AuthFormData): Promise<LoginResponse> => {
+  // Convert AuthFormData to LoginInput format
+  const loginData: LoginInput = {
+    usernameOrEmail: data.usernameOrEmail || data.username!,
+    password: data.password!,
+  };
+  
   const response = await request<LoginResponse>('/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify(data),
+    body: JSON.stringify(loginData),
   });
   return response;
 };
 
-// API call to get get Login status
-export const validLogin = async (): Promise<LoginValidationResponse> => await request('/auth/valid-login', {
+// API call to get Login status
+export const validLogin = async (): Promise<LoginValidationResponse> => 
+  await request('/auth/valid-login', {
     credentials: 'include',
   });
 
@@ -61,19 +74,20 @@ export const logoutUser = async (): Promise<void> => {
   await request('/auth/logout', {
     method: 'POST',
     credentials: 'include',
-  })}
+  });
+};
 
 export const getProfile = async (): Promise<User> => {
   const data = await request<ProfileResponse>('/auth/profile', {
     method: 'GET',
     credentials: 'include',
   });
-  return data.data.user;
+  return data;
 };
 
 // API call to update user profile
-export const updateProfile = async (updateData: ProfileUpdateInput): Promise<ProfileResponse> => {
-  const data = await request<ProfileResponse>('/auth/update', {
+export const updateProfile = async (updateData: ProfileUpdateInput): Promise<ProfileUpdateResponse> => {
+  const data = await request<ProfileUpdateResponse>('/auth/update', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
