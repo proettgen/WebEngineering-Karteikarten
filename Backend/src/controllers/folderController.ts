@@ -66,7 +66,7 @@ export const getFolderById = async (req: AuthenticatedRequest, res: Response, ne
         idSchema.parse(id);
         
         // Fetch folder from service layer (user-owned only)
-        const folder = await folderService.getUserFolder(req.user!.id, id);
+        const folder = await folderService.getUserFolder(id, req.user!.id);
 
         if (!folder) {
             throw new AppError(`Folder with ID ${id} not found`, 404);
@@ -127,7 +127,7 @@ export const updateFolder = async (req: AuthenticatedRequest, res: Response, nex
         const parsed = folderUpdateSchema.parse(req.body);
         
         // Update folder through service layer (user-owned only)
-        const folder = await folderService.updateUserFolder(req.user!.id, id, parsed);
+        const folder = await folderService.updateUserFolder(id, req.user!.id, parsed);
         
         if (!folder) {
             throw new AppError(`Folder with ID ${id} not found`, 404);
@@ -157,7 +157,7 @@ export const deleteFolder = async (req: AuthenticatedRequest, res: Response, nex
         idSchema.parse(id);
         
         // Delete folder through service layer (user-owned only)
-        const deleted = await folderService.deleteUserFolder(req.user!.id, id);
+        const deleted = await folderService.deleteUserFolder(id, req.user!.id);
         
         if (!deleted) {
             throw new AppError(`Folder with ID ${id} not found`, 404);
@@ -224,7 +224,7 @@ export const getChildFolders = async (req: AuthenticatedRequest, res: Response, 
         const offsetNum = offset ?? DEFAULT_OFFSET;
 
         // First verify that the user owns the parent folder
-        const parentFolder = await folderService.getUserFolder(req.user!.id, parentId);
+        const parentFolder = await folderService.getUserFolder(parentId, req.user!.id);
         if (!parentFolder) {
             throw new AppError(`Parent folder with ID ${parentId} not found`, 404);
         }

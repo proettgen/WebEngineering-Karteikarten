@@ -381,8 +381,10 @@ router.get('/root', authenticateJWT, folderController.getRootFolders);
  * /api/folders/{id}:
  *   get:
  *     summary: Get single folder
- *     description: Loads a specific folder by its ID
+ *     description: Loads a specific folder by its ID. Only returns folders owned by the authenticated user.
  *     tags: [Folders]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -391,32 +393,69 @@ router.get('/root', authenticateJWT, folderController.getRootFolders);
  *           type: string
  *           format: uuid
  *         description: Unique ID of the folder
+ *         example: "c6f8fb2b-a33f-46da-941d-9832b6212395"
  *     responses:
  *       200:
  *         description: Folder successfully loaded
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: success
- *                 data:
- *                   type: object
- *                   properties:
- *                     folder:
- *                       $ref: '#/components/schemas/Folder'
- *       404:
- *         description: Folder not found
+ *               $ref: '#/components/schemas/FolderResponse'
+ *             example:
+ *               status: "success"
+ *               data:
+ *                 folder:
+ *                   id: "c6f8fb2b-a33f-46da-941d-9832b6212395"
+ *                   name: "JavaScript Basics"
+ *                   parentId: null
+ *                   userId: "550e8400-e29b-41d4-a716-446655440000"
+ *                   createdAt: "2024-05-01T08:00:00.000Z"
+ *                   lastOpenedAt: "2024-05-15T14:30:00.000Z"
+ *       400:
+ *         description: Invalid folder ID format
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationErrorResponse'
+ *             example:
+ *               status: "fail"
+ *               message: "Validation failed"
+ *               errors:
+ *                 - field: "id"
+ *                   message: "Invalid UUID format"
+ *       401:
+ *         description: Authentication required
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               status: "fail"
+ *               message: "Authentication token is required"
+ *       404:
+ *         description: Folder not found or not owned by user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               status: "fail"
+ *               message: "Folder with ID c6f8fb2b-a33f-46da-941d-9832b6212395 not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               status: "error"
+ *               message: "An unexpected error occurred while retrieving the folder"
  *   put:
  *     summary: Update folder
- *     description: Updates an existing folder (partial updates possible)
+ *     description: Updates an existing folder owned by the authenticated user (partial updates supported)
  *     tags: [Folders]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -425,6 +464,7 @@ router.get('/root', authenticateJWT, folderController.getRootFolders);
  *           type: string
  *           format: uuid
  *         description: Unique ID of the folder
+ *         example: "c6f8fb2b-a33f-46da-941d-9832b6212395"
  *     requestBody:
  *       required: true
  *       content:
@@ -434,47 +474,126 @@ router.get('/root', authenticateJWT, folderController.getRootFolders);
  *             properties:
  *               name:
  *                 type: string
- *                 description: Neuer Folder name
+ *                 minLength: 1
+ *                 maxLength: 100
+ *                 description: Updated folder name
+ *                 example: "JavaScript Advanced"
  *               parentId:
  *                 type: string
  *                 format: uuid
- *                 description: New parent folder ID
+ *                 description: New parent folder ID (null for root folder)
  *                 nullable: true
- *             example:
- *               name: "JavaScript Fortgeschritten"
- *               parentId: null
+ *                 example: "d7f9fc3c-b44f-57bc-9d8e-1f2g3h4i5j6k"
+ *           example:
+ *             name: "JavaScript Advanced"
+ *             parentId: null
  *     responses:
  *       200:
  *         description: Folder successfully updated
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: success
- *                 data:
- *                   type: object
- *                   properties:
- *                     folder:
- *                       $ref: '#/components/schemas/Folder'
+ *               $ref: '#/components/schemas/FolderResponse'
+ *             example:
+ *               status: "success"
+ *               data:
+ *                 folder:
+ *                   id: "c6f8fb2b-a33f-46da-941d-9832b6212395"
+ *                   name: "JavaScript Advanced"
+ *                   parentId: null
+ *                   userId: "550e8400-e29b-41d4-a716-446655440000"
+ *                   createdAt: "2024-05-01T08:00:00.000Z"
+ *                   lastOpenedAt: "2024-05-16T10:30:00.000Z"
  *       400:
  *         description: Invalid input data
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
- *       404:
- *         description: Folder not found
+ *               $ref: '#/components/schemas/ValidationErrorResponse'
+ *             examples:
+ *               invalidName:
+ *                 summary: Invalid folder name
+ *                 value:
+ *                   status: "fail"
+ *                   message: "Validation failed"
+ *                   errors:
+ *                     - field: "name"
+ *                       message: "Folder name must be between 1 and 100 characters"
+ *               invalidParentId:
+ *                 summary: Invalid parent folder ID format
+ *                 value:
+ *                   status: "fail"
+ *                   message: "Validation failed"
+ *                   errors:
+ *                     - field: "parentId"
+ *                       message: "Invalid UUID format for parent folder ID"
+ *               invalidFolderId:
+ *                 summary: Invalid folder ID format
+ *                 value:
+ *                   status: "fail"
+ *                   message: "Validation failed"
+ *                   errors:
+ *                     - field: "id"
+ *                       message: "Invalid UUID format"
+ *       401:
+ *         description: Authentication required
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               status: "fail"
+ *               message: "Authentication token is required"
+ *       403:
+ *         description: Access denied to parent folder
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               status: "fail"
+ *               message: "New parent folder not found or access denied"
+ *       404:
+ *         description: Folder not found or not owned by user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             examples:
+ *               folderNotFound:
+ *                 summary: Folder not found
+ *                 value:
+ *                   status: "fail"
+ *                   message: "Folder with ID c6f8fb2b-a33f-46da-941d-9832b6212395 not found"
+ *               parentNotFound:
+ *                 summary: Parent folder not found
+ *                 value:
+ *                   status: "fail"
+ *                   message: "Parent folder with ID d7f9fc3c-b44f-57bc-9d8e-1f2g3h4i5j6k not found"
+ *       409:
+ *         description: Folder name already exists in parent
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               status: "fail"
+ *               message: "A folder with the name 'JavaScript Advanced' already exists in this location"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               status: "error"
+ *               message: "An unexpected error occurred while updating the folder"
  *   delete:
  *     summary: Delete folder
- *     description: Permanently deletes a folder (cascades to all contained cards)
+ *     description: Permanently deletes a folder owned by the authenticated user (cascades to all contained cards and subfolders)
  *     tags: [Folders]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -483,15 +602,49 @@ router.get('/root', authenticateJWT, folderController.getRootFolders);
  *           type: string
  *           format: uuid
  *         description: Unique ID of the folder to delete
+ *         example: "c6f8fb2b-a33f-46da-941d-9832b6212395"
  *     responses:
  *       204:
  *         description: Folder successfully deleted
- *       404:
- *         description: Folder not found
+ *       400:
+ *         description: Invalid folder ID format
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationErrorResponse'
+ *             example:
+ *               status: "fail"
+ *               message: "Validation failed"
+ *               errors:
+ *                 - field: "id"
+ *                   message: "Invalid UUID format"
+ *       401:
+ *         description: Authentication required
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               status: "fail"
+ *               message: "Authentication token is required"
+ *       404:
+ *         description: Folder not found or not owned by user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               status: "fail"
+ *               message: "Folder with ID c6f8fb2b-a33f-46da-941d-9832b6212395 not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               status: "error"
+ *               message: "An unexpected error occurred while deleting the folder"
  */
 router
     .route('/:id')
