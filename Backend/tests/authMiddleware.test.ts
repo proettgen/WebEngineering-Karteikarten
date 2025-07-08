@@ -1,4 +1,10 @@
 import { describe, it, expect, vi, beforeEach, MockInstance } from "vitest";
+
+// Mock the db module to prevent it from trying to connect to a real database
+vi.mock("../src/db", () => ({
+  db: vi.fn(), // Provide a mock db object
+}));
+
 import { authenticateJWT } from "../src/middleware/authMiddleware";
 import * as authService from "../src/services/authService";
 import jwt from "jsonwebtoken";
@@ -30,9 +36,9 @@ describe("authenticateJWT middleware", () => {
 
   beforeEach(() => {
     // Create a properly typed request with cookies
-    req = { 
+    req = {
       cookies: { authToken: "valid.token" },
-      user: undefined
+      user: undefined,
     };
     next = vi.fn();
     vi.clearAllMocks();
@@ -43,7 +49,7 @@ describe("authenticateJWT middleware", () => {
     await authenticateJWT(
       req as AuthenticatedRequest,
       res,
-      next as unknown as NextFunction
+      next as unknown as NextFunction,
     );
     expect(next).toHaveBeenCalledWith(expect.any(AppError));
     const error = next.mock.calls[0][0] as AppError;
@@ -55,7 +61,7 @@ describe("authenticateJWT middleware", () => {
     await authenticateJWT(
       req as AuthenticatedRequest,
       res,
-      next as unknown as NextFunction
+      next as unknown as NextFunction,
     );
     expect(next).toHaveBeenCalledWith(expect.any(AppError));
     const error = next.mock.calls[0][0] as AppError;
@@ -69,7 +75,7 @@ describe("authenticateJWT middleware", () => {
     await authenticateJWT(
       req as AuthenticatedRequest,
       res,
-      next as unknown as NextFunction
+      next as unknown as NextFunction,
     );
     expect(next).toHaveBeenCalledWith(expect.any(AppError));
     const error = next.mock.calls[0][0] as AppError;
@@ -77,47 +83,55 @@ describe("authenticateJWT middleware", () => {
   });
 
   it("calls next with AppError if authService throws", async () => {
-    vi.spyOn(jwt, "verify").mockImplementation(() => ({ 
-      userId: "123", 
-      iat: 1, 
-      exp: 2 
-    } as JwtPayload));
-    
-    vi.spyOn(authService, "getUserProfile").mockRejectedValue(new Error("fail"));
-    
+    vi.spyOn(jwt, "verify").mockImplementation(
+      () =>
+        ({
+          userId: "123",
+          iat: 1,
+          exp: 2,
+        }) as JwtPayload,
+    );
+
+    vi.spyOn(authService, "getUserProfile").mockRejectedValue(
+      new Error("fail"),
+    );
+
     await authenticateJWT(
       req as AuthenticatedRequest,
       res,
-      next as unknown as NextFunction
+      next as unknown as NextFunction,
     );
-    
+
     expect(next).toHaveBeenCalledWith(expect.any(AppError));
     const error = next.mock.calls[0][0] as AppError;
     expect(error.message).toMatch(/Authentication failed/);
   });
 
   it("attaches user to req and calls next on success", async () => {
-    vi.spyOn(jwt, "verify").mockImplementation(() => ({ 
-      userId: "123", 
-      iat: 1, 
-      exp: 2 
-    } as JwtPayload));
-    
+    vi.spyOn(jwt, "verify").mockImplementation(
+      () =>
+        ({
+          userId: "123",
+          iat: 1,
+          exp: 2,
+        }) as JwtPayload,
+    );
+
     vi.spyOn(authService, "getUserProfile").mockResolvedValue(mockUser);
-    
+
     await authenticateJWT(
       req as AuthenticatedRequest,
       res,
-      next as unknown as NextFunction
+      next as unknown as NextFunction,
     );
-    
+
     // We know the user property will be defined after the middleware runs
     expect(req.user).toMatchObject({
       id: mockUser.id,
       username: mockUser.username,
       email: mockUser.email,
     });
-    
+
     expect(next).toHaveBeenCalledWith();
   });
 });
