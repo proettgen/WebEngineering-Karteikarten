@@ -19,6 +19,10 @@
 import React from 'react';
 import Button from '../../atoms/Button';
 import AnalyticsMetric from '../../atoms/AnalyticsMetric';
+import Headline from '../../atoms/Headline';
+import Text from '../../atoms/Text';
+import Icon from '../../atoms/Icon';
+import { EmptyStateContainer } from '../../shared/StyledComponents';
 import type { Analytics } from '../../../database/analyticsTypes';
 import * as SC from './styles';
 
@@ -63,9 +67,27 @@ export const AnalyticsDisplay: React.FC<AnalyticsDisplayProps> = React.memo(({
         <SC.HeaderSection>
           <SC.Title>Your Learning Statistics</SC.Title>
         </SC.HeaderSection>
-        <SC.EmptyStateText>
-          No analytics data available
-        </SC.EmptyStateText>
+        <EmptyStateContainer>
+          <SC.IconWrapper>
+            <Icon size="xl" color="textPrimary">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 -960 960 960"
+                fill="currentColor"
+                aria-label="Analytics Icon"
+              >
+                <path d="M280-280h80v-200h-80v200Zm160 0h80v-400h-80v400Zm160 0h80v-120h-80v120ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z" />
+              </svg>
+            </Icon>
+          </SC.IconWrapper>
+          <Headline size="lg">Start Your Learning Journey!</Headline>
+          <Text size="large">
+            Your learning statistics will appear here once you begin practicing.
+          </Text>
+          <Text size="medium" color="textSecondary">
+            Study some flashcards to see detailed insights about your progress, performance, and learning patterns.
+          </Text>
+        </EmptyStateContainer>
       </SC.DisplayContainer>
     );
   }
@@ -73,7 +95,19 @@ export const AnalyticsDisplay: React.FC<AnalyticsDisplayProps> = React.memo(({
   return (
     <SC.DisplayContainer data-testid={testId}>
       <SC.HeaderSection>
-        <SC.Title>Your Learning Statistics</SC.Title>
+        <SC.HeaderWithIcon>
+          <Icon size="m" color="textPrimary">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 -960 960 960"
+              fill="currentColor"
+              aria-label="Statistics"
+            >
+              <path d="M280-280h80v-200h-80v200Zm160 0h80v-400h-80v400Zm160 0h80v-120h-80v120ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z" />
+            </svg>
+          </Icon>
+          <SC.Title>Learning Progress & Statistics</SC.Title>
+        </SC.HeaderWithIcon>
         {onEdit && !isEditing && (
           <Button 
             onClick={() => onEdit(analytics)}
@@ -86,13 +120,13 @@ export const AnalyticsDisplay: React.FC<AnalyticsDisplayProps> = React.memo(({
 
       <SC.MetricsGrid>
         <AnalyticsMetric
-          label="Total Learning Time"
+          label="Study Time"
           value={`${learningTimeMinutes}m ${learningTimeSeconds}s`}
           color="primary"
           testId="metric-learning-time"
         />
         <AnalyticsMetric
-          label="Cards Learned"
+          label="Cards Studied"
           value={analytics.totalCardsLearned}
           color="primary"
           testId="metric-cards-learned"
@@ -104,13 +138,13 @@ export const AnalyticsDisplay: React.FC<AnalyticsDisplayProps> = React.memo(({
           testId="metric-correct"
         />
         <AnalyticsMetric
-          label="Wrong Answers"
+          label="Incorrect Answers"
           value={analytics.totalWrong}
           color="danger"
           testId="metric-wrong"
         />
         <AnalyticsMetric
-          label="Resets"
+          label="Study Sessions Reset"
           value={analytics.resets}
           color="warning"
           testId="metric-resets"
@@ -118,9 +152,9 @@ export const AnalyticsDisplay: React.FC<AnalyticsDisplayProps> = React.memo(({
       </SC.MetricsGrid>
 
       <SC.SuccessRateSection>
-        <SC.SuccessRateTitle>Success Rate</SC.SuccessRateTitle>
+        <SC.SuccessRateTitle>Learning Performance</SC.SuccessRateTitle>
         <AnalyticsMetric
-          label="Success Rate"
+          label="Overall Success Rate"
           value={`${successRate}%`}
           color={Number(successRate) >= 70 ? 'success' : Number(successRate) >= 50 ? 'warning' : 'danger'}
           testId="metric-success-rate"

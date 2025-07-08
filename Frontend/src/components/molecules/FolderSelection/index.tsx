@@ -122,10 +122,10 @@ export const FolderSelection: React.FC<FolderSelectionProps> = ({
       <SelectionGrid data-testid={testId}>
         <EmptyState>
           <Text size="large" weight="bold" color="textSecondary">
-            No folders available
+            Ready to Start Learning?
           </Text>
           <Text size="medium" color="textSecondary">
-            Create some folders with flashcards first to start learning.
+            Create some folders with flashcards first, then return here to begin your learning journey!
           </Text>
         </EmptyState>
       </SelectionGrid>

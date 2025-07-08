@@ -15,6 +15,12 @@ export const HeaderSection = styled.div`
   margin-bottom: 24px;
 `;
 
+export const HeaderWithIcon = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
 export const Title = styled.h2`
   color: ${({ theme }) => theme.textPrimary};
   font-size: ${({ theme }) => theme.fontSizes.large};
@@ -49,8 +55,9 @@ export const LastUpdatedText = styled.div`
   margin-top: 16px;
 `;
 
-export const EmptyStateText = styled.div`
-  text-align: center;
-  color: ${({ theme }) => theme.textSecondary};
-  padding: 24px;
+export const IconWrapper = styled.div`
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

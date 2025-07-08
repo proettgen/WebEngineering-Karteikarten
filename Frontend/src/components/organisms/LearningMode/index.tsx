@@ -4,6 +4,8 @@ import Button from "@/components/atoms/Button";
 import Card from "@/components/molecules/Card";
 import Headline from "@/components/atoms/Headline";
 import Text from "@/components/atoms/Text";
+import Icon from "@/components/atoms/Icon";
+import { EmptyStateContainer } from "@/components/shared/StyledComponents";
 import { CardType, LearningModeProps } from "./types";
 /**
  * Organism-Komponente für die Interaktion mit einer einzelnen Lernkarte im Lernmodus.
@@ -146,31 +148,51 @@ const LearningMode = ({ elapsedSeconds: _elapsedSeconds, cards, onEvaluate, onNe
             <SC.ButtonRow>
               <SC.HintWrapper onMouseDown={handleHint} onMouseEnter={handleHint} tabIndex={-1}>
                 <Button $variant="accept" onClick={markCorrect} disabled={!isFlipped}>
-                  Correct
+                  ✓ I Got It Right
                 </Button>
               </SC.HintWrapper>
               <SC.HintWrapper onMouseDown={handleHint} onMouseEnter={handleHint} tabIndex={-1}>
                 <Button $variant="deny" onClick={markWrong} disabled={!isFlipped}>
-                  Incorrect
+                  ✗ I Got It Wrong
                 </Button>
               </SC.HintWrapper>
               <SC.HintWrapper>
                 <Button $variant="secondary" onClick={handleNextCard}>
-                  Next Card
+                  Next Card →
                 </Button>
               </SC.HintWrapper>
             </SC.ButtonRow>
             <SC.HintArea>
               {showFlipHint && (
-                <Text color="deny">Please flip the card first to evaluate it!</Text>
+                <Text color="deny">Please flip the card first to see the answer before evaluating!</Text>
               )}
             </SC.HintArea>            </SC.LearningContainer>
         ) : !isEvaluating ? (
-          <Headline size="md">No more flashcards in current box available.</Headline>
+          <EmptyStateContainer>
+            <SC.CompleteIconWrapper>
+              <Icon size="xl" color="textPrimary">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 -960 960 960"
+                  fill="currentColor"
+                  aria-label="Box Complete"
+                >
+                  <path d="M440-183v-274L200-596v274l240 139Zm80 0 240-139v-274L520-457v274Zm-40 97L160-252q-19-11-29.5-29T120-321v-318q0-22 10.5-40t29.5-29l320-186q19-11 40-11t40 11l320 186q19 11 29.5 29t10.5 40v318q0 22-10.5 40T880-252L560-86q-19 11-40 11t-40-11Zm200-528 77-44-237-137-78 45 238 136Zm-160 93 78-45-237-137-78 45 237 137Z" />
+                </svg>
+              </Icon>
+            </SC.CompleteIconWrapper>
+            <Headline size="lg">Congratulations!</Headline>
+            <Text size="large">
+              You&apos;ve successfully completed all cards in this learning box!
+            </Text>
+            <Text size="medium" color="textSecondary">
+              Great progress! Use the &quot;Back&quot; button to choose another box or return to folder selection to continue your learning journey.
+            </Text>
+          </EmptyStateContainer>
         ) : (
-          <div style={{ minHeight: "400px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <SC.EvaluatingContainer>
             <Headline size="md">Evaluating...</Headline>
-          </div>
+          </SC.EvaluatingContainer>
         )}
     </SC.Container>
   );

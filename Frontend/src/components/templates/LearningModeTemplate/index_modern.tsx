@@ -91,7 +91,7 @@ export const LearningModeTemplate: React.FC<LearningModeTemplateProps> = React.m
         <Headline size="md">Learning Mode</Headline>
         {step === 'learn' && typeof selectedLearningLevel === "number" && (
           <SC.BoxLevel>
-            {`Box ${selectedLearningLevel + 1}${boxCounts.find(b => b.level === selectedLearningLevel)?.count ? ` (${boxCounts.find(b => b.level === selectedLearningLevel)?.count})` : ""}`}
+            {`Box ${selectedLearningLevel + 1} (${boxCounts.find(b => b.level === selectedLearningLevel)?.count ?? 0})`}
           </SC.BoxLevel>
         )}
         {step === 'learn' && typeof elapsedSeconds === "number" && (

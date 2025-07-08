@@ -106,3 +106,20 @@ export const HintArea = styled.div`
   min-height: 24px;
   margin-top: 8px;
 `;
+
+// Container für den Evaluating-Status
+export const EvaluatingContainer = styled.div`
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+`;
+
+// Wrapper für das Complete-Icon
+export const CompleteIconWrapper = styled.div`
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;

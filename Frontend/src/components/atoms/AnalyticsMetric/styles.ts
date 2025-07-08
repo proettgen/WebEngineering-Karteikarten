@@ -18,6 +18,10 @@ export const MetricContainer = styled.div`
   }
 `;
 
+export const MetricIconWrapper = styled.div`
+  margin-bottom: 4px;
+`;
+
 export const MetricLabel = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.small};
   color: ${({ theme }) => theme.textSecondary};
