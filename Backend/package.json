@@ -6,7 +6,7 @@
     "build:ts": "tsc",
     "build:copy-assets": "copyfiles -u 1 \"src/data/**/*.json\" dist && copyfiles -u 1 \"src/swagger/*.json\" dist",
     "generate-swagger": "ts-node scripts/generateSwagger.ts",
-    "build": "npm run generate-swagger && npm run clean && npm run build:ts && npm run build:copy-assets",
+    "build": "npm run generate-swagger && npm run clean && npm run build:ts && npm run build:copy-assets && npm run test:once",
     "start": "node dist/api/index.js",
     "dev": "nodemon --watch api --ext ts,json --exec ts-node api/index.ts",
     "test": "vitest --ui",
