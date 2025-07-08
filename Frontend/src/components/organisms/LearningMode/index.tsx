@@ -4,7 +4,6 @@ import Button from "@/components/atoms/Button";
 import Card from "@/components/molecules/Card";
 import Headline from "@/components/atoms/Headline";
 import Text from "@/components/atoms/Text";
-import LearningModeTemplate from "@/components/templates/LearningModeTemplate";
 import { CardType, LearningModeProps } from "./types";
 /**
  * Organism-Komponente für die Interaktion mit einer einzelnen Lernkarte im Lernmodus.
@@ -38,7 +37,7 @@ import { CardType, LearningModeProps } from "./types";
  * - ../LearningModeManager/index.tsx: Übergeordnete Logik für den Lernmodus einer Box
  * - @/components/templates/LearningModeTemplate: Layout-Wrapper für den Lernmodus (Header, Timer, Box-Anzeige)
  */
-const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack, currentLearningLevel }: LearningModeProps) => {
+const LearningMode = ({ elapsedSeconds: _elapsedSeconds, cards, onEvaluate, onNextCard, onBack, currentLearningLevel: _currentLearningLevel }: LearningModeProps) => {
   // State für die aktuell angezeigte Karte (wird zufällig aus dem Stapel gewählt)
   const [currentCard, setCurrentCard] = useState<CardType | null>(
     cards.length > 0 ? cards[Math.floor(Math.random() * cards.length)] : null
@@ -115,19 +114,15 @@ const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack, c
     if (onNextCard) onNextCard();
   };
 
-  // Anzahl Karten in der aktuellen Box berechnen (für Anzeige im Template)
-  const boxCardCount = cards.filter(card => (card.currentLearningLevel ?? 0) === currentLearningLevel).length;
-
   return (
-    <LearningModeTemplate elapsedSeconds={elapsedSeconds} currentLearningLevel={currentLearningLevel} boxCount={boxCardCount}>
-      <SC.Container>
-        {onBack && (
-          <SC.TopRow>
-            <Button $variant="secondary" onClick={onBack}>
-              Back
-            </Button>
-          </SC.TopRow>
-        )}
+    <SC.Container>
+      {onBack && (
+        <SC.TopRow>
+          <Button $variant="secondary" onClick={onBack}>
+            Back
+          </Button>
+        </SC.TopRow>
+      )}
         {currentCard ? (
           <SC.LearningContainer>
             <Card
@@ -163,8 +158,7 @@ const LearningMode = ({ elapsedSeconds, cards, onEvaluate, onNextCard, onBack, c
         ) : (
           <Headline size="md">No more flashcards in current box available.</Headline>
         )}
-      </SC.Container>
-    </LearningModeTemplate>
+    </SC.Container>
   );
 };
 export default LearningMode;

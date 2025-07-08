@@ -2,20 +2,24 @@ import React, { useMemo } from "react";
 import * as SC from "./styles";
 import Headline from "@/components/atoms/Headline";
 import { LearningModeTemplateProps } from "./types";
+
 /**
- * Template-Komponente für den Lernmodus (Layout-Wrapper).
+ * Legacy LearningModeTemplate (Layout-Wrapper).
  *
- * Diese Komponente stellt das Layout für den Lernmodus bereit:
- * - Kopfzeile mit Titel, Timer und Box-Anzeige
- * - Container für die jeweiligen Inhalte (children)
+ * This is the legacy template component used by LearningModeManager and LearningMode.
+ * For the main learning mode page, use the modernized template from index_modern.tsx.
+ *
+ * This component provides layout for the learning mode:
+ * - Header with title, timer and box display
+ * - Container for the respective content (children)
  *
  * Props:
- * - children: Die eigentlichen Inhalte (z.B. Auswahl, Karte, Buttons)
- * - elapsedSeconds: Bisher vergangene Zeit im Lernmodus (optional, für Timer-Anzeige)
- * - currentLearningLevel: Aktuelles Lernlevel/Box-Stufe (optional, für Anzeige)
- * - boxCount: Anzahl der Karten in der aktuellen Box (optional)
+ * - children: The actual content (e.g. selection, card, buttons)
+ * - elapsedSeconds: Time elapsed in learning mode (optional, for timer display)
+ * - currentLearningLevel: Current learning level/box level (optional, for display)
+ * - boxCount: Number of cards in the current box (optional)
  *
- * Diese Komponente enthält keine eigene Logik, sondern dient nur als Layout-Wrapper für die Inhalte.
+ * This component contains no logic of its own, but only serves as a layout wrapper for the content.
  */
 const formatTime = (seconds: number) => {
   const mm = String(Math.floor(seconds / 60)).padStart(2, "0");

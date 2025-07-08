@@ -5,7 +5,6 @@ import { LearningModeManagerProps } from "./types";
 import Button from "@/components/atoms/Button";
 import Headline from "@/components/atoms/Headline";
 import Text from "@/components/atoms/Text";
-import LearningModeTemplate from "@/components/templates/LearningModeTemplate";
 import * as SC from "./styles";
 
 const clampBox = (level: number) => Math.max(0, Math.min(3, level)); // Hilfsfunktion: begrenzt Box-Level auf 0-3
@@ -170,45 +169,39 @@ const LearningModeManager = ({
   // Wenn alle Karten gelernt wurden, könnte hier eine Abschlussanzeige gerendert werden
   if (loadingCards) {
     return (
-      <LearningModeTemplate>
-        <div style={{ textAlign: "center", padding: 32 }}>
-          <p>Loading cards ...</p>
-        </div>
-      </LearningModeTemplate>
+      <div style={{ textAlign: "center", padding: 32 }}>
+        <p>Loading cards ...</p>
+      </div>
     );
   }
   if (error) {
     return (
-      <LearningModeTemplate>
-        <div style={{ textAlign: "center", padding: 32 }}>
-          <p>{error}</p>
-        </div>
-      </LearningModeTemplate>
+      <div style={{ textAlign: "center", padding: 32 }}>
+        <p>{error}</p>
+      </div>
     );
   }
   if (isCompleted) {
     return (
-      <LearningModeTemplate elapsedSeconds={completedTime ?? elapsedSeconds}>
-        <SC.CongratsWrapper>
-          <Headline size="lg">Congratulations!</Headline>
+      <SC.CongratsWrapper>
+        <Headline size="lg">Congratulations!</Headline>
+        <Text size="medium">
+          You have successfully learned all flashcards.
+        </Text>
+        {typeof completedTime === "number" && (
           <Text size="medium">
-            You have successfully learned all flashcards.
+            {`Total time: ${Math.floor(completedTime / 60)}:${String(completedTime % 60).padStart(2, "0")}`}
           </Text>
-          {typeof completedTime === "number" && (
-            <Text size="medium">
-              {`Total time: ${Math.floor(completedTime / 60)}:${String(completedTime % 60).padStart(2, "0")}`}
-            </Text>
-          )}
-          <SC.ButtonRow>
-            <Button $variant="primary" onClick={handleRestart}>
-              Learn again
-            </Button>
-            <Button $variant="secondary" onClick={handleBackToFolders}>
-              Back to folder selection
-            </Button>
-          </SC.ButtonRow>
-        </SC.CongratsWrapper>
-      </LearningModeTemplate>
+        )}
+        <SC.ButtonRow>
+          <Button $variant="primary" onClick={handleRestart}>
+            Learn again
+          </Button>
+          <Button $variant="secondary" onClick={handleBackToFolders}>
+            Back to folder selection
+          </Button>
+        </SC.ButtonRow>
+      </SC.CongratsWrapper>
     );
   }
 

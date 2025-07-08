@@ -21,10 +21,10 @@ export const CardManagerTemplate = lazy(() =>
   }))
 );
 
-// Learning Mode-Komponenten (werden nur bei /learn benötigt)
-export const LearningModeSelection = lazy(() => 
-  import('../components/organisms/LearningModeSelection').then(module => ({
-    default: module.default
+// Learning Mode Template (wird direkt von der /learn page verwendet)
+export const LearningModeTemplate = lazy(() => 
+  import('../components/templates/LearningModeTemplate/index_modern').then(module => ({
+    default: module.LearningModeTemplate
   }))
 );
 

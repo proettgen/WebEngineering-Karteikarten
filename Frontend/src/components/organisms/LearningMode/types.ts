@@ -26,7 +26,7 @@ export type CardType = {
 export type LearningModeProps = {
   elapsedSeconds: number; // Bisher vergangene Zeit im Lernmodus (für Timer)
   cards: CardType[]; // Karten, die aktuell gelernt werden (nur aktuelle Box)
-  onEvaluate?: (cardId: string, correct: boolean) => void; // Callback für Bewertung (richtig/falsch)
+  onEvaluate?: (_cardId: string, _correct: boolean) => void; // Callback für Bewertung (richtig/falsch)
   onNextCard?: () => void; // Callback für Wechsel zur nächsten Karte
   onBack?: () => void; // Callback für Zurück-Button
   currentLearningLevel?: number; // Aktuelles Lernlevel/Box-Stufe (0-3)
