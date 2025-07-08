@@ -22,7 +22,7 @@ import styled from "styled-components";
 export const Container = styled.div`
   background-color: ${({ theme }) => theme.background};
   color: ${({ theme }) => theme.textPrimary};
-  padding: 0;
+  padding: 24px;
 `;
 
 // Kopfzeile mit Titel, Timer und Box-Anzeige

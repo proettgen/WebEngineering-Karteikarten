@@ -1,38 +1,76 @@
-import type { Analytics } from '../database/analyticsTypes';
+/**
+ * Analytics Service (Frontend)
+ *
+ * This service handles all analytics-related API calls from the frontend.
+ * Now follows the same patterns as cardAndFolderService with proper authentication
+ * and consistent error handling.
+ *
+ * Cross-references:
+ * - src/database/analyticsTypes.ts: Type definitions
+ * - src/services/httpClient.ts: Unified HTTP client (should be used)
+ * - Backend analytics routes: /api/analytics endpoints
+ */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/analytics';
+import { request } from "./httpClient";
+import type { 
+  AnalyticsResponse,
+  CreateAnalyticsInput, 
+  UpdateAnalyticsInput 
+} from '../database/analyticsTypes';
 
+const ANALYTICS_ENDPOINT = '/analytics';
 
-export const getAnalytics = async (): Promise<Analytics | null> => {
-  const res = await fetch(API_URL, { cache: 'no-store' });
-  if (!res.ok) return null;
-  return await res.json();
+/**
+ * Analytics API service following the established patterns
+ */
+export const analyticsService = {
+  /**
+   * Gets analytics data for the current user.
+   */
+  getAnalytics: (): Promise<AnalyticsResponse> =>
+    request(ANALYTICS_ENDPOINT, { 
+      credentials: 'include' 
+    }),
+
+  /**
+   * Creates a new analytics record for the current user.
+   */
+  createAnalytics: (data: CreateAnalyticsInput): Promise<AnalyticsResponse> =>
+    request(ANALYTICS_ENDPOINT, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      credentials: 'include',
+    }),
+
+  /**
+   * Updates the analytics record for the current user.
+   */
+  updateAnalytics: (data: UpdateAnalyticsInput): Promise<AnalyticsResponse> =>
+    request(ANALYTICS_ENDPOINT, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+      credentials: 'include',
+    }),
+
+  /**
+   * Deletes the analytics record for the current user.
+   */
+  deleteAnalytics: (): Promise<void> =>
+    request(ANALYTICS_ENDPOINT, {
+      method: 'DELETE',
+      credentials: 'include',
+    }),
 };
 
+// Convenient export functions for components
+export const getAnalytics = (): Promise<AnalyticsResponse> => 
+  analyticsService.getAnalytics();
 
-export const updateAnalytics = async (id: string, data: Partial<Omit<Analytics, 'id' | 'updatedAt'>>): Promise<Analytics | null> => {
-  const res = await fetch(`${API_URL}/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) return null;
-  return await res.json();
-};
+export const createAnalytics = (data: CreateAnalyticsInput): Promise<AnalyticsResponse> => 
+  analyticsService.createAnalytics(data);
 
+export const updateAnalytics = (data: UpdateAnalyticsInput): Promise<AnalyticsResponse> => 
+  analyticsService.updateAnalytics(data);
 
-export const createAnalytics = async (data: Omit<Analytics, 'id' | 'updatedAt'>): Promise<Analytics | null> => {
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) return null;
-  return await res.json();
-};
-
-
-export const deleteAnalytics = async (id: string): Promise<boolean> => {
-  const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-  return res.ok;
-};
+export const deleteAnalytics = (): Promise<void> => 
+  analyticsService.deleteAnalytics();

@@ -1,170 +1,61 @@
 
-
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getAnalytics, updateAnalytics } from "../../src/services/analyticsService";
-import type { Analytics } from "../../src/database/analyticsTypes";
-import Headline from "../../src/components/atoms/Headline";
-import Button from "../../src/components/atoms/Button";
-import Text from "../../src/components/atoms/Text";
-import Input from "../../src/components/atoms/Input";
 import { useAuth } from "../../src/context/AuthContext";
-/**
- * AnalyticsPage (Frontend)
- *
- * Zeigt die Lernstatistiken (Analytics) des Nutzers an und ermöglicht deren Bearbeitung.
- *
- * Hinweise für Einsteiger:
- * - Diese Seite ist nur für eingeloggte Nutzer zugänglich (authentifiziert).
- * - Die Daten werden über das Analytics-Service geladen (siehe src/services/analyticsService.ts).
- * - Die Typisierung erfolgt über src/database/analyticsTypes.ts.
- *
- * Querverweise:
- * - src/services/analyticsService.ts: API-Aufrufe
- * - src/database/analyticsTypes.ts: Typdefinition
- * - src/components/molecules/NavigationBar/index.tsx: Einbindung in die Navigation
- */
+import { AnalyticsTemplate } from "../../src/utils/lazyImports";
+import SuspenseWrapper from "../../src/components/molecules/SuspenseWrapper";
 
 /**
  * AnalyticsPage (Frontend)
  *
- * Zeigt die Lernstatistiken (Analytics) des Nutzers an und ermöglicht deren Bearbeitung.
+ * The main analytics page component following atomic design principles.
+ * Now fully refactored to use custom hooks, templates, and atomic components.
  *
- * Hinweise für Einsteiger:
- * - Diese Seite ist nur für eingeloggte Nutzer zugänglich (authentifiziert).
- * - Die Daten werden über das Analytics-Service geladen (siehe src/services/analyticsService.ts).
- * - Die Typisierung erfolgt über src/database/analyticsTypes.ts.
+ * Features:
+ * - Authentication protection
+ * - Atomic design architecture
+ * - Custom hooks for state management
+ * - Template-based layout
+ * - Improved error handling and loading states
  *
- * Querverweise:
- * - src/services/analyticsService.ts: API-Aufrufe
- * - src/database/analyticsTypes.ts: Typdefinition
- * - src/components/molecules/NavigationBar/index.tsx: Einbindung in die Navigation
+ * Architecture:
+ * - Page Component (this file): Route-level logic and auth
+ * - Template Component: Layout and component orchestration
+ * - Organism Components: Complex UI sections
+ * - Molecule Components: Mid-level UI components
+ * - Atom Components: Basic UI elements
+ * - Custom Hooks: Business logic and state management
+ *
+ * Cross-references:
+ * - src/components/templates/AnalyticsTemplate: Main template
+ * - src/hooks/useAnalytics.ts: Analytics state management
+ * - src/context/AuthContext.tsx: Authentication context
  */
 export default function AnalyticsPage() {
   const { isLoggedIn } = useAuth();
   const router = useRouter();
-  // Authentifizierungsschutz: Weiterleitung, falls nicht eingeloggt
+  
+  // Authentication protection: redirect if not logged in
   useEffect(() => {
     if (isLoggedIn === false) {
       router.replace("/login");
     }
   }, [isLoggedIn, router]);
 
-  const [analytics, setAnalytics] = useState<Analytics | null>(null);
-  const [edit, setEdit] = useState(false);
-  const [form, setForm] = useState({
-    totalLearningTime: '',
-    totalCardsLearned: '',
-    totalCorrect: '',
-    totalWrong: '',
-    resets: '',
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Don't render anything while checking authentication
+  if (isLoggedIn === null) {
+    return null;
+  }
 
-  useEffect(() => {
-    getAnalytics()
-      .then((data) => {
-        setAnalytics(data);
-        if (data) setForm({
-          totalLearningTime: String(data.totalLearningTime),
-          totalCardsLearned: String(data.totalCardsLearned),
-          totalCorrect: String(data.totalCorrect),
-          totalWrong: String(data.totalWrong),
-          resets: String(data.resets),
-        });
-      })
-      .catch(() => setError('Fehler beim Laden der Analytics'))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const handleChange = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [key]: e.target.value });
-  };
-
-  const handleSave = async () => {
-    if (!analytics) return;
-    setLoading(true);
-    setError(null);
-    const payload = {
-      totalLearningTime: Number(form.totalLearningTime),
-      totalCardsLearned: Number(form.totalCardsLearned),
-      totalCorrect: Number(form.totalCorrect),
-      totalWrong: Number(form.totalWrong),
-      resets: Number(form.resets),
-    };
-    const updated = await updateAnalytics(analytics.id, payload);
-    if (updated) {
-      setAnalytics(updated);
-      setEdit(false);
-    } else {
-      setError('Fehler beim Speichern');
-    }
-    setLoading(false);
-  };
-
-  if (loading) return <Text>Lade Analytics...</Text>;
-  if (error) return <Text>{error}</Text>;
-  if (!analytics) return <Text>Keine Analytics-Daten gefunden.</Text>;
+  // Don't render if user is not authenticated (will redirect)
+  if (isLoggedIn === false) {
+    return null;
+  }
 
   return (
-    <div style={{ maxWidth: 500, margin: '0 auto', padding: 24 }}>
-      <Headline>Learning Analytics</Headline>
-      <div
-        style={{
-          margin: '32px 0',
-          background: 'var(--card-bg, #18191c)',
-          borderRadius: 12,
-          boxShadow: '0 2px 16px #0003',
-          padding: 32,
-          color: 'var(--text-color, #f5f5f5)',
-          minWidth: 320,
-          maxWidth: 500,
-          width: '100%',
-        }}
-      >
-        {edit ? (
-          <div style={{ display: 'grid', gap: 16 }}>
-            <label>
-              <Text>Learning time (seconds)</Text>
-              <Input type="number" value={form.totalLearningTime} onChange={handleChange('totalLearningTime')} placeholder="Learning time (seconds)" />
-            </label>
-            <label>
-              <Text>Cards learned</Text>
-              <Input type="number" value={form.totalCardsLearned} onChange={handleChange('totalCardsLearned')} placeholder="Cards learned" />
-            </label>
-            <label>
-              <Text>Correct answers</Text>
-              <Input type="number" value={form.totalCorrect} onChange={handleChange('totalCorrect')} placeholder="Correct answers" />
-            </label>
-            <label>
-              <Text>Wrong answers</Text>
-              <Input type="number" value={form.totalWrong} onChange={handleChange('totalWrong')} placeholder="Wrong answers" />
-            </label>
-            <label>
-              <Text>Resets</Text>
-              <Input type="number" value={form.resets} onChange={handleChange('resets')} placeholder="Resets" />
-            </label>
-            <div style={{ marginTop: 8, display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
-              <Button onClick={handleSave}>Save</Button>
-              <Button onClick={() => setEdit(false)}>Cancel</Button>
-            </div>
-          </div>
-        ) : (
-          <div style={{ display: 'grid', gap: 8, color: 'var(--text-color, #f5f5f5)' }}>
-            <Text>{`Learning time: ${analytics.totalLearningTime} seconds`}</Text>
-            <Text>{`Cards learned: ${analytics.totalCardsLearned}`}</Text>
-            <Text>{`Correct answers: ${analytics.totalCorrect}`}</Text>
-            <Text>{`Wrong answers: ${analytics.totalWrong}`}</Text>
-            <Text>{`Resets: ${analytics.resets}`}</Text>
-            <Text>{`Last update: ${new Date(analytics.updatedAt).toLocaleString()}`}</Text>
-            <div style={{ marginTop: 12 }}>
-              <Button onClick={() => setEdit(true)}>Edit</Button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+    <SuspenseWrapper>
+      <AnalyticsTemplate testId="analytics-page" />
+    </SuspenseWrapper>
   );
 }

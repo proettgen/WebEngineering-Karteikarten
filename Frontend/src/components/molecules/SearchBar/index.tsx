@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import * as SC from "./styles";
 import { SearchBarProps } from "./types";
 import Icon from "@/components/atoms/Icon";
 
-const SearchBar: React.FC<SearchBarProps> = ({
+const SearchBar: React.FC<SearchBarProps> = React.memo(({
   placeholder = "Search...",
   onSearch,
   initialValue = "",
@@ -14,7 +14,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     setSearchTerm(initialValue);
   }, [initialValue]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setSearchTerm(newValue);
     
@@ -22,24 +22,24 @@ const SearchBar: React.FC<SearchBarProps> = ({
     if (newValue.trim() === '') {
       onSearch('');
     }
-  };
+  }, [onSearch]);
 
-  const triggerSearch = () => {
+  const triggerSearch = useCallback(() => {
     const trimmedSearchTerm = searchTerm.trim();
     onSearch(trimmedSearchTerm);
-  };
+  }, [searchTerm, onSearch]);
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault(); // Prevent default if inside a form
       triggerSearch();
     }
-  };
+  }, [triggerSearch]);
 
-  const clearSearch = () => {
+  const clearSearch = useCallback(() => {
     setSearchTerm('');
     onSearch('');
-  };
+  }, [onSearch]);
 
   const isInputFilled = searchTerm.trim() !== "";
 
@@ -85,6 +85,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
       )}
     </SC.SearchBarContainer>
   );
-};
+});
+
+SearchBar.displayName = 'SearchBar';
 
 export default SearchBar;

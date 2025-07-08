@@ -397,6 +397,138 @@ export const swaggerOptions = {
         },
         
         // =============================================================================
+        // ANALYTICS SCHEMAS
+        // =============================================================================
+        Analytics: {
+          type: "object",
+          required: ["id", "userId", "studySession", "totalCards", "correctAnswers", "createdAt"],
+          properties: {
+            id: {
+              type: "string",
+              format: "uuid",
+              description: "Unique ID of the analytics record",
+              example: "analytics-123e4567-e89b-12d3-a456-426614174000",
+            },
+            userId: {
+              type: "string",
+              format: "uuid",
+              description: "ID of the user this analytics belongs to",
+              example: "550e8400-e29b-41d4-a716-446655440000",
+            },
+            studySession: {
+              type: "integer",
+              minimum: 1,
+              description: "Study session number",
+              example: 5,
+            },
+            totalCards: {
+              type: "integer",
+              minimum: 0,
+              description: "Total number of cards studied in this session",
+              example: 20,
+            },
+            correctAnswers: {
+              type: "integer",
+              minimum: 0,
+              description: "Number of correct answers in this session",
+              example: 15,
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+              description: "Timestamp when the analytics record was created",
+              example: "2024-01-20T10:30:00.000Z",
+            },
+            updatedAt: {
+              type: "string",
+              format: "date-time",
+              description: "Timestamp when the analytics record was last updated",
+              example: "2024-01-20T10:30:00.000Z",
+            },
+          },
+        },
+        CreateAnalyticsRequest: {
+          type: "object",
+          required: ["studySession", "totalCards", "correctAnswers"],
+          properties: {
+            studySession: {
+              type: "integer",
+              minimum: 1,
+              description: "Study session number",
+              example: 5,
+            },
+            totalCards: {
+              type: "integer",
+              minimum: 0,
+              description: "Total number of cards studied in this session",
+              example: 20,
+            },
+            correctAnswers: {
+              type: "integer",
+              minimum: 0,
+              description: "Number of correct answers in this session",
+              example: 15,
+            },
+          },
+        },
+        UpdateAnalyticsRequest: {
+          type: "object",
+          properties: {
+            studySession: {
+              type: "integer",
+              minimum: 1,
+              description: "Study session number",
+              example: 6,
+            },
+            totalCards: {
+              type: "integer",
+              minimum: 0,
+              description: "Total number of cards studied in this session",
+              example: 25,
+            },
+            correctAnswers: {
+              type: "integer",
+              minimum: 0,
+              description: "Number of correct answers in this session",
+              example: 20,
+            },
+          },
+        },
+        AnalyticsResponse: {
+          type: "object",
+          required: ["status", "data"],
+          properties: {
+            status: {
+              type: "string",
+              enum: ["success"],
+              description: "Success status",
+              example: "success",
+            },
+            data: {
+              $ref: "#/components/schemas/Analytics",
+            },
+          },
+        },
+        AnalyticsListResponse: {
+          type: "object",
+          required: ["status", "data"],
+          properties: {
+            status: {
+              type: "string",
+              enum: ["success"],
+              description: "Success status",
+              example: "success",
+            },
+            data: {
+              type: "array",
+              items: {
+                $ref: "#/components/schemas/Analytics",
+              },
+            },
+          },
+        },
+        
+        // =============================================================================
         // API RESPONSE SCHEMAS
         // =============================================================================
         SuccessResponse: {

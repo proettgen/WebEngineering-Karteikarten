@@ -66,7 +66,7 @@ const LearningModeSelection = () => {
         setError(null);
       })
       .catch(() => {
-        setError("Fehler beim Laden der Ordner");
+        setError("Error loading folders");
       })
       .finally(() => setLoadingFolders(false));
   }, []);
@@ -175,7 +175,7 @@ const LearningModeSelection = () => {
         <SC.CenteredColumn>
           <Headline size="md">Select a folder</Headline>
           {loadingFolders ? (
-            <p>Ordner werden geladen ...</p>
+            <p>Loading folders ...</p>
           ) : error ? (
             <p>{error}</p>
           ) : (

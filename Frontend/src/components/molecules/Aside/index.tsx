@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import { Folder } from "@/database/folderTypes";
 import { AsideProps, BreadcrumbItem } from "./types";
 import * as SC from "./styles";
@@ -32,7 +32,7 @@ const FolderNavigationAside: React.FC<AsideProps> = ({
   );
 
   // Sort folders based on the selected sort option
-  const sortFolders = (foldersToSort: Folder[], sortOption: SortOption): Folder[] => {
+  const sortFolders = useCallback((foldersToSort: Folder[], sortOption: SortOption): Folder[] => {
     const sorted = [...foldersToSort];
     switch (sortOption) {
       case "name":
@@ -51,23 +51,23 @@ const FolderNavigationAside: React.FC<AsideProps> = ({
       default:
         return sorted;
     }
-  };
+  }, []);
 
   // List of folders to display (all folders since filtering is handled in parent)
   const displayedFolders = useMemo((): Folder[] => 
     sortFolders(currentFolders, sortOption), 
-    [currentFolders, sortOption]
+    [currentFolders, sortOption, sortFolders]
   );
 
   // Handle click on a folder item (to select it)
-  const handleFolderClick = (clickedFolder: Folder): void => {
+  const handleFolderClick = useCallback((clickedFolder: Folder): void => {
     onFolderSelect(clickedFolder.id);
-  };
+  }, [onFolderSelect]);
 
   // Handle breadcrumb navigation
-  const handleBreadcrumbClick = (item: BreadcrumbItem | null): void => {
+  const handleBreadcrumbClick = useCallback((item: BreadcrumbItem | null): void => {
     onBreadcrumbNavigate(item ? item.id : null);
-  };
+  }, [onBreadcrumbNavigate]);
 
   return (
     <SC.AsideContainer>

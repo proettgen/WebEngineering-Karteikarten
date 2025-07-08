@@ -9,8 +9,13 @@
  */
 "use client";
 import React from "react";
-import LearningModeSelection from "@/components/organisms/LearningModeSelection";
+import { LearningModeSelection } from "@/utils/lazyImports";
+import SuspenseWrapper from "@/components/molecules/SuspenseWrapper";
 
-const LearningModePage = () => <LearningModeSelection />;
+const LearningModePage = () => (
+  <SuspenseWrapper>
+    <LearningModeSelection />
+  </SuspenseWrapper>
+);
 
 export default LearningModePage;

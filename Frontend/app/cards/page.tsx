@@ -1,12 +1,12 @@
 "use client";
 import React from "react";
-import CardManagerTemplate from "@/components/templates/CardManagerTemplate/index";
-import { Suspense } from "react";
+import { CardManagerTemplate } from "@/utils/lazyImports";
+import SuspenseWrapper from "@/components/molecules/SuspenseWrapper";
 
 const Cards = () => (
-  <Suspense fallback={<div>Loading...</div>}>
+  <SuspenseWrapper>
     <CardManagerTemplate />
-  </Suspense>
+  </SuspenseWrapper>
 );
 
 export default Cards;

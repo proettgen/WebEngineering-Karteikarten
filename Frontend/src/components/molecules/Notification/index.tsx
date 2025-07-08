@@ -1,21 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import * as SC from "./styles";
 import { NotificationProps } from "./types";
 
-const Notification = ({ message, type, duration = 3000, onDismiss }: NotificationProps) => {
+const Notification = React.memo(({ message, type, duration = 3000, onDismiss }: NotificationProps) => {
   const [isFadingOut, setIsFadingOut] = useState(false);
+
+  const handleFadeOut = useCallback(() => {
+    setIsFadingOut(true);
+  }, []);
+
+  const handleDismiss = useCallback(() => {
+    if (onDismiss) {
+      onDismiss();
+    }
+  }, [onDismiss]);
 
   useEffect(() => {
     if (onDismiss && duration > 0) {
       // Start fade-out animation 400ms before dismissing
-      const fadeOutTimer = setTimeout(() => {
-        setIsFadingOut(true);
-      }, duration - 400);
+      const fadeOutTimer = setTimeout(handleFadeOut, duration - 400);
 
       // Dismiss notification after fade-out completes
-      const dismissTimer = setTimeout(() => {
-        onDismiss();
-      }, duration);
+      const dismissTimer = setTimeout(handleDismiss, duration);
 
       // Cleanup timers if component unmounts
       return () => {
@@ -23,13 +29,15 @@ const Notification = ({ message, type, duration = 3000, onDismiss }: Notificatio
         clearTimeout(dismissTimer);
       };
     }
-  }, [onDismiss, duration]);
+  }, [duration, handleFadeOut, handleDismiss, onDismiss]);
 
   return (
     <SC.Notification type={type} isFadingOut={isFadingOut}>
       {message}
     </SC.Notification>
   );
-};
+});
+
+Notification.displayName = 'Notification';
 
 export default Notification;

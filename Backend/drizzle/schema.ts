@@ -53,10 +53,17 @@ export const users = pgTable("users", {
 
 export const analytics = pgTable("analytics", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
+	userId: uuid("user_id").notNull(),
 	totalLearningTime: integer("total_learning_time").default(0).notNull(),
 	totalCardsLearned: integer("total_cards_learned").default(0).notNull(),
 	totalCorrect: integer("total_correct").default(0).notNull(),
 	totalWrong: integer("total_wrong").default(0).notNull(),
 	resets: integer().default(0).notNull(),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().notNull(),
-});
+}, (table) => [
+	foreignKey({
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "analytics_user_id_users_id_fk"
+	}).onDelete("cascade"),
+]);

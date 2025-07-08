@@ -6,6 +6,7 @@
  *
  * Felder:
  * - id: Eindeutige ID des Datensatzes (UUID)
+ * - userId: ID des Benutzers, dem die Analytics gehören (Foreign Key)
  * - totalLearningTime: Gesamte Lernzeit in Sekunden
  * - totalCardsLearned: Anzahl gelernter Karten
  * - totalCorrect: Anzahl richtiger Antworten
@@ -20,6 +21,7 @@
  */
 export interface Analytics {
   id: string;
+  userId: string;
   totalLearningTime: number;
   totalCardsLearned: number;
   totalCorrect: number;

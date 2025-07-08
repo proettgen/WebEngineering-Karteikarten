@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { cardAndFolderService } from "@/services/cardAndFolderService";
 import Folder from "../../molecules/Folder";
@@ -24,7 +24,7 @@ interface CardManagerProps {
   initialFolderId?: string | null;
 }
 
-const CardManager = ({
+const CardManager = React.memo(({
   initialFolderId: _initialFolderId,
 }: CardManagerProps) => {
   const router = useRouter();
@@ -243,7 +243,7 @@ const CardManager = ({
   }, []);
 
   // Create or update a folder
-  const handleSaveFolder = async (folderName: string) => {
+  const handleSaveFolder = useCallback(async (folderName: string) => {
     setLoading(true);
     try {
       let allFoldersData: FolderType[];
@@ -295,10 +295,10 @@ const CardManager = ({
       setEditingFolder(null);
       setModalOpen(false);
     }
-  };
+  }, [editingFolder, currentParentId]);
 
   // Delete a folder
-  const handleDeleteFolder = async () => {
+  const handleDeleteFolder = useCallback(async () => {
     if (editingFolder && editingFolder.id) {
       setLoading(true);
       try {
@@ -341,7 +341,7 @@ const CardManager = ({
         setModalOpen(false);
       }
     }
-  };
+  }, [editingFolder, selectedFolderId, navigateToFolder, currentParentId]);
 
   // Load cards for a specific folder (used in CRUD operations)
   const loadCardsForFolder = useCallback(async (folderId: string) => {
@@ -361,7 +361,7 @@ const CardManager = ({
   }, []);
 
   // Card operations
-  const handleAddCard: FolderProps["onAddCard"] = async (
+  const handleAddCard: FolderProps["onAddCard"] = useCallback(async (
     folderName,
     title,
     question,
@@ -390,9 +390,9 @@ const CardManager = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedFolderId, loadCardsForFolder]);
 
-  const handleEditCard: FolderProps["onEditCard"] = async (
+  const handleEditCard: FolderProps["onEditCard"] = useCallback(async (
     folderName,
     cardIndex,
     newTitle,
@@ -426,9 +426,9 @@ const CardManager = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedFolderId, cardsByFolder, loadCardsForFolder]);
 
-  const handleDeleteCard: FolderProps["onDeleteCard"] = async (
+  const handleDeleteCard: FolderProps["onDeleteCard"] = useCallback(async (
     folderName,
     cardIndex,
   ) => {
@@ -452,16 +452,16 @@ const CardManager = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedFolderId, cardsByFolder, loadCardsForFolder]);
 
-  const handleEditFolder = (folder: FolderType) => {
+  const handleEditFolder = useCallback((folder: FolderType) => {
     setEditingFolder({
       name: folder.name,
       id: folder.id,
       parentId: folder.parentId,
     });
     setModalOpen(true);
-  };
+  }, []);
 
   const handleAddFolder = useCallback(() => {
     // Create a new folder at the current level
@@ -473,10 +473,10 @@ const CardManager = ({
     setModalOpen(true);
   }, [currentParentId]);
 
-  // Get the selected folder cards for display
-  const selectedFolderCards = selectedFolderId
-    ? cardsByFolder[selectedFolderId] || []
-    : [];
+  // Get the selected folder cards for display (memoized)
+  const selectedFolderCards = useMemo(() => 
+    selectedFolderId ? cardsByFolder[selectedFolderId] || [] : []
+  , [selectedFolderId, cardsByFolder]);
 
   return (
     <SC.ContentWrapper>
@@ -558,6 +558,8 @@ const CardManager = ({
       </SC.CardsWrapper>
     </SC.ContentWrapper>
   );
-};
+});
+
+CardManager.displayName = 'CardManager';
 
 export default CardManager;

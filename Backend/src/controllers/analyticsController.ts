@@ -1,85 +1,132 @@
 /**
  * Analytics Controller
  *
- * Diese Datei enthält die HTTP-Controller für alle Analytics-Endpunkte.
- * Sie nimmt HTTP-Anfragen entgegen, ruft die Service-Methoden auf und sendet die HTTP-Antworten zurück.
+ * This file contains HTTP controllers for all analytics endpoints.
+ * It handles HTTP requests, calls service methods, and sends HTTP responses.
  *
- * Hinweise für Einsteiger:
- * - Controller sind für die HTTP-spezifische Logik zuständig (z.B. Statuscodes, Fehlerbehandlung).
- * - Die eigentliche Datenbanklogik steckt im Service (siehe src/services/analyticsService.ts).
- * - Die Controller werden in den Routen (src/routes/analyticsRoutes.ts) verwendet.
+ * Notes:
+ * - Controllers are responsible for HTTP-specific logic (e.g., status codes, error handling).
+ * - The actual database logic is in the service (see src/services/analyticsService.ts).
+ * - Controllers are used in routes (src/routes/analyticsRoutes.ts).
+ * - Now follows the same patterns as authController and cardController.
  *
- * Querverweise:
- * - src/services/analyticsService.ts: Geschäftslogik für Analytics
- * - src/routes/analyticsRoutes.ts: Routing der Analytics-Endpunkte
- * - drizzle/schema.ts: Datenbankschema
+ * Cross-references:
+ * - src/services/analyticsService.ts: Business logic for analytics
+ * - src/routes/analyticsRoutes.ts: Routing for analytics endpoints
+ * - src/validation/analyticsValidation.ts: Request validation
+ * - drizzle/schema.ts: Database schema
  */
 
+import { Response, NextFunction } from 'express';
 import * as analyticsService from '../services/analyticsService';
-import { Request, Response, NextFunction } from 'express';
+import { AppError } from '../utils/AppError';
+import { createAnalyticsBody, updateAnalyticsBody } from '../validation/analyticsValidation';
+import { AuthenticatedRequest } from '../types/authTypes';
 
 /**
  * GET /api/analytics
- * Gibt die aktuellen Analytics-Daten zurück.
+ * Returns the current user's analytics data.
+ * Creates a new analytics record if none exists.
  */
-export const getAnalytics = async (req: Request, res: Response, next: NextFunction) => {
+export const getAnalytics = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
-    const data = await analyticsService.getAnalytics();
-    if (!data) {
-      res.status(404).json({ message: 'Analytics not found' });
-      return;
+    if (!req.user) {
+      throw new AppError('User not authenticated', 401);
     }
-    res.json(data);
-  } catch (err) {
-    next(err);
+
+    const data = await analyticsService.getUserAnalytics(req.user.id);
+    
+    res.status(200).json({
+      status: 'success',
+      data: data
+    });
+  } catch (error) {
+    next(error);
   }
 };
 
 /**
  * POST /api/analytics
- * Legt einen neuen Analytics-Datensatz an.
+ * Creates a new analytics record for the authenticated user.
  */
-export const createAnalytics = async (req: Request, res: Response, next: NextFunction) => {
+export const createAnalytics = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
-    const data = await analyticsService.createAnalytics(req.body as Omit<import('../types/analyticsTypes').Analytics, 'id' | 'updatedAt'>);
-    res.status(201).json(data);
-  } catch (err) {
-    next(err);
+    if (!req.user) {
+      throw new AppError('User not authenticated', 401);
+    }
+
+    const validatedData = createAnalyticsBody.parse(req.body);
+    const data = await analyticsService.createUserAnalytics(req.user.id, validatedData);
+    
+    res.status(201).json({
+      status: 'success',
+      data: data
+    });
+  } catch (error) {
+    next(error);
   }
 };
 
 /**
- * PUT /api/analytics/:id
- * Aktualisiert einen Analytics-Datensatz anhand der ID.
+ * PUT /api/analytics
+ * Updates the authenticated user's analytics record.
  */
-export const updateAnalytics = async (req: Request, res: Response, next: NextFunction) => {
+export const updateAnalytics = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
-    const { id } = req.params;
-    const data = await analyticsService.updateAnalytics(id, req.body as Partial<Omit<import('../types/analyticsTypes').Analytics, 'id' | 'updatedAt'>>);
+    if (!req.user) {
+      throw new AppError('User not authenticated', 401);
+    }
+
+    const validatedData = updateAnalyticsBody.parse(req.body);
+    const data = await analyticsService.updateUserAnalytics(req.user.id, validatedData);
+    
     if (!data) {
-      res.status(404).json({ message: 'Analytics not found' });
-      return;
+      throw new AppError('Analytics not found for this user', 404);
     }
-    res.json(data);
-  } catch (err) {
-    next(err);
+    
+    res.status(200).json({
+      status: 'success',
+      data: data
+    });
+  } catch (error) {
+    next(error);
   }
 };
 
 /**
- * DELETE /api/analytics/:id
- * Löscht einen Analytics-Datensatz anhand der ID.
+ * DELETE /api/analytics
+ * Deletes the authenticated user's analytics record.
  */
-export const deleteAnalytics = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteAnalytics = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
-    const { id } = req.params;
-    const deleted = await analyticsService.deleteAnalytics(id);
-    if (!deleted) {
-      res.status(404).json({ message: 'Analytics not found' });
-      return;
+    if (!req.user) {
+      throw new AppError('User not authenticated', 401);
     }
+
+    const deleted = await analyticsService.deleteUserAnalytics(req.user.id);
+    
+    if (!deleted) {
+      throw new AppError('Analytics not found for this user', 404);
+    }
+    
     res.status(204).send();
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };

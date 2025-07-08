@@ -56,7 +56,7 @@ npm run generate-swagger
 This creates `src/config/generated-swagger.json` which must be committed to version control.
 
 ### 3. View Documentation
-- **Local Development**: http://localhost:3001/api/docs
+- **Local Development**: http://localhost:8080/api/docs
 - **Production**: https://petstore.swagger.io/?url=https://web-engineering-karteikarten.vercel.app/api/api-docs/swagger.json
 
 ##  Workflow Rules

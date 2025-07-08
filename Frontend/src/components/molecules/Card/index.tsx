@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import * as SC from "./styles";
 import { CardProps } from "./types";
 import Modal from "@/components/molecules/Modal";
@@ -6,7 +6,7 @@ import CardForm from "@/components/molecules/CardForm";
 import Text from "@/components/atoms/Text";
 import Icon from "@/components/atoms/Icon";
 
-const Card = ({
+const Card = React.memo(({
   title,
   question,
   answer,
@@ -21,9 +21,9 @@ const Card = ({
   const [isQuestionExpanded, setIsQuestionExpanded] = useState(false);
   const [isAnswerExpanded, setIsAnswerExpanded] = useState(false);
 
-  const isTextLong = (text: string) => text.length > 150;
+  const isTextLong = useCallback((text: string) => text.length > 150, []);
 
-  const handleEditSubmit = (
+  const handleEditSubmit = useCallback((
     newTitle: string,
     newQuestion: string,
     newAnswer: string,
@@ -33,19 +33,35 @@ const Card = ({
       onEdit(newTitle, newQuestion, newAnswer, newTags);
     }
     setIsEditing(false);
-  };
+  }, [onEdit]);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     if (onDelete) {
       onDelete();
     }
-  };
+  }, [onDelete]);
 
-  const handleFlip = () => {
+  const handleFlip = useCallback(() => {
     if (onFlip) {
       onFlip();
     }
-  };
+  }, [onFlip]);
+
+  const toggleQuestionExpanded = useCallback(() => {
+    setIsQuestionExpanded(!isQuestionExpanded);
+  }, [isQuestionExpanded]);
+
+  const toggleAnswerExpanded = useCallback(() => {
+    setIsAnswerExpanded(!isAnswerExpanded);
+  }, [isAnswerExpanded]);
+
+  const openEditModal = useCallback(() => {
+    setIsEditing(true);
+  }, []);
+
+  const closeEditModal = useCallback(() => {
+    setIsEditing(false);
+  }, []);
 
   return (
     <SC.CardContainer>
@@ -81,14 +97,14 @@ const Card = ({
               </Text>
             </SC.TruncatedText>
             {isTextLong(question) && (
-              <SC.ExpandButton onClick={() => setIsQuestionExpanded(!isQuestionExpanded)}>
+              <SC.ExpandButton onClick={toggleQuestionExpanded}>
                 {isQuestionExpanded ? 'Show less' : 'Show more'}
               </SC.ExpandButton>
             )}
           </SC.MainTextWrapper>
           {showEditButton && (
             <SC.EditButtonWrapper>
-              <SC.EditButton onClick={() => setIsEditing(true)} aria-label="Edit card">
+              <SC.EditButton onClick={openEditModal} aria-label="Edit card">
               <Icon size="s" color="textPrimary">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -133,14 +149,14 @@ const Card = ({
               </Text>
             </SC.TruncatedText>
             {isTextLong(answer) && (
-              <SC.ExpandButton onClick={() => setIsAnswerExpanded(!isAnswerExpanded)}>
+              <SC.ExpandButton onClick={toggleAnswerExpanded}>
                 {isAnswerExpanded ? 'Show less' : 'Show more'}
               </SC.ExpandButton>
             )}
           </SC.MainTextWrapper>
           {showEditButton && (
             <SC.EditButtonWrapper>
-              <SC.EditButton onClick={() => setIsEditing(true)} aria-label="Edit card">
+              <SC.EditButton onClick={openEditModal} aria-label="Edit card">
               <Icon size="s" color="textPrimary">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -156,7 +172,7 @@ const Card = ({
         </SC.CardBack>
       </SC.Card>
       {isEditing && (
-        <Modal isOpen={isEditing} onClose={() => setIsEditing(false)}>
+        <Modal isOpen={isEditing} onClose={closeEditModal}>
           <CardForm
             onSubmit={handleEditSubmit}
             initialTitle={title}
@@ -164,11 +180,14 @@ const Card = ({
             initialAnswer={answer}
             initialTags={tags.join(", ")}
             onDelete={handleDelete}
-            onCancel={() => setIsEditing(false)}
+            onCancel={closeEditModal}
           />
         </Modal>
       )}
     </SC.CardContainer>
   );
-};
+});
+
+Card.displayName = 'Card';
+
 export default Card;

@@ -2,7 +2,7 @@ import React from "react";
 import * as SC from "./styles";
 import { ButtonProps } from "./types";
 
-const Button: React.FC<ButtonProps> = ({
+const Button: React.FC<ButtonProps> = React.memo(({
   $variant = "primary",
   children,
   disabled = false,
@@ -19,5 +19,8 @@ const Button: React.FC<ButtonProps> = ({
   >
     {children}
   </SC.Button>
-);
+));
+
+Button.displayName = 'Button';
+
 export default Button;

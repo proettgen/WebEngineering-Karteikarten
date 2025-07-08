@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import LearningMode from "@/components/organisms/LearningMode";
 import { cardAndFolderService } from "@/services/cardAndFolderService";
 import { LearningModeManagerProps } from "./types";
@@ -61,7 +61,7 @@ const LearningModeManager = ({
         );
         setError(null);
       })
-      .catch(() => setError("Fehler beim Laden der Karten"))
+      .catch(() => setError("Error loading cards"))
       .finally(() => {
         setIsCompleted(false);
         setCompletedTime(null);
@@ -71,8 +71,7 @@ const LearningModeManager = ({
   /**
    * Bewertet eine Karte als richtig/falsch, verschiebt sie in die nächste/letzte Box und prüft, ob alle Karten gelernt wurden.
    */
-
-  const handleEvaluate = async (cardId: string, correct: boolean) => {
+  const handleEvaluate = useCallback(async (cardId: string, correct: boolean) => {
     // Finde die Karte
     const card = cards.find((c: any) => c.id === cardId);
     if (!card) return;
@@ -98,15 +97,16 @@ const LearningModeManager = ({
         setCompletedTime(elapsedSeconds);
       }
     } catch {
-      setError("Fehler beim Aktualisieren der Karte");
+      setError("Error updating card");
     } finally {
       setLoadingCards(false);
     }
-  };
+  }, [cards, folder.id, currentLearningLevel, elapsedSeconds]);
+
   /**
    * Lädt die Karten für die aktuelle Box neu (z.B. nach Bewertung oder Zurück).
    */
-  const handleNextCard = async () => {
+  const handleNextCard = useCallback(async () => {
     setLoadingCards(true);
     try {
       const res = await cardAndFolderService.getCardsByFolder(folder.id);
@@ -115,22 +115,23 @@ const LearningModeManager = ({
         allCards.filter((card: any) => (card.currentLearningLevel ?? 0) === currentLearningLevel),
       );
     } catch {
-      setError("Fehler beim Nachladen der Karten");
+      setError("Error reloading cards");
     } finally {
       setLoadingCards(false);
     }
-  };
+  }, [folder.id, currentLearningLevel]);
   /**
    * Geht zurück zur vorherigen Ansicht und lädt die Karten neu.
    */
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     handleNextCard();
     onBack();
-  };
+  }, [handleNextCard, onBack]);
+
   /**
    * Setzt alle Karten im aktuellen Ordner auf Box 0 zurück (Neustart).
    */
-  const resetAllCardsToBox0 = async () => {
+  const resetAllCardsToBox0 = useCallback(async () => {
     setLoadingCards(true);
     try {
       const res = await cardAndFolderService.getCardsByFolder(folder.id);
@@ -143,33 +144,35 @@ const LearningModeManager = ({
         ),
       );
     } catch {
-      setError("Fehler beim Zurücksetzen der Karten");
+      setError("Error resetting cards");
     } finally {
       setLoadingCards(false);
     }
-  };
+  }, [folder.id]);
+
   /**
    * Startet den Lernmodus neu (setzt alle Karten zurück und erhöht den Reset-Key).
    */
-  const handleRestart = async () => {
+  const handleRestart = useCallback(async () => {
     await resetAllCardsToBox0();
     setResetKey((prev) => prev + 1);
     if (typeof onRestart === "function") onRestart();
-  };
+  }, [resetAllCardsToBox0, onRestart]);
+
   /**
    * Geht zurück zur Ordnerauswahl oder zur vorherigen Ansicht.
    */
-  const handleBackToFolders = () => {
+  const handleBackToFolders = useCallback(() => {
     if (typeof onBackToFolders === "function") onBackToFolders();
     else handleBack();
-  };
+  }, [onBackToFolders, handleBack]);
 
   // Wenn alle Karten gelernt wurden, könnte hier eine Abschlussanzeige gerendert werden
   if (loadingCards) {
     return (
       <LearningModeTemplate>
         <div style={{ textAlign: "center", padding: 32 }}>
-          <p>Karten werden geladen ...</p>
+          <p>Loading cards ...</p>
         </div>
       </LearningModeTemplate>
     );
