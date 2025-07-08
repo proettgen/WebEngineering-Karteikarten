@@ -1,18 +1,19 @@
 /**
- * useLearningMode Hook
+ * useLearningMode Hook (Enhanced)
  * 
  * Custom hook for learning mode state management and business logic.
- * Centralizes all learning mode operations and provides a clean API for components.
+ * Enhanced with robust error handling, retry mechanisms, and improved reliability.
+ * Now matches the robustness of Card/Folder operations.
  * 
  * Features:
  * - Folder loading and selection
  * - Box/learning level management
  * - Timer functionality
  * - Step navigation (start -> folder selection -> box selection -> learning)
- * - Error handling and loading states
+ * - Enhanced error handling with retry mechanisms
+ * - Loading states with better UX
  * - Authentication-aware API calls
- * 
- * This hook follows the same pattern as useAnalytics for consistency.
+ * - Consistent with Card/Folder error handling patterns
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -20,6 +21,7 @@ import { useRouter } from 'next/navigation';
 import { cardAndFolderService } from '@/services/cardAndFolderService';
 import { Folder } from '@/database/folderTypes';
 import { Card } from '@/database/cardTypes';
+import { useEnhancedError } from './useEnhancedError';
 
 export type LearningModeStep = 'start' | 'select-folder' | 'select-box' | 'learn';
 
@@ -46,8 +48,10 @@ interface UseLearningModeReturn {
   loadingCards: boolean;
   loading: boolean;
   
-  // Error states
+  // Enhanced error states
   error: string | null;
+  canRetry: boolean;
+  isRetrying: boolean;
   
   // Actions
   startLearning: () => void;
@@ -57,6 +61,8 @@ interface UseLearningModeReturn {
   resetLearning: () => void;
   goBack: () => void;
   goBackToFolders: () => void;
+  retryLastOperation: () => Promise<void>;
+  refreshBoxCounts: () => Promise<void>;
   
   // Navigation
   navigateToCards: () => void;
@@ -79,11 +85,14 @@ export const useLearningMode = (): UseLearningModeReturn => {
   const [loadingFolders, setLoadingFolders] = useState(false);
   const [loadingCards, setLoadingCards] = useState(false);
   
-  // Error state
-  const [error, setError] = useState<string | null>(null);
+  // Enhanced error handling
+  const { error, setError, clearError, retry, canRetry, isRetrying } = useEnhancedError(3);
   
   // Timer ref
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  
+  // Track last operation for retry
+  const lastOperationRef = useRef<(() => Promise<void>) | null>(null);
   
   // Router for navigation
   const router = useRouter();
@@ -91,24 +100,29 @@ export const useLearningMode = (): UseLearningModeReturn => {
   // Load folders when component mounts or when transitioning to folder selection
   const loadFolders = useCallback(async () => {
     setLoadingFolders(true);
-    setError(null);
     
-    try {
+    const operation = async () => {
       const response = await cardAndFolderService.getFolders();
       setFolders(response.data.folders);
-    } catch {
-      setError('Failed to load folders. Please try again.');
+    };
+
+    lastOperationRef.current = operation;
+
+    try {
+      await operation();
+      clearError();
+    } catch (err) {
+      setError(err as Error, 'network');
     } finally {
       setLoadingFolders(false);
     }
-  }, []);
+  }, [setError, clearError]);
   
   // Load cards and calculate box counts for selected folder
   const loadBoxCounts = useCallback(async (folderId: string) => {
     setLoadingCards(true);
-    setError(null);
     
-    try {
+    const operation = async () => {
       const response = await cardAndFolderService.getCardsByFolder(folderId);
       const folderCards = response.data?.cards || [];
       setCards(folderCards);
@@ -120,12 +134,26 @@ export const useLearningMode = (): UseLearningModeReturn => {
         counts.push({ level, count });
       }
       setBoxCounts(counts);
-    } catch {
-      setError('Failed to load cards. Please try again.');
+    };
+
+    lastOperationRef.current = operation;
+
+    try {
+      await operation();
+      clearError();
+    } catch (err) {
+      setError(err as Error, 'network');
     } finally {
       setLoadingCards(false);
     }
-  }, []);
+  }, [setError, clearError]);
+  
+  // Retry mechanism for failed operations
+  const retryLastOperation = useCallback(async () => {
+    if (lastOperationRef.current && canRetry) {
+      await retry(lastOperationRef.current);
+    }
+  }, [retry, canRetry]);
   
   // Start timer
   const startTimer = useCallback(() => {
@@ -169,17 +197,30 @@ export const useLearningMode = (): UseLearningModeReturn => {
     }
   }, [selectedLearningLevel, startTimer]);
   
-  const resetLearning = useCallback(() => {
+  const resetLearning = useCallback(async () => {
     stopTimer();
-    setStep('start');
-    setSelectedFolder(null);
     setSelectedLearningLevel(null);
     setElapsedSeconds(0);
     setResetTrigger(prev => prev + 1);
-    setError(null);
-  }, [stopTimer]);
+    clearError();
+    
+    // Stay in the same folder and go back to box selection instead of start
+    if (selectedFolder) {
+      setStep('select-box');
+      await loadBoxCounts(selectedFolder.id);
+    } else {
+      setStep('start');
+      setSelectedFolder(null);
+    }
+  }, [stopTimer, clearError, selectedFolder, loadBoxCounts]);
+  // Refresh box counts for selected folder (called after card evaluation)
+  const refreshBoxCounts = useCallback(async () => {
+    if (selectedFolder) {
+      await loadBoxCounts(selectedFolder.id);
+    }
+  }, [selectedFolder, loadBoxCounts]);
   
-  const goBack = useCallback(() => {
+  const goBack = useCallback(async () => {
     switch (step) {
       case 'select-folder':
         setStep('start');
@@ -193,10 +234,14 @@ export const useLearningMode = (): UseLearningModeReturn => {
         setStep('select-box');
         setSelectedLearningLevel(null);
         setElapsedSeconds(0);
+        // Refresh box counts when going back from learning to box selection
+        if (selectedFolder) {
+          await loadBoxCounts(selectedFolder.id);
+        }
         break;
     }
-    setError(null);
-  }, [step, stopTimer]);
+    clearError();
+  }, [step, stopTimer, clearError, selectedFolder, loadBoxCounts]);
   
   const goBackToFolders = useCallback(() => {
     stopTimer();
@@ -204,8 +249,8 @@ export const useLearningMode = (): UseLearningModeReturn => {
     setSelectedFolder(null);
     setSelectedLearningLevel(null);
     setElapsedSeconds(0);
-    setError(null);
-  }, [stopTimer]);
+    clearError();
+  }, [stopTimer, clearError]);
   
   const navigateToCards = useCallback(() => {
     if (selectedFolder) {
@@ -240,8 +285,10 @@ export const useLearningMode = (): UseLearningModeReturn => {
     loadingCards,
     loading: loadingFolders || loadingCards,
     
-    // Error state
-    error,
+    // Enhanced error states
+    error: error?.message || null,
+    canRetry,
+    isRetrying,
     
     // Actions
     startLearning,
@@ -251,6 +298,8 @@ export const useLearningMode = (): UseLearningModeReturn => {
     resetLearning,
     goBack,
     goBackToFolders,
+    retryLastOperation,
+    refreshBoxCounts,
     
     // Navigation
     navigateToCards,

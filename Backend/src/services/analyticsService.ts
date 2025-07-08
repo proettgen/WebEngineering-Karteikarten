@@ -1,14 +1,15 @@
 /**
- * Analytics Service
+ * Analytics Service (Enhanced)
  *
- * This file contains the business logic for managing analytics data (learning statistics).
- * It encapsulates all database operations for the analytics module and is used by controllers.
+ * Enhanced business logic for managing analytics data (learning statistics).
+ * Now follows the same robust patterns as cardService and folderService.
  *
- * Important notes:
- * - The service layer is responsible for database communication.
- * - It should not contain HTTP-specific logic (that's the controller's job).
- * - Analytics data is now user-specific (associated with userId).
- * - Follows the same patterns as cardService and folderService.
+ * Improvements:
+ * - Better error handling with specific error types
+ * - Consistent validation patterns
+ * - Improved database interaction patterns
+ * - Better logging and monitoring
+ * - Follows Card/Folder service patterns exactly
  *
  * Cross-references:
  * - src/controllers/analyticsController.ts: HTTP controllers for analytics endpoints
@@ -27,13 +28,19 @@ import type { CreateAnalyticsBody, UpdateAnalyticsBody } from '../validation/ana
 /**
  * Retrieves analytics data for a specific user.
  * Creates a new analytics record if none exists for the user.
+ * Enhanced with better error handling and validation.
  * 
  * @param userId - The ID of the user whose analytics to retrieve
  * @returns The user's analytics data
- * @throws {AppError} If database query fails
+ * @throws {AppError} With specific error codes and messages
  */
 export const getUserAnalytics = async (userId: string): Promise<Analytics> => {
   try {
+    // Validate userId format (should be UUID)
+    if (!userId || typeof userId !== 'string') {
+      throw new AppError('Invalid user ID format', 400);
+    }
+
     // First, try to get existing analytics for the user
     const result = await db
       .select()
@@ -41,10 +48,12 @@ export const getUserAnalytics = async (userId: string): Promise<Analytics> => {
       .where(eq(analytics.userId, userId));
 
     if (result.length > 0) {
+      console.log(`Successfully retrieved analytics for user: ${userId}`);
       return result[0] as Analytics;
     }
 
     // If no analytics exist, create a new record with default values
+    console.log(`No analytics found for user ${userId}, creating default record`);
     const newAnalytics = await createUserAnalytics(userId, {
       totalLearningTime: 0,
       totalCardsLearned: 0,
@@ -55,21 +64,36 @@ export const getUserAnalytics = async (userId: string): Promise<Analytics> => {
 
     return newAnalytics;
   } catch (error) {
-    console.error('Error fetching user analytics:', error);
-    throw new AppError('Could not retrieve analytics data.', 500);
+    // Re-throw AppErrors as-is, wrap others
+    if (error instanceof AppError) {
+      throw error;
+    }
+    
+    console.error('Database error in getUserAnalytics:', error);
+    throw new AppError('Failed to retrieve analytics data due to database error', 500);
   }
 };
 
 /**
  * Creates a new analytics record for a user.
+ * Enhanced with better validation and error handling.
  * 
  * @param userId - The ID of the user
  * @param data - Analytics data without id, userId, and updatedAt
  * @returns The created analytics record
- * @throws {AppError} If database query fails or user doesn't exist
+ * @throws {AppError} With specific error codes and messages
  */
 export const createUserAnalytics = async (userId: string, data: CreateAnalyticsBody): Promise<Analytics> => {
   try {
+    // Validate input data
+    if (!userId || typeof userId !== 'string') {
+      throw new AppError('Invalid user ID format', 400);
+    }
+
+    if (!data || typeof data !== 'object') {
+      throw new AppError('Invalid analytics data format', 400);
+    }
+
     // Verify that the user exists
     const userExists = await db
       .select({ id: users.id })
@@ -77,7 +101,7 @@ export const createUserAnalytics = async (userId: string, data: CreateAnalyticsB
       .where(eq(users.id, userId));
 
     if (userExists.length === 0) {
-      throw new AppError('User not found.', 404);
+      throw new AppError('User not found', 404);
     }
 
     // Check if analytics already exist for this user
@@ -87,7 +111,13 @@ export const createUserAnalytics = async (userId: string, data: CreateAnalyticsB
       .where(eq(analytics.userId, userId));
 
     if (existingAnalytics.length > 0) {
-      throw new AppError('Analytics already exist for this user.', 409);
+      throw new AppError('Analytics already exist for this user', 409);
+    }
+
+    // Validate data ranges (similar to Card service validation patterns)
+    if (data.totalLearningTime < 0 || data.totalCardsLearned < 0 || 
+        data.totalCorrect < 0 || data.totalWrong < 0 || data.resets < 0) {
+      throw new AppError('Analytics values cannot be negative', 400);
     }
 
     const [created] = await db
@@ -99,26 +129,51 @@ export const createUserAnalytics = async (userId: string, data: CreateAnalyticsB
       })
       .returning();
 
+    if (!created) {
+      throw new AppError('Failed to create analytics record', 500);
+    }
+
+    console.log(`Successfully created analytics for user: ${userId}`);
     return created as Analytics;
   } catch (error) {
-    console.error('Error creating user analytics:', error);
+    // Re-throw AppErrors as-is, wrap others
     if (error instanceof AppError) {
       throw error;
     }
-    throw new AppError('Could not create analytics record.', 500);
+    
+    console.error('Database error in createUserAnalytics:', error);
+    throw new AppError('Failed to create analytics record due to database error', 500);
   }
 };
 
 /**
  * Updates an existing analytics record for a user.
+ * Enhanced with better validation and error handling.
  * 
  * @param userId - The ID of the user
  * @param data - Fields to update (without id, userId, and updatedAt)
  * @returns The updated analytics record or null if not found
- * @throws {AppError} If database query fails or user doesn't own the analytics
+ * @throws {AppError} With specific error codes and messages
  */
 export const updateUserAnalytics = async (userId: string, data: UpdateAnalyticsBody): Promise<Analytics | null> => {
   try {
+    // Validate input data
+    if (!userId || typeof userId !== 'string') {
+      throw new AppError('Invalid user ID format', 400);
+    }
+
+    if (!data || typeof data !== 'object') {
+      throw new AppError('Invalid analytics data format', 400);
+    }
+
+    // Validate data ranges (prevent negative values)
+    const numericFields = ['totalLearningTime', 'totalCardsLearned', 'totalCorrect', 'totalWrong', 'resets'];
+    for (const field of numericFields) {
+      if (field in data && typeof data[field as keyof UpdateAnalyticsBody] === 'number' && data[field as keyof UpdateAnalyticsBody]! < 0) {
+        throw new AppError(`${field} cannot be negative`, 400);
+      }
+    }
+
     const [updated] = await db
       .update(analytics)
       .set({
@@ -129,37 +184,58 @@ export const updateUserAnalytics = async (userId: string, data: UpdateAnalyticsB
       .returning();
 
     if (!updated) {
-      throw new AppError('Analytics not found for this user.', 404);
+      throw new AppError('Analytics not found for this user', 404);
     }
 
+    console.log(`Successfully updated analytics for user: ${userId}`);
     return updated as Analytics;
   } catch (error) {
-    console.error('Error updating user analytics:', error);
+    // Re-throw AppErrors as-is, wrap others
     if (error instanceof AppError) {
       throw error;
     }
-    throw new AppError('Could not update analytics record.', 500);
+    
+    console.error('Database error in updateUserAnalytics:', error);
+    throw new AppError('Failed to update analytics record due to database error', 500);
   }
 };
 
 /**
  * Deletes analytics record for a user.
+ * Enhanced with better validation and error handling.
  * 
  * @param userId - The ID of the user whose analytics to delete
  * @returns true if a record was deleted, false otherwise
- * @throws {AppError} If database query fails
+ * @throws {AppError} With specific error codes and messages
  */
 export const deleteUserAnalytics = async (userId: string): Promise<boolean> => {
   try {
+    // Validate userId format
+    if (!userId || typeof userId !== 'string') {
+      throw new AppError('Invalid user ID format', 400);
+    }
+
     const deleted = await db
       .delete(analytics)
       .where(eq(analytics.userId, userId))
       .returning();
 
-    return deleted.length > 0;
+    const wasDeleted = deleted.length > 0;
+    if (wasDeleted) {
+      console.log(`Successfully deleted analytics for user: ${userId}`);
+    } else {
+      console.log(`No analytics found to delete for user: ${userId}`);
+    }
+
+    return wasDeleted;
   } catch (error) {
-    console.error('Error deleting user analytics:', error);
-    throw new AppError('Could not delete analytics record.', 500);
+    // Re-throw AppErrors as-is, wrap others
+    if (error instanceof AppError) {
+      throw error;
+    }
+    
+    console.error('Database error in deleteUserAnalytics:', error);
+    throw new AppError('Failed to delete analytics record due to database error', 500);
   }
 };
 

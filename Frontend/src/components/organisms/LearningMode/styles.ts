@@ -83,6 +83,14 @@ export const ButtonRow = styled.div`
   display: flex;
   gap: 10px;
   margin-top: 20px;
+  align-items: center;
+  
+  /* Ensure all buttons have consistent sizing */
+  > button {
+    min-width: 120px;
+    height: 44px;
+    font-size: ${({ theme }) => theme.fontSizes.medium};
+  }
 `;
 
 // Wrapper für den Hinweistext oder Icons

@@ -16,7 +16,10 @@ import Headline from '../../atoms/Headline';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import ErrorMessage from '../../atoms/ErrorMessage';
 import Button from '../../atoms/Button';
+import Timer from '../../atoms/Timer';
 import LearningModeManager from '../../organisms/LearningModeManager';
+import FolderSelection from '../../molecules/FolderSelection';
+import BoxSelection from '../../molecules/BoxSelection';
 import { useLearningMode } from '../../../hooks/useLearningMode';
 import * as SC from './styles';
 
@@ -39,6 +42,8 @@ export const LearningModeTemplate: React.FC<LearningModeTemplateProps> = React.m
     loadingCards,
     loading,
     error,
+    canRetry,
+    isRetrying,
     startLearning,
     selectFolder,
     selectBox,
@@ -46,6 +51,8 @@ export const LearningModeTemplate: React.FC<LearningModeTemplateProps> = React.m
     resetLearning,
     goBack,
     goBackToFolders,
+    retryLastOperation,
+    refreshBoxCounts,
     navigateToCards,
   } = useLearningMode();
 
@@ -64,12 +71,6 @@ export const LearningModeTemplate: React.FC<LearningModeTemplateProps> = React.m
   const handleNavigateToCards = useCallback(() => {
     navigateToCards();
   }, [navigateToCards]);
-
-  const formatTime = useCallback((seconds: number) => {
-    const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
-    const ss = String(seconds % 60).padStart(2, "0");
-    return `${mm}:${ss}`;
-  }, []);
 
   if (loading && step === 'start') {
     return (
@@ -95,24 +96,19 @@ export const LearningModeTemplate: React.FC<LearningModeTemplateProps> = React.m
         )}
         {step === 'learn' && typeof elapsedSeconds === "number" && (
           <SC.TimerRow>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24px"
-              viewBox="0 -960 960 960"
-              width="24px"
-              fill="#e3e3e3"
-              aria-label="Clock"
-            >
-              <path d="M360-840v-80h240v80H360Zm80 440h80v-240h-80v240Zm40 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l56-56 56 56-56 56q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Zm0-80q116 0 198-82t82-198q0-116-82-198t-198-82q-116 0-198 82t-82 198q0 116 82 198t198 82Zm0-280Z" />
-            </svg>
-            <SC.Timer>{formatTime(elapsedSeconds)}</SC.Timer>
+            <Timer seconds={elapsedSeconds} size="medium" />
           </SC.TimerRow>
         )}
       </SC.Header>
 
       <SC.Content>
         {error && (
-          <ErrorMessage message={error} />
+          <ErrorMessage 
+            message={error} 
+            type="error"
+            onRetry={canRetry ? retryLastOperation : undefined}
+            retryText={isRetrying ? "Retrying..." : "Retry"}
+          />
         )}
 
         {step === 'start' && (
@@ -145,27 +141,13 @@ export const LearningModeTemplate: React.FC<LearningModeTemplateProps> = React.m
               Choose the folder containing the flashcards you want to study.
             </SC.StepDescription>
             
-            {loadingFolders ? (
-              <SC.LoadingContainer>
-                <LoadingSpinner 
-                  size="medium" 
-                  text="Loading folders..." 
-                />
-              </SC.LoadingContainer>
-            ) : (
-              <SC.SelectionSection>
-                {folders.map((folder) => (
-                  <SC.BoxCard 
-                    key={folder.id}
-                    $isSelected={false}
-                    onClick={() => handleFolderSelect(folder)}
-                  >
-                    <SC.BoxNumber>{folder.name}</SC.BoxNumber>
-                    <SC.BoxDescription>Click to select this folder</SC.BoxDescription>
-                  </SC.BoxCard>
-                ))}
-              </SC.SelectionSection>
-            )}
+            <FolderSelection
+              folders={folders}
+              selectedFolderId={selectedFolder?.id || null}
+              onSelect={handleFolderSelect}
+              loading={loadingFolders}
+              testId="folder-selection"
+            />
             
             <SC.ButtonGroup>
               <Button 
@@ -185,47 +167,27 @@ export const LearningModeTemplate: React.FC<LearningModeTemplateProps> = React.m
               Choose which learning box to study. Higher boxes contain cards you know better.
             </SC.StepDescription>
             
-            {loadingCards ? (
-              <SC.LoadingContainer>
-                <LoadingSpinner 
-                  size="medium" 
-                  text="Loading cards..." 
-                />
-              </SC.LoadingContainer>
-            ) : (
-              <SC.BoxGrid>
-                {boxCounts.map(({ level, count }) => (
-                  <SC.BoxCard 
-                    key={level}
-                    $isSelected={selectedLearningLevel === level}
-                    onClick={() => handleBoxSelect(level)}
-                  >
-                    <SC.BoxNumber>Box {level + 1}</SC.BoxNumber>
-                    <SC.BoxCount>{count} cards</SC.BoxCount>
-                    <SC.BoxDescription>
-                      {level === 0 && "New cards"}
-                      {level === 1 && "Learning cards"}
-                      {level === 2 && "Review cards"}
-                      {level === 3 && "Mastered cards"}
-                    </SC.BoxDescription>
-                  </SC.BoxCard>
-                ))}
-              </SC.BoxGrid>
-            )}
+            <BoxSelection
+              boxes={boxCounts}
+              selectedLevel={selectedLearningLevel}
+              onSelect={handleBoxSelect}
+              loading={loadingCards}
+              testId="box-selection"
+            />
             
             <SC.ButtonGroup>
-              <Button 
-                $variant="secondary" 
-                onClick={goBack}
-              >
-                Back to Folders
-              </Button>
               <Button 
                 $variant="primary" 
                 onClick={handleStartBoxLearning}
                 disabled={selectedLearningLevel === null || loadingCards}
               >
                 Start Learning
+              </Button>
+              <Button 
+                $variant="secondary" 
+                onClick={goBack}
+              >
+                Back to Folders
               </Button>
             </SC.ButtonGroup>
           </SC.SelectionSection>
@@ -241,6 +203,7 @@ export const LearningModeTemplate: React.FC<LearningModeTemplateProps> = React.m
               onBack={goBack}
               onRestart={resetLearning}
               onBackToFolders={goBackToFolders}
+              onRefreshCounts={refreshBoxCounts}
             />
           </SC.LearningSection>
         )}

@@ -46,11 +46,14 @@ const LearningMode = ({ elapsedSeconds: _elapsedSeconds, cards, onEvaluate, onNe
   const [isFlipped, setIsFlipped] = useState(false);
   // State, ob der Flip-Hinweis angezeigt werden soll
   const [showFlipHint, setShowFlipHint] = useState(false);
+  // State um das Flicker-Problem zu lösen - verhindert Rendering der alten Karte
+  const [isEvaluating, setIsEvaluating] = useState(false);
   /**
    * Effekt: Wenn sich der Kartenstapel ändert, wähle eine neue zufällige Karte und setze den Flip-Zustand zurück.
    * Wenn keine Karten mehr vorhanden sind, setze currentCard auf null.
    */
   useEffect(() => {
+    setIsEvaluating(false); // Reset evaluation state
     if (cards.length === 0) {
       setCurrentCard(null);
       setIsFlipped(false);
@@ -74,6 +77,9 @@ const LearningMode = ({ elapsedSeconds: _elapsedSeconds, cards, onEvaluate, onNe
    */
   const markCorrect = () => {
     if (currentCard && onEvaluate) {
+      // Setze evaluation state um smooth transition zu ermöglichen
+      setIsEvaluating(true);
+      setIsFlipped(false);
       onEvaluate(currentCard.id, true);
     }
   };
@@ -82,6 +88,9 @@ const LearningMode = ({ elapsedSeconds: _elapsedSeconds, cards, onEvaluate, onNe
    */
   const markWrong = () => {
     if (currentCard && onEvaluate) {
+      // Setze evaluation state um smooth transition zu ermöglichen
+      setIsEvaluating(true);
+      setIsFlipped(false);
       onEvaluate(currentCard.id, false);
     }
   };
@@ -123,7 +132,7 @@ const LearningMode = ({ elapsedSeconds: _elapsedSeconds, cards, onEvaluate, onNe
           </Button>
         </SC.TopRow>
       )}
-        {currentCard ? (
+        {currentCard && !isEvaluating ? (
           <SC.LearningContainer>
             <Card
               title={currentCard.title}
@@ -145,18 +154,23 @@ const LearningMode = ({ elapsedSeconds: _elapsedSeconds, cards, onEvaluate, onNe
                   Incorrect
                 </Button>
               </SC.HintWrapper>
-              <Button $variant="secondary" onClick={handleNextCard}>
-                Next Card
-              </Button>
+              <SC.HintWrapper>
+                <Button $variant="secondary" onClick={handleNextCard}>
+                  Next Card
+                </Button>
+              </SC.HintWrapper>
             </SC.ButtonRow>
             <SC.HintArea>
               {showFlipHint && (
                 <Text color="deny">Please flip the card first to evaluate it!</Text>
               )}
-            </SC.HintArea>
-          </SC.LearningContainer>
-        ) : (
+            </SC.HintArea>            </SC.LearningContainer>
+        ) : !isEvaluating ? (
           <Headline size="md">No more flashcards in current box available.</Headline>
+        ) : (
+          <div style={{ minHeight: "400px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Headline size="md">Evaluating...</Headline>
+          </div>
         )}
     </SC.Container>
   );

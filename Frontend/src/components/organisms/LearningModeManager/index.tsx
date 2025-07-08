@@ -34,6 +34,7 @@ const LearningModeManager = ({
   onBack,
   onRestart,
   onBackToFolders,
+  onRefreshCounts,
 }: LearningModeManagerProps) => {
   // State für die aktuell zu lernenden Karten
   const [cards, setCards] = useState<any[]>([]);
@@ -77,17 +78,26 @@ const LearningModeManager = ({
     let newLevel = card.currentLearningLevel ?? 0;
     if (correct) newLevel = clampBox(newLevel + 1);
     else newLevel = clampBox(newLevel - 1);
+    
     try {
+      // Optimierte Kartenaktualisierung: Entferne die bewertete Karte sofort aus dem lokalen State
+      const updatedCards = cards.filter((c: any) => c.id !== cardId);
+      setCards(updatedCards);
+      
+      // Backend-Update im Hintergrund
       await cardAndFolderService.updateCardInFolder(folder.id, cardId, {
         currentLearningLevel: newLevel,
       });
-      // Karten neu laden
-      setLoadingCards(true);
+      
+      // Rufe das Callback auf, um Box-Counts zu aktualisieren
+      if (onRefreshCounts) {
+        await onRefreshCounts();
+      }
+      
+      // Prüfen, ob alle Karten in der letzten Box sind (Lernziel erreicht)
+      // Hier müssen wir trotzdem alle Karten laden, um den Abschluss-Status zu prüfen
       const res = await cardAndFolderService.getCardsByFolder(folder.id);
       const allCards = (res as { data: { cards: any[] } }).data.cards || [];
-      const newCards = allCards.filter((c: any) => (c.currentLearningLevel ?? 0) === currentLearningLevel);
-      setCards(newCards);
-      // Prüfen, ob alle Karten in der letzten Box sind (Lernziel erreicht)
       const allInLastBox =
         allCards.length > 0 &&
         allCards.every((c: any) => (c.currentLearningLevel ?? 0) === LAST_BOX);
@@ -97,16 +107,18 @@ const LearningModeManager = ({
       }
     } catch {
       setError("Error updating card");
-    } finally {
-      setLoadingCards(false);
+      // Bei Fehler: Karten neu laden
+      const res = await cardAndFolderService.getCardsByFolder(folder.id);
+      const allCards = (res as { data: { cards: any[] } }).data.cards || [];
+      setCards(allCards.filter((c: any) => (c.currentLearningLevel ?? 0) === currentLearningLevel));
     }
-  }, [cards, folder.id, currentLearningLevel, elapsedSeconds]);
+  }, [cards, folder.id, elapsedSeconds, onRefreshCounts, currentLearningLevel]);
 
   /**
    * Lädt die Karten für die aktuelle Box neu (z.B. nach Bewertung oder Zurück).
    */
   const handleNextCard = useCallback(async () => {
-    setLoadingCards(true);
+    // Nur Loading-State setzen, wenn wir wirklich neu laden müssen
     try {
       const res = await cardAndFolderService.getCardsByFolder(folder.id);
       const allCards = (res as { data: { cards: any[] } }).data.cards || [];
@@ -115,10 +127,9 @@ const LearningModeManager = ({
       );
     } catch {
       setError("Error reloading cards");
-    } finally {
-      setLoadingCards(false);
     }
   }, [folder.id, currentLearningLevel]);
+  
   /**
    * Geht zurück zur vorherigen Ansicht und lädt die Karten neu.
    */
@@ -155,8 +166,12 @@ const LearningModeManager = ({
   const handleRestart = useCallback(async () => {
     await resetAllCardsToBox0();
     setResetKey((prev) => prev + 1);
+    // Aktualisiere Box-Counts nach dem Reset
+    if (onRefreshCounts) {
+      await onRefreshCounts();
+    }
     if (typeof onRestart === "function") onRestart();
-  }, [resetAllCardsToBox0, onRestart]);
+  }, [resetAllCardsToBox0, onRefreshCounts, onRestart]);
 
   /**
    * Geht zurück zur Ordnerauswahl oder zur vorherigen Ansicht.

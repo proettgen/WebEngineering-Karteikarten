@@ -28,6 +28,7 @@ export type LearningModeManagerProps = {
   elapsedSeconds: number; // Bisher vergangene Zeit im Lernmodus
   onBack: () => void; // Callback für Zurück-Button
   onRestart?: () => void; // Callback für Neustart des Lernmodus
+  onRefreshCounts?: () => Promise<void>; // Callback zum Aktualisieren der Box-Counts
   onBackToFolders?: () => void; // Callback für Rückkehr zur Ordnerauswahl
 };
 
