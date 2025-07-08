@@ -29,13 +29,140 @@
       }
     },
     "schemas": {
+      "User": {
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique ID of the user",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "Username",
+            "example": "johndoe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true,
+            "description": "Email address (optional)",
+            "example": "john@example.com"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Account creation date",
+            "example": "2024-05-01T08:00:00.000Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update date",
+            "example": "2024-05-15T14:30:00.000Z"
+          }
+        }
+      },
+      "LoginInput": {
+        "type": "object",
+        "required": [
+          "usernameOrEmail",
+          "password"
+        ],
+        "properties": {
+          "usernameOrEmail": {
+            "type": "string",
+            "description": "Username or email address",
+            "example": "johndoe"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "description": "Password",
+            "example": "password123"
+          }
+        }
+      },
+      "RegisterInput": {
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "Username",
+            "example": "johndoe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true,
+            "description": "Email address (optional)",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "description": "Password",
+            "example": "password123"
+          }
+        }
+      },
+      "ProfileUpdateInput": {
+        "type": "object",
+        "required": [
+          "currentPassword"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "New username",
+            "example": "newusername"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true,
+            "description": "New email address",
+            "example": "new@example.com"
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 6,
+            "description": "New password",
+            "example": "newpassword123"
+          },
+          "currentPassword": {
+            "type": "string",
+            "description": "Current password for verification",
+            "example": "currentpassword123"
+          }
+        }
+      },
       "Card": {
         "type": "object",
         "required": [
+          "id",
           "title",
           "question",
           "answer",
-          "folderId"
+          "folderId",
+          "createdAt"
         ],
         "properties": {
           "id": {
@@ -99,10 +226,116 @@
           }
         }
       },
+      "CardInput": {
+        "type": "object",
+        "required": [
+          "title",
+          "question",
+          "answer",
+          "folderId"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Title of the flashcard",
+            "example": "JavaScript Closures"
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "description": "Question on the flashcard",
+            "example": "What is a closure in JavaScript?"
+          },
+          "answer": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "description": "Answer on the flashcard",
+            "example": "A closure is a function that has access to variables from its outer scope."
+          },
+          "currentLearningLevel": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5,
+            "description": "Current learning level (0-5)",
+            "example": 0
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "description": "Tags for categorization",
+            "example": [
+              "javascript",
+              "frontend"
+            ]
+          },
+          "folderId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the associated folder",
+            "example": "c6f8fb2b-a33f-46da-941d-9832b6212395"
+          }
+        }
+      },
+      "CardUpdateInput": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Title of the flashcard",
+            "example": "JavaScript Closures"
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "description": "Question on the flashcard",
+            "example": "What is a closure in JavaScript?"
+          },
+          "answer": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "description": "Answer on the flashcard",
+            "example": "A closure is a function that has access to variables from its outer scope."
+          },
+          "currentLearningLevel": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5,
+            "description": "Current learning level (0-5)",
+            "example": 2
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "description": "Tags for categorization",
+            "example": [
+              "javascript",
+              "frontend",
+              "advanced"
+            ]
+          }
+        }
+      },
       "Folder": {
         "type": "object",
         "required": [
-          "name"
+          "id",
+          "name",
+          "userId",
+          "createdAt"
         ],
         "properties": {
           "id": {
@@ -122,8 +355,14 @@
             "type": "string",
             "format": "uuid",
             "nullable": true,
-            "description": "ID of the parent folder",
+            "description": "ID of the parent folder (null for root folders)",
             "example": "parent-folder-uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the folder owner",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
           },
           "createdAt": {
             "type": "string",
@@ -134,13 +373,361 @@
           "lastOpenedAt": {
             "type": "string",
             "format": "date-time",
+            "nullable": true,
             "description": "Last opened date",
             "example": "2024-05-15T14:30:00.000Z"
           }
         }
       },
+      "FolderInput": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Name of the folder",
+            "example": "JavaScript Basics"
+          },
+          "parentId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "ID of the parent folder (null for root folder)",
+            "example": "parent-folder-uuid"
+          }
+        }
+      },
+      "FolderUpdateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Name of the folder",
+            "example": "JavaScript Advanced"
+          },
+          "parentId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "ID of the parent folder",
+            "example": "parent-folder-uuid"
+          }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Success status",
+            "example": "success"
+          },
+          "message": {
+            "type": "string",
+            "description": "Success message",
+            "example": "Operation completed successfully"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message",
+          "data"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Success status",
+            "example": "success"
+          },
+          "message": {
+            "type": "string",
+            "description": "Success message",
+            "example": "Login successful"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "user": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        }
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message",
+          "data"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Success status",
+            "example": "success"
+          },
+          "message": {
+            "type": "string",
+            "description": "Success message",
+            "example": "Registration successful"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "user": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        }
+      },
+      "ProfileResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "data"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Success status",
+            "example": "success"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "user": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        }
+      },
+      "CardListResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "results",
+          "limit",
+          "offset",
+          "total",
+          "data"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Success status",
+            "example": "success"
+          },
+          "results": {
+            "type": "integer",
+            "description": "Number of cards returned",
+            "example": 10
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of cards requested",
+            "example": 20
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Number of cards skipped",
+            "example": 0
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of cards available",
+            "example": 50
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "cards": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Card"
+                }
+              }
+            }
+          }
+        }
+      },
+      "CardResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "data"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Success status",
+            "example": "success"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "card": {
+                "$ref": "#/components/schemas/Card"
+              }
+            }
+          }
+        }
+      },
+      "FolderListResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "results",
+          "limit",
+          "offset",
+          "total",
+          "data"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Success status",
+            "example": "success"
+          },
+          "results": {
+            "type": "integer",
+            "description": "Number of folders returned",
+            "example": 5
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of folders requested",
+            "example": 20
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Number of folders skipped",
+            "example": 0
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of folders available",
+            "example": 15
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "folders": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Folder"
+                }
+              }
+            }
+          }
+        }
+      },
+      "FolderResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "data"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Success status",
+            "example": "success"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "folder": {
+                "$ref": "#/components/schemas/Folder"
+              }
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "fail"
+            ],
+            "description": "Validation error status",
+            "example": "fail"
+          },
+          "message": {
+            "type": "string",
+            "description": "Validation error message",
+            "example": "Validation failed"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "description": "Field name with error",
+                  "example": "title"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Error message for the field",
+                  "example": "Title is required"
+                }
+              }
+            }
+          }
+        }
+      },
       "Error": {
         "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
         "properties": {
           "status": {
             "type": "string",
@@ -994,10 +1581,15 @@
     },
     "/api/cards": {
       "get": {
-        "summary": "Get all cards with advanced filtering and sorting options",
-        "description": "Search all cards system-wide with various filtering options",
+        "summary": "Get all user cards with advanced filtering and sorting options",
+        "description": "Retrieves all cards belonging to the authenticated user with various filtering options",
         "tags": [
           "Cards"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "parameters": [
           {
@@ -1007,7 +1599,8 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "Filter by specific folder"
+            "description": "Filter by specific folder",
+            "example": "c6f8fb2b-a33f-46da-941d-9832b6212395"
           },
           {
             "in": "query",
@@ -1024,7 +1617,8 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filter by title (partial match)"
+            "description": "Filter by title (partial match)",
+            "example": "JavaScript"
           },
           {
             "in": "query",
@@ -1054,7 +1648,8 @@
               "type": "string",
               "enum": [
                 "createdAt",
-                "currentLearningLevel"
+                "currentLearningLevel",
+                "title"
               ]
             },
             "description": "Field to sort by"
@@ -1074,52 +1669,143 @@
         ],
         "responses": {
           "200": {
-            "description": "List of filtered cards",
+            "description": "Cards retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "example": "success"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "cards": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/Card"
-                          }
-                        },
-                        "pagination": {
-                          "type": "object",
-                          "properties": {
-                            "limit": {
-                              "type": "integer"
-                            },
-                            "offset": {
-                              "type": "integer"
-                            },
-                            "total": {
-                              "type": "integer"
-                            }
-                          }
-                        }
+                  "$ref": "#/components/schemas/CardListResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "results": 15,
+                  "limit": 20,
+                  "offset": 0,
+                  "total": 50,
+                  "data": {
+                    "cards": [
+                      {
+                        "id": "1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a",
+                        "title": "JavaScript Closures",
+                        "question": "What is a closure in JavaScript?",
+                        "answer": "A closure is a function that has access to variables from its outer scope.",
+                        "currentLearningLevel": 2,
+                        "createdAt": "2024-05-01T08:00:00.000Z",
+                        "tags": [
+                          "javascript",
+                          "frontend",
+                          "advanced"
+                        ],
+                        "folderId": "c6f8fb2b-a33f-46da-941d-9832b6212395"
                       }
-                    }
+                    ]
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid parameters",
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "examples": {
+                  "invalidLimit": {
+                    "summary": "Invalid limit parameter",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "limit",
+                          "message": "Limit must be between 1 and 100"
+                        }
+                      ]
+                    }
+                  },
+                  "invalidSortField": {
+                    "summary": "Invalid sort field",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "sortBy",
+                          "message": "Sort field must be one of: createdAt, currentLearningLevel, title"
+                        }
+                      ]
+                    }
+                  },
+                  "invalidUUID": {
+                    "summary": "Invalid folderId format",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "folderId",
+                          "message": "Invalid UUID format"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Authentication token is required"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Invalid or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Invalid or expired authentication token"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Folder not found (when filtering by folderId)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Folder with ID 'c6f8fb2b-a33f-46da-941d-9832b6212395' not found or you don't have access to it"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "An unexpected error occurred while retrieving cards"
                 }
               }
             }
@@ -1128,63 +1814,33 @@
       },
       "post": {
         "summary": "Create new card",
-        "description": "Creates a new flashcard and assigns it to a folder",
+        "description": "Creates a new flashcard and assigns it to a folder. The user must own the specified folder.",
         "tags": [
           "Cards"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "required": [
-                  "title",
-                  "question",
-                  "answer",
-                  "folderId"
+                "$ref": "#/components/schemas/CardInput"
+              },
+              "example": {
+                "title": "JavaScript Closures",
+                "question": "What is a closure in JavaScript?",
+                "answer": "A closure is a function that has access to variables from its outer scope and can access those variables even after the outer function has finished executing.",
+                "folderId": "c6f8fb2b-a33f-46da-941d-9832b6212395",
+                "tags": [
+                  "javascript",
+                  "closures",
+                  "functions"
                 ],
-                "properties": {
-                  "title": {
-                    "type": "string",
-                    "description": "Card title",
-                    "example": "JavaScript Closures"
-                  },
-                  "question": {
-                    "type": "string",
-                    "description": "Question on the front side",
-                    "example": "What is a closure in JavaScript?"
-                  },
-                  "answer": {
-                    "type": "string",
-                    "description": "Answer on the back side",
-                    "example": "A closure is a function that has access to variables from its outer scope..."
-                  },
-                  "folderId": {
-                    "type": "string",
-                    "format": "uuid",
-                    "description": "ID of the associated folder"
-                  },
-                  "tags": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Tags for categorization",
-                    "example": [
-                      "javascript",
-                      "closures",
-                      "functions"
-                    ]
-                  },
-                  "currentLearningLevel": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 5,
-                    "default": 1,
-                    "description": "Current learning level (1-5)"
-                  }
-                }
+                "currentLearningLevel": 0
               }
             }
           }
@@ -1195,19 +1851,24 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "example": "success"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "card": {
-                          "$ref": "#/components/schemas/Card"
-                        }
-                      }
+                  "$ref": "#/components/schemas/CardResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "data": {
+                    "card": {
+                      "id": "1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a",
+                      "title": "JavaScript Closures",
+                      "question": "What is a closure in JavaScript?",
+                      "answer": "A closure is a function that has access to variables from its outer scope and can access those variables even after the outer function has finished executing.",
+                      "currentLearningLevel": 0,
+                      "createdAt": "2024-05-01T08:00:00.000Z",
+                      "tags": [
+                        "javascript",
+                        "closures",
+                        "functions"
+                      ],
+                      "folderId": "c6f8fb2b-a33f-46da-941d-9832b6212395"
                     }
                   }
                 }
@@ -1219,7 +1880,93 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "examples": {
+                  "missingRequired": {
+                    "summary": "Missing required fields",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "title",
+                          "message": "Title is required"
+                        },
+                        {
+                          "field": "question",
+                          "message": "Question is required"
+                        }
+                      ]
+                    }
+                  },
+                  "invalidLength": {
+                    "summary": "Field length validation",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "title",
+                          "message": "Title must be between 1 and 200 characters"
+                        }
+                      ]
+                    }
+                  },
+                  "invalidLearningLevel": {
+                    "summary": "Invalid learning level",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "currentLearningLevel",
+                          "message": "Learning level must be between 0 and 5"
+                        }
+                      ]
+                    }
+                  },
+                  "invalidUUID": {
+                    "summary": "Invalid folder ID format",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "folderId",
+                          "message": "Invalid UUID format for folder ID"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Authentication token is required"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied to folder",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "You don't have permission to create cards in this folder"
                 }
               }
             }
@@ -1230,6 +1977,38 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Folder with ID 'c6f8fb2b-a33f-46da-941d-9832b6212395' not found"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Duplicate card title in folder",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "A card with the title 'JavaScript Closures' already exists in this folder"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "An unexpected error occurred while creating the card"
                 }
               }
             }
@@ -1240,9 +2019,14 @@
     "/api/cards/{id}": {
       "get": {
         "summary": "Get single card",
-        "description": "Loads a specific card by its ID",
+        "description": "Retrieves a specific card by its ID. User must own the card's folder.",
         "tags": [
           "Cards"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "parameters": [
           {
@@ -1253,30 +2037,84 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "Unique ID of the card"
+            "description": "Unique ID of the card",
+            "example": "1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a"
           }
         ],
         "responses": {
           "200": {
-            "description": "Card successfully loaded",
+            "description": "Card successfully retrieved",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "example": "success"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "card": {
-                          "$ref": "#/components/schemas/Card"
-                        }
-                      }
+                  "$ref": "#/components/schemas/CardResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "data": {
+                    "card": {
+                      "id": "1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a",
+                      "title": "JavaScript Closures",
+                      "question": "What is a closure in JavaScript?",
+                      "answer": "A closure is a function that has access to variables from its outer scope.",
+                      "currentLearningLevel": 2,
+                      "createdAt": "2024-05-01T08:00:00.000Z",
+                      "tags": [
+                        "javascript",
+                        "frontend",
+                        "advanced"
+                      ],
+                      "folderId": "c6f8fb2b-a33f-46da-941d-9832b6212395"
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid card ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Validation failed",
+                  "errors": [
+                    {
+                      "field": "id",
+                      "message": "Invalid UUID format for card ID"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Authentication token is required"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied to card",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "You don't have permission to access this card"
                 }
               }
             }
@@ -1287,6 +2125,24 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Card with ID '1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a' not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "An unexpected error occurred while retrieving the card"
                 }
               }
             }
@@ -1295,9 +2151,14 @@
       },
       "put": {
         "summary": "Update card",
-        "description": "Updates an existing card (partial updates possible)",
+        "description": "Updates an existing card (partial updates supported). User must own the card's folder.",
         "tags": [
           "Cards"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "parameters": [
           {
@@ -1308,7 +2169,8 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "Unique ID of the card"
+            "description": "Unique ID of the card",
+            "example": "1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a"
           }
         ],
         "requestBody": {
@@ -1316,48 +2178,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "title": {
-                    "type": "string",
-                    "description": "Neuer Card title"
-                  },
-                  "question": {
-                    "type": "string",
-                    "description": "New question"
-                  },
-                  "answer": {
-                    "type": "string",
-                    "description": "New answer"
-                  },
-                  "folderId": {
-                    "type": "string",
-                    "format": "uuid",
-                    "description": "New folder ID"
-                  },
-                  "tags": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "New tags"
-                  },
-                  "currentLearningLevel": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 5,
-                    "description": "New learning level"
-                  }
-                },
-                "example": {
-                  "title": "JavaScript Closures - Erweitert",
-                  "currentLearningLevel": 3,
-                  "tags": [
-                    "javascript",
-                    "closures",
-                    "advanced"
-                  ]
-                }
+                "$ref": "#/components/schemas/CardUpdateInput"
+              },
+              "example": {
+                "title": "JavaScript Closures - Advanced",
+                "currentLearningLevel": 3,
+                "tags": [
+                  "javascript",
+                  "closures",
+                  "advanced",
+                  "functions"
+                ]
               }
             }
           }
@@ -1368,19 +2199,25 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "example": "success"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "card": {
-                          "$ref": "#/components/schemas/Card"
-                        }
-                      }
+                  "$ref": "#/components/schemas/CardResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "data": {
+                    "card": {
+                      "id": "1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a",
+                      "title": "JavaScript Closures - Advanced",
+                      "question": "What is a closure in JavaScript?",
+                      "answer": "A closure is a function that has access to variables from its outer scope.",
+                      "currentLearningLevel": 3,
+                      "createdAt": "2024-05-01T08:00:00.000Z",
+                      "tags": [
+                        "javascript",
+                        "closures",
+                        "advanced",
+                        "functions"
+                      ],
+                      "folderId": "c6f8fb2b-a33f-46da-941d-9832b6212395"
                     }
                   }
                 }
@@ -1392,7 +2229,70 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "examples": {
+                  "invalidLength": {
+                    "summary": "Field length validation",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "title",
+                          "message": "Title must be between 1 and 200 characters"
+                        }
+                      ]
+                    }
+                  },
+                  "invalidLearningLevel": {
+                    "summary": "Invalid learning level",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "currentLearningLevel",
+                          "message": "Learning level must be between 0 and 5"
+                        }
+                      ]
+                    }
+                  },
+                  "emptyUpdate": {
+                    "summary": "No fields to update",
+                    "value": {
+                      "status": "fail",
+                      "message": "At least one field must be provided for update"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Authentication token is required"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied to card",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "You don't have permission to update this card"
                 }
               }
             }
@@ -1403,6 +2303,38 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Card with ID '1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a' not found"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict with existing card",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "A card with the title 'JavaScript Closures - Advanced' already exists in this folder"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "An unexpected error occurred while updating the card"
                 }
               }
             }
@@ -1411,9 +2343,14 @@
       },
       "delete": {
         "summary": "Delete card",
-        "description": "Permanently deletes a card from the system",
+        "description": "Permanently deletes a card from the system. User must own the card's folder. This action cannot be undone.",
         "tags": [
           "Cards"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "parameters": [
           {
@@ -1424,12 +2361,61 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "Unique ID of the card to delete"
+            "description": "Unique ID of the card to delete",
+            "example": "1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a"
           }
         ],
         "responses": {
           "204": {
-            "description": "Card successfully deleted"
+            "description": "Card successfully deleted (no content returned)"
+          },
+          "400": {
+            "description": "Invalid card ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Validation failed",
+                  "errors": [
+                    {
+                      "field": "id",
+                      "message": "Invalid UUID format for card ID"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Authentication token is required"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied to card",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "You don't have permission to delete this card"
+                }
+              }
+            }
           },
           "404": {
             "description": "Card not found",
@@ -1437,6 +2423,24 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Card with ID '1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a' not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "An unexpected error occurred while deleting the card"
                 }
               }
             }
@@ -1447,9 +2451,14 @@
     "/api/folders": {
       "get": {
         "summary": "Get all folders with pagination",
-        "description": "Loads all available folders with optional pagination",
+        "description": "Retrieves all folders belonging to the authenticated user with optional pagination",
         "tags": [
           "Folders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "parameters": [
           {
@@ -1461,7 +2470,8 @@
               "maximum": 100,
               "default": 20
             },
-            "description": "Number of folders per page"
+            "description": "Number of folders per page",
+            "example": 20
           },
           {
             "in": "query",
@@ -1471,57 +2481,143 @@
               "minimum": 0,
               "default": 0
             },
-            "description": "Number of folders to skip for pagination"
+            "description": "Number of folders to skip for pagination",
+            "example": 0
+          },
+          {
+            "in": "query",
+            "name": "sortBy",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "name",
+                "createdAt",
+                "lastOpenedAt"
+              ]
+            },
+            "description": "Field to sort by",
+            "example": "name"
+          },
+          {
+            "in": "query",
+            "name": "order",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            },
+            "description": "Sort order",
+            "example": "asc"
           }
         ],
         "responses": {
           "200": {
-            "description": "List of all folders",
+            "description": "Folders retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "example": "success"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "folders": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/Folder"
-                          }
-                        },
-                        "pagination": {
-                          "type": "object",
-                          "properties": {
-                            "limit": {
-                              "type": "integer"
-                            },
-                            "offset": {
-                              "type": "integer"
-                            },
-                            "total": {
-                              "type": "integer"
-                            }
-                          }
-                        }
+                  "$ref": "#/components/schemas/FolderListResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "results": 5,
+                  "limit": 20,
+                  "offset": 0,
+                  "total": 15,
+                  "data": {
+                    "folders": [
+                      {
+                        "id": "c6f8fb2b-a33f-46da-941d-9832b6212395",
+                        "name": "JavaScript Basics",
+                        "parentId": null,
+                        "userId": "550e8400-e29b-41d4-a716-446655440000",
+                        "createdAt": "2024-05-01T08:00:00.000Z",
+                        "lastOpenedAt": "2024-05-15T14:30:00.000Z"
                       }
-                    }
+                    ]
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid parameters",
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "examples": {
+                  "invalidLimit": {
+                    "summary": "Invalid limit parameter",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "limit",
+                          "message": "Limit must be between 1 and 100"
+                        }
+                      ]
+                    }
+                  },
+                  "invalidSortField": {
+                    "summary": "Invalid sort field",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "sortBy",
+                          "message": "Sort field must be one of: name, createdAt, lastOpenedAt"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Authentication token is required"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Invalid or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Invalid or expired authentication token"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "An unexpected error occurred while retrieving folders"
                 }
               }
             }
@@ -1530,32 +2626,25 @@
       },
       "post": {
         "summary": "Create new folder",
-        "description": "Creates a new folder (can also be a subfolder)",
+        "description": "Creates a new folder (can be a root folder or subfolder). User automatically becomes the owner.",
         "tags": [
           "Folders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "required": [
-                  "name"
-                ],
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "Folder name",
-                    "example": "JavaScript Grundlagen"
-                  },
-                  "parentId": {
-                    "type": "string",
-                    "format": "uuid",
-                    "description": "ID of the parent folder (optional for subfolders)",
-                    "nullable": true
-                  }
-                }
+                "$ref": "#/components/schemas/FolderInput"
+              },
+              "example": {
+                "name": "JavaScript Advanced",
+                "parentId": "c6f8fb2b-a33f-46da-941d-9832b6212395"
               }
             }
           }
@@ -1566,19 +2655,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "example": "success"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "folder": {
-                          "$ref": "#/components/schemas/Folder"
-                        }
-                      }
+                  "$ref": "#/components/schemas/FolderResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "data": {
+                    "folder": {
+                      "id": "d7f9fc3c-b44f-57bc-9d8e-1f2g3h4i5j6k",
+                      "name": "JavaScript Advanced",
+                      "parentId": "c6f8fb2b-a33f-46da-941d-9832b6212395",
+                      "userId": "550e8400-e29b-41d4-a716-446655440000",
+                      "createdAt": "2024-05-16T10:30:00.000Z",
+                      "lastOpenedAt": null
                     }
                   }
                 }
@@ -1590,17 +2678,118 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "examples": {
+                  "missingName": {
+                    "summary": "Missing required name field",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "name",
+                          "message": "Folder name is required"
+                        }
+                      ]
+                    }
+                  },
+                  "invalidLength": {
+                    "summary": "Folder name too long",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "name",
+                          "message": "Folder name must be between 1 and 100 characters"
+                        }
+                      ]
+                    }
+                  },
+                  "invalidParentId": {
+                    "summary": "Invalid parent folder ID format",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "parentId",
+                          "message": "Invalid UUID format for parent folder ID"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Authentication token is required"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied to parent folder",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "You don't have permission to create subfolders in this folder"
                 }
               }
             }
           },
           "404": {
-            "description": "Übergeordneter Folder not found",
+            "description": "Parent folder not found",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Parent folder with ID 'c6f8fb2b-a33f-46da-941d-9832b6212395' not found"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Folder name already exists in parent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "A folder with the name 'JavaScript Advanced' already exists in this location"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "An unexpected error occurred while creating the folder"
                 }
               }
             }
@@ -2068,7 +3257,7 @@
     "/api/folders/{id}/cards": {
       "get": {
         "summary": "Get all cards in a folder",
-        "description": "Loads all flashcards assigned to a specific folder",
+        "description": "Loads all flashcards assigned to a specific folder with pagination support",
         "tags": [
           "Folders",
           "Cards"
@@ -2082,7 +3271,8 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "ID of the folder"
+            "description": "ID of the folder",
+            "example": "c6f8fb2b-a33f-46da-941d-9832b6212395"
           },
           {
             "in": "query",
@@ -2103,7 +3293,32 @@
               "minimum": 0,
               "default": 0
             },
-            "description": "Anzahl der zu überspringenden Karten"
+            "description": "Number of cards to skip for pagination"
+          },
+          {
+            "in": "query",
+            "name": "sortBy",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "createdAt",
+                "currentLearningLevel",
+                "title"
+              ]
+            },
+            "description": "Field to sort by"
+          },
+          {
+            "in": "query",
+            "name": "order",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            },
+            "description": "Sort order"
           }
         ],
         "responses": {
@@ -2143,7 +3358,102 @@
                         }
                       }
                     }
+                  },
+                  "$ref": "#/components/schemas/CardListResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "results": 8,
+                  "limit": 20,
+                  "offset": 0,
+                  "total": 8,
+                  "data": {
+                    "cards": [
+                      {
+                        "id": "1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a",
+                        "title": "JavaScript Closures",
+                        "question": "What is a closure in JavaScript?",
+                        "answer": "A closure is a function that has access to variables from its outer scope.",
+                        "currentLearningLevel": 2,
+                        "createdAt": "2024-05-01T08:00:00.000Z",
+                        "tags": [
+                          "javascript",
+                          "frontend"
+                        ],
+                        "folderId": "c6f8fb2b-a33f-46da-941d-9832b6212395"
+                      }
+                    ]
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "examples": {
+                  "invalidUUID": {
+                    "summary": "Invalid folder ID format",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "id",
+                          "message": "Invalid UUID format for folder ID"
+                        }
+                      ]
+                    }
+                  },
+                  "invalidPagination": {
+                    "summary": "Invalid pagination parameters",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "limit",
+                          "message": "Limit must be between 1 and 100"
+                        },
+                        {
+                          "field": "offset",
+                          "message": "Offset must be 0 or greater"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Authentication token is required"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied to folder",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "You don't have permission to access this folder"
                 }
               }
             }
@@ -2154,15 +3464,38 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Folder with ID 'c6f8fb2b-a33f-46da-941d-9832b6212395' not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "An unexpected error occurred while retrieving cards"
                 }
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "post": {
         "summary": "Create new card in a folder",
-        "description": "Creates a new flashcard and automatically assigns it to the specified folder",
+        "description": "Creates a new flashcard and automatically assigns it to the specified folder. The user must own the folder.",
         "tags": [
           "Folders",
           "Cards"
@@ -2176,7 +3509,8 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "ID of the folder, dem die Karte zugeordnet wird"
+            "description": "ID of the folder where the card will be created",
+            "example": "c6f8fb2b-a33f-46da-941d-9832b6212395"
           }
         ],
         "requestBody": {
@@ -2194,38 +3528,57 @@
                   "title": {
                     "type": "string",
                     "description": "Card title",
-                    "example": "React Hooks"
+                    "example": "React Hooks",
+                    "minLength": 1,
+                    "maxLength": 200
                   },
                   "question": {
                     "type": "string",
                     "description": "Question on the front side",
-                    "example": "Was ist der Unterschied zwischen useState und useEffect?"
+                    "example": "What is the difference between useState and useEffect?",
+                    "minLength": 1,
+                    "maxLength": 2000
                   },
                   "answer": {
                     "type": "string",
                     "description": "Answer on the back side",
-                    "example": "useState verwaltet lokalen State, useEffect führt Seiteneffekte aus..."
+                    "example": "useState manages local component state, while useEffect handles side effects like API calls, subscriptions, and DOM manipulation.",
+                    "minLength": 1,
+                    "maxLength": 5000
                   },
                   "tags": {
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "type": "string",
+                      "maxLength": 50
                     },
                     "description": "Tags for categorization",
                     "example": [
                       "react",
                       "hooks",
                       "frontend"
-                    ]
+                    ],
+                    "maxItems": 20
                   },
                   "currentLearningLevel": {
                     "type": "integer",
-                    "minimum": 1,
+                    "minimum": 0,
                     "maximum": 5,
-                    "default": 1,
-                    "description": "Current learning level (1-5)"
+                    "default": 0,
+                    "description": "Current learning level (0-5, where 0 is new/unlearned)"
                   }
                 }
+              },
+              "example": {
+                "title": "React Hooks",
+                "question": "What is the difference between useState and useEffect?",
+                "answer": "useState manages local component state, while useEffect handles side effects like API calls, subscriptions, and DOM manipulation.",
+                "tags": [
+                  "react",
+                  "hooks",
+                  "frontend"
+                ],
+                "currentLearningLevel": 0
               }
             }
           }
@@ -2250,6 +3603,26 @@
                         }
                       }
                     }
+                  },
+                  "$ref": "#/components/schemas/CardResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "data": {
+                    "card": {
+                      "id": "1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a",
+                      "title": "React Hooks",
+                      "question": "What is the difference between useState and useEffect?",
+                      "answer": "useState manages local component state, while useEffect handles side effects like API calls, subscriptions, and DOM manipulation.",
+                      "currentLearningLevel": 0,
+                      "createdAt": "2024-05-01T08:00:00.000Z",
+                      "tags": [
+                        "react",
+                        "hooks",
+                        "frontend"
+                      ],
+                      "folderId": "c6f8fb2b-a33f-46da-941d-9832b6212395"
+                    }
                   }
                 }
               }
@@ -2260,7 +3633,114 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "examples": {
+                  "missingRequired": {
+                    "summary": "Missing required fields",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "title",
+                          "message": "Title is required"
+                        },
+                        {
+                          "field": "question",
+                          "message": "Question is required"
+                        },
+                        {
+                          "field": "answer",
+                          "message": "Answer is required"
+                        }
+                      ]
+                    }
+                  },
+                  "invalidLength": {
+                    "summary": "Field length validation",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "title",
+                          "message": "Title must be between 1 and 200 characters"
+                        },
+                        {
+                          "field": "question",
+                          "message": "Question must be between 1 and 2000 characters"
+                        }
+                      ]
+                    }
+                  },
+                  "invalidLearningLevel": {
+                    "summary": "Invalid learning level",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "currentLearningLevel",
+                          "message": "Learning level must be between 0 and 5"
+                        }
+                      ]
+                    }
+                  },
+                  "invalidUUID": {
+                    "summary": "Invalid folder ID format",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "id",
+                          "message": "Invalid UUID format for folder ID"
+                        }
+                      ]
+                    }
+                  },
+                  "tooManyTags": {
+                    "summary": "Too many tags",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "tags",
+                          "message": "Maximum 20 tags allowed per card"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Authentication token is required"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied to folder",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "You don't have permission to create cards in this folder"
                 }
               }
             }
@@ -2271,20 +3751,62 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Folder with ID 'c6f8fb2b-a33f-46da-941d-9832b6212395' not found"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Duplicate card title in folder",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "A card with the title 'React Hooks' already exists in this folder"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "An unexpected error occurred while creating the card"
                 }
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/api/folders/{id}/cards/{cardId}": {
       "put": {
-        "summary": "Karte in einem Update folder",
-        "description": "Aktualisiert eine Karte und validiert, dass sie zum angegebenen Ordner gehört",
+        "summary": "Update card in a folder",
+        "description": "Updates a flashcard and validates that it belongs to the specified folder. The user must own the folder.",
         "tags": [
           "Folders",
           "Cards"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "parameters": [
           {
@@ -2295,7 +3817,8 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "ID of the folder"
+            "description": "ID of the folder",
+            "example": "c6f8fb2b-a33f-46da-941d-9832b6212395"
           },
           {
             "in": "path",
@@ -2305,7 +3828,8 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "ID der zu aktualisierenden Karte"
+            "description": "ID of the card to update",
+            "example": "1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a"
           }
         ],
         "requestBody": {
@@ -2317,39 +3841,60 @@
                 "properties": {
                   "title": {
                     "type": "string",
-                    "description": "Neuer Card title"
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "description": "Updated card title",
+                    "example": "React Hooks - Advanced"
                   },
                   "question": {
                     "type": "string",
-                    "description": "New question"
+                    "minLength": 1,
+                    "maxLength": 2000,
+                    "description": "Updated question",
+                    "example": "What are the rules of React Hooks and how do they work?"
                   },
                   "answer": {
                     "type": "string",
-                    "description": "New answer"
+                    "minLength": 1,
+                    "maxLength": 5000,
+                    "description": "Updated answer",
+                    "example": "React Hooks follow two main rules: 1) Only call hooks at the top level, 2) Only call hooks from React functions."
                   },
                   "tags": {
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "type": "string",
+                      "maxLength": 50
                     },
-                    "description": "New tags"
+                    "maxItems": 20,
+                    "description": "Updated tags",
+                    "example": [
+                      "react",
+                      "hooks",
+                      "advanced",
+                      "rules"
+                    ]
                   },
                   "currentLearningLevel": {
                     "type": "integer",
-                    "minimum": 1,
+                    "minimum": 0,
                     "maximum": 5,
-                    "description": "New learning level"
+                    "description": "Updated learning level",
+                    "example": 3
                   }
-                },
-                "example": {
-                  "title": "React Hooks - Erweitert",
-                  "currentLearningLevel": 3,
-                  "tags": [
-                    "react",
-                    "hooks",
-                    "advanced"
-                  ]
                 }
+              },
+              "example": {
+                "title": "React Hooks - Advanced",
+                "question": "What are the rules of React Hooks and how do they work?",
+                "answer": "React Hooks follow two main rules: 1) Only call hooks at the top level, 2) Only call hooks from React functions.",
+                "tags": [
+                  "react",
+                  "hooks",
+                  "advanced",
+                  "rules"
+                ],
+                "currentLearningLevel": 3
               }
             }
           }
@@ -2360,19 +3905,25 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "example": "success"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "card": {
-                          "$ref": "#/components/schemas/Card"
-                        }
-                      }
+                  "$ref": "#/components/schemas/CardResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "data": {
+                    "card": {
+                      "id": "1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a",
+                      "title": "React Hooks - Advanced",
+                      "question": "What are the rules of React Hooks and how do they work?",
+                      "answer": "React Hooks follow two main rules: 1) Only call hooks at the top level, 2) Only call hooks from React functions.",
+                      "currentLearningLevel": 3,
+                      "createdAt": "2024-05-01T08:00:00.000Z",
+                      "tags": [
+                        "react",
+                        "hooks",
+                        "advanced",
+                        "rules"
+                      ],
+                      "folderId": "c6f8fb2b-a33f-46da-941d-9832b6212395"
                     }
                   }
                 }
@@ -2380,21 +3931,149 @@
             }
           },
           "400": {
-            "description": "Invalid input data oder Karte gehört nicht zum Ordner",
+            "description": "Invalid input data or card doesn't belong to folder",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "examples": {
+                  "invalidLength": {
+                    "summary": "Field length validation",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "title",
+                          "message": "Title must be between 1 and 200 characters"
+                        },
+                        {
+                          "field": "question",
+                          "message": "Question must be between 1 and 2000 characters"
+                        }
+                      ]
+                    }
+                  },
+                  "invalidLearningLevel": {
+                    "summary": "Invalid learning level",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "currentLearningLevel",
+                          "message": "Learning level must be between 0 and 5"
+                        }
+                      ]
+                    }
+                  },
+                  "cardNotInFolder": {
+                    "summary": "Card doesn't belong to folder",
+                    "value": {
+                      "status": "fail",
+                      "message": "Card does not belong to the specified folder"
+                    }
+                  },
+                  "invalidUUID": {
+                    "summary": "Invalid ID format",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "id",
+                          "message": "Invalid UUID format for folder ID"
+                        },
+                        {
+                          "field": "cardId",
+                          "message": "Invalid UUID format for card ID"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Authentication token is required"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied to folder",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "You don't have permission to update cards in this folder"
                 }
               }
             }
           },
           "404": {
-            "description": "Ordner oder Card not found",
+            "description": "Folder or card not found",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "folderNotFound": {
+                    "summary": "Folder not found",
+                    "value": {
+                      "status": "fail",
+                      "message": "Folder with ID 'c6f8fb2b-a33f-46da-941d-9832b6212395' not found"
+                    }
+                  },
+                  "cardNotFound": {
+                    "summary": "Card not found",
+                    "value": {
+                      "status": "fail",
+                      "message": "Card with ID '1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a' not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Duplicate card title in folder",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "A card with the title 'React Hooks - Advanced' already exists in this folder"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "An unexpected error occurred while updating the card"
                 }
               }
             }
@@ -2402,11 +4081,16 @@
         }
       },
       "delete": {
-        "summary": "Karte aus einem Delete folder",
-        "description": "Löscht eine Karte und validiert, dass sie zum angegebenen Ordner gehört",
+        "summary": "Delete card from folder",
+        "description": "Deletes a flashcard and validates that it belongs to the specified folder. The user must own the folder.",
         "tags": [
           "Folders",
           "Cards"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "parameters": [
           {
@@ -2417,7 +4101,8 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "ID of the folder"
+            "description": "ID of the folder",
+            "example": "c6f8fb2b-a33f-46da-941d-9832b6212395"
           },
           {
             "in": "path",
@@ -2427,7 +4112,8 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "ID der zu löschenden Karte"
+            "description": "ID of the card to delete",
+            "example": "1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a"
           }
         ],
         "responses": {
@@ -2435,21 +4121,105 @@
             "description": "Card successfully deleted"
           },
           "400": {
-            "description": "Karte gehört nicht zum angegebenen Ordner",
+            "description": "Card doesn't belong to the specified folder",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "examples": {
+                  "cardNotInFolder": {
+                    "summary": "Card doesn't belong to folder",
+                    "value": {
+                      "status": "fail",
+                      "message": "Card does not belong to the specified folder"
+                    }
+                  },
+                  "invalidUUID": {
+                    "summary": "Invalid ID format",
+                    "value": {
+                      "status": "fail",
+                      "message": "Validation failed",
+                      "errors": [
+                        {
+                          "field": "id",
+                          "message": "Invalid UUID format for folder ID"
+                        },
+                        {
+                          "field": "cardId",
+                          "message": "Invalid UUID format for card ID"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "Authentication token is required"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied to folder",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "fail",
+                  "message": "You don't have permission to delete cards from this folder"
                 }
               }
             }
           },
           "404": {
-            "description": "Ordner oder Card not found",
+            "description": "Folder or card not found",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "folderNotFound": {
+                    "summary": "Folder not found",
+                    "value": {
+                      "status": "fail",
+                      "message": "Folder with ID 'c6f8fb2b-a33f-46da-941d-9832b6212395' not found"
+                    }
+                  },
+                  "cardNotFound": {
+                    "summary": "Card not found",
+                    "value": {
+                      "status": "fail",
+                      "message": "Card with ID '1a2b3c4d-5e6f-47ab-8c9d-0e1f2a3b4c5a' not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "An unexpected error occurred while deleting the card"
                 }
               }
             }

@@ -2,31 +2,32 @@
  * Folder Controller
  *
  * Handles HTTP requests for folder operations including:
- * - CRUD operations for folders
+ * - User-based CRUD operations for folders
  * - Hierarchical folder navigation (root folders, child folders)
  * - Folder search functionality with pagination
- * - Support for nested folder structures
+ * - Support for nested folder structures with user ownership
  */
 
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import * as folderService from '../services/folderService';
 import { AppError } from '../utils/AppError';
-import { folderSchema, folderUpdateSchema } from '../validation/folderValidation';
+import { folderInputSchema, folderUpdateSchema } from '../validation/folderValidation';
 import { idSchema } from '../validation/common';
 import { paginationSchema, searchPaginationSchema } from '../validation/pagination';
+import { AuthenticatedRequest } from '../types/authTypes';
 
 // Constants for default values and configuration
 const DEFAULT_LIMIT = 20;
 const DEFAULT_OFFSET = 0;
 
 /**
- * Retrieves all folders with pagination support
+ * Retrieves all folders belonging to the authenticated user
  *
  * Query parameters:
  * - limit: Number of folders per page (default: 20)
  * - offset: Number of folders to skip for pagination
  */
-export const getAllFolders = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getAllFolders = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         // Parse and validate query parameters
         const { limit, offset } = paginationSchema.parse(req.query);
@@ -35,8 +36,8 @@ export const getAllFolders = async (req: Request, res: Response, next: NextFunct
         const limitNum = limit ?? DEFAULT_LIMIT;
         const offsetNum = offset ?? DEFAULT_OFFSET;
 
-        // Fetch folders from service layer
-        const { folders, total } = await folderService.getAllFolders(limitNum, offsetNum);
+        // Fetch user's folders from service layer
+        const { folders, total } = await folderService.getUserFolders(req.user!.id, limitNum, offsetNum);
         
         res.status(200).json({
             status: 'success',
@@ -52,20 +53,20 @@ export const getAllFolders = async (req: Request, res: Response, next: NextFunct
 };
 
 /**
- * Retrieves a single folder by its unique identifier
+ * Retrieves a single folder by its unique identifier (user-owned only)
  *
  * @param id - UUID of the folder to retrieve
- * @throws {AppError} 404 - If folder with given ID is not found
+ * @throws {AppError} 404 - If folder with given ID is not found or not owned by user
  */
-export const getFolderById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getFolderById = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
         
         // Validate UUID format
         idSchema.parse(id);
         
-        // Fetch folder from service layer
-        const folder = await folderService.getFolderById(id);
+        // Fetch folder from service layer (user-owned only)
+        const folder = await folderService.getUserFolder(req.user!.id, id);
 
         if (!folder) {
             throw new AppError(`Folder with ID ${id} not found`, 404);
@@ -81,18 +82,18 @@ export const getFolderById = async (req: Request, res: Response, next: NextFunct
 };
 
 /**
- * Creates a new folder
+ * Creates a new folder for the authenticated user
  *
  * Supports creating both root folders (parentId = null) and nested folders.
  * The parentId is optional and defaults to null for root folders.
  */
-export const createFolder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createFolder = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         // Validate and parse request body
-        const parsed = folderSchema.parse(req.body);
+        const parsed = folderInputSchema.parse(req.body);
         
-        // Create folder with optional parentId (null for root folders)
-        const folder = await folderService.createFolder({
+        // Create folder for the authenticated user
+        const folder = await folderService.createUserFolder(req.user!.id, {
             ...parsed,
             parentId: parsed.parentId ?? null
         });
@@ -107,15 +108,15 @@ export const createFolder = async (req: Request, res: Response, next: NextFuncti
 };
 
 /**
- * Updates an existing folder
+ * Updates an existing folder owned by the authenticated user
  *
  * Supports partial updates including changing the folder's parent
  * to restructure the folder hierarchy.
  *
  * @param id - UUID of the folder to update
- * @throws {AppError} 404 - If folder with given ID is not found
+ * @throws {AppError} 404 - If folder with given ID is not found or not owned by user
  */
-export const updateFolder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const updateFolder = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
         
@@ -125,8 +126,8 @@ export const updateFolder = async (req: Request, res: Response, next: NextFuncti
         // Validate and parse update data
         const parsed = folderUpdateSchema.parse(req.body);
         
-        // Update folder through service layer
-        const folder = await folderService.updateFolder(id, parsed);
+        // Update folder through service layer (user-owned only)
+        const folder = await folderService.updateUserFolder(req.user!.id, id, parsed);
         
         if (!folder) {
             throw new AppError(`Folder with ID ${id} not found`, 404);
@@ -142,20 +143,25 @@ export const updateFolder = async (req: Request, res: Response, next: NextFuncti
 };
 
 /**
- * Deletes a folder by its unique identifier
+ * Deletes a folder owned by the authenticated user
  *
  * @param id - UUID of the folder to delete
  * @returns 204 No Content on successful deletion
+ * @throws {AppError} 404 - If folder not found or not owned by user
  */
-export const deleteFolder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const deleteFolder = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
         
         // Validate UUID format
         idSchema.parse(id);
         
-        // Delete folder through service layer
-        await folderService.deleteFolder(id);
+        // Delete folder through service layer (user-owned only)
+        const deleted = await folderService.deleteUserFolder(req.user!.id, id);
+        
+        if (!deleted) {
+            throw new AppError(`Folder with ID ${id} not found`, 404);
+        }
         
         res.status(204).send();
     } catch (error) {
@@ -169,22 +175,22 @@ export const deleteFolder = async (req: Request, res: Response, next: NextFuncti
  */
 
 /**
- * Retrieves all root folders (folders without a parent)
+ * Retrieves all root folders belonging to the authenticated user
  *
  * Used to build the top level of folder hierarchy in the aside navigation.
  * Query parameters:
  * - limit: Number of folders per page (default: 20)
  * - offset: Number of folders to skip for pagination
  */
-export const getRootFolders = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getRootFolders = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         // Parse and validate query parameters
         const { limit, offset } = paginationSchema.parse(req.query);
         const limitNum = limit ?? DEFAULT_LIMIT;
         const offsetNum = offset ?? DEFAULT_OFFSET;
 
-        // Fetch root folders from service layer
-        const { folders, total } = await folderService.getRootFolders(limitNum, offsetNum);
+        // Fetch user's root folders from service layer
+        const { folders, total } = await folderService.getUserRootFolders(req.user!.id, limitNum, offsetNum);
         
         res.status(200).json({
             status: 'success',
@@ -200,13 +206,13 @@ export const getRootFolders = async (req: Request, res: Response, next: NextFunc
 };
 
 /**
- * Retrieves all child folders of a specific parent folder
+ * Retrieves all child folders of a specific parent folder owned by the user
  *
  * Used to expand folder nodes in the hierarchical navigation.
  *
  * @param id - UUID of the parent folder
  */
-export const getChildFolders = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getChildFolders = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id: parentId } = req.params;
         const { limit, offset } = paginationSchema.parse(req.query);
@@ -216,6 +222,12 @@ export const getChildFolders = async (req: Request, res: Response, next: NextFun
         
         const limitNum = limit ?? DEFAULT_LIMIT;
         const offsetNum = offset ?? DEFAULT_OFFSET;
+
+        // First verify that the user owns the parent folder
+        const parentFolder = await folderService.getUserFolder(req.user!.id, parentId);
+        if (!parentFolder) {
+            throw new AppError(`Parent folder with ID ${parentId} not found`, 404);
+        }
 
         // Fetch child folders from service layer
         const { folders, total } = await folderService.getChildFolders(parentId, limitNum, offsetNum);
@@ -234,7 +246,7 @@ export const getChildFolders = async (req: Request, res: Response, next: NextFun
 };
 
 /**
- * Searches folders by name with pagination support
+ * Searches folders by name for the authenticated user
  *
  * Query parameters:
  * - search: Search term to match against folder names (required)
@@ -243,7 +255,7 @@ export const getChildFolders = async (req: Request, res: Response, next: NextFun
  *
  * @throws {AppError} 400 - If search term is empty or missing
  */
-export const searchFolders = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const searchFolders = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         // Parse and validate query parameters
         const parsedQuery = searchPaginationSchema.parse(req.query);
@@ -259,8 +271,8 @@ export const searchFolders = async (req: Request, res: Response, next: NextFunct
         const offsetNum = offset ?? DEFAULT_OFFSET;
         const searchTerm = search.trim();
 
-        // Perform search through service layer
-        const { folders, total } = await folderService.searchFolders(searchTerm, limitNum, offsetNum);
+        // Perform search through service layer for user's folders only
+        const { folders, total } = await folderService.searchUserFolders(req.user!.id, searchTerm, limitNum, offsetNum);
         
         res.status(200).json({
             status: 'success',

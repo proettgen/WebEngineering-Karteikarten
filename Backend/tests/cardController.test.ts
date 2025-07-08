@@ -1,29 +1,35 @@
 /**
  * Card Controller Tests
  * 
- * Tests für die HTTP-Handler der Card-Funktionalität
+ * Tests für die HTTP-Handler der Card-Funktionalität mit user-basierte Operationen
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { Request, Response, NextFunction } from 'express'
+import { Response, NextFunction } from 'express'
 import * as cardController from '../src/controllers/cardController'
+import { AuthenticatedRequest } from '../src/types/authTypes'
 
 // Mock für cardService
 vi.mock('../src/services/cardService', () => ({
-  getAllCards: vi.fn()
+  getUserCards: vi.fn(),
+  getUserCard: vi.fn(),
+  createUserCard: vi.fn(),
+  updateUserCard: vi.fn(),
+  deleteUserCard: vi.fn(),
+  getUserCardsByFolder: vi.fn()
 }))
 
 // Mock für folderService
 vi.mock('../src/services/folderService', () => ({
-  folderExists: vi.fn()
+  verifyFolderOwnership: vi.fn()
 }))
 
 // Import der gemockten Services
 import * as cardService from '../src/services/cardService'
 
 describe('Card Controller', () => {
-  // Mock Request, Response und NextFunction
-  let mockRequest: Partial<Request>
+  // Mock AuthenticatedRequest, Response und NextFunction
+  let mockRequest: Partial<AuthenticatedRequest>
   let mockResponse: Partial<Response>
   let mockNext: NextFunction
 
@@ -33,6 +39,13 @@ describe('Card Controller', () => {
 
     // Setup Mock-Objekte
     mockRequest = {
+      user: {
+        id: 'user-123',
+        username: 'testuser',
+        email: 'test@example.com',
+        created_at: '2025-01-01T10:00:00Z',
+        updated_at: '2025-01-01T10:00:00Z'
+      },
       query: {},
       params: {},
       body: {}
@@ -79,18 +92,18 @@ describe('Card Controller', () => {
       }
 
       // Mock der Service-Funktion
-      const mockGetAllCards = vi.mocked(cardService.getAllCards)
-      mockGetAllCards.mockResolvedValue(mockServiceResult)
+      const mockGetUserCards = vi.mocked(cardService.getUserCards)
+      mockGetUserCards.mockResolvedValue(mockServiceResult)
 
       // Act
       await cardController.getAllCards(
-        mockRequest as Request,
+        mockRequest as AuthenticatedRequest,
         mockResponse as Response,
         mockNext
       )
 
       // Assert
-      expect(mockGetAllCards).toHaveBeenCalledWith({
+      expect(mockGetUserCards).toHaveBeenCalledWith('user-123', {
         folderId: undefined,
         tags: undefined,
         title: undefined,

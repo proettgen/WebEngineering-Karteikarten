@@ -1,5 +1,4 @@
 import { pgTable, text, timestamp, foreignKey, integer, unique, uuid, varchar } from "drizzle-orm/pg-core"
-import { sql } from "drizzle-orm"
 
 
 
@@ -7,9 +6,21 @@ export const folders = pgTable("folders", {
 	id: text().primaryKey().notNull(),
 	name: text().notNull(),
 	parentId: text("parent_id"),
+	userId: uuid("user_id").notNull(),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow().notNull(),
 	lastOpenedAt: timestamp("last_opened_at", { mode: 'string' }),
-});
+}, (table) => [
+	foreignKey({
+		columns: [table.parentId],
+		foreignColumns: [table.id],
+		name: "folders_parent_id_folders_id_fk"
+	}).onDelete("cascade"),
+	foreignKey({
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "folders_user_id_users_id_fk"
+	}).onDelete("cascade"),
+]);
 
 export const cards = pgTable("cards", {
 	id: text().primaryKey().notNull(),
@@ -19,13 +30,13 @@ export const cards = pgTable("cards", {
 	currentLearningLevel: integer("current_learning_level"),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	tags: text().array(),
-	folderId: text("folder_id"),
+	folderId: text("folder_id").notNull(),
 }, (table) => [
 	foreignKey({
-			columns: [table.folderId],
-			foreignColumns: [folders.id],
-			name: "cards_folder_id_folders_id_fk"
-		}).onDelete("cascade"),
+		columns: [table.folderId],
+		foreignColumns: [folders.id],
+		name: "cards_folder_id_folders_id_fk"
+	}).onDelete("cascade"),
 ]);
 
 export const users = pgTable("users", {

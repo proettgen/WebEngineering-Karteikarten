@@ -14,8 +14,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const checkLogin = async () => {
     try {
-      const { validLogin: isValid } = await validLogin();
-      setIsLoggedIn(isValid);
+      const response = await validLogin();
+      setIsLoggedIn(response.validLogin);
     } catch {
       setIsLoggedIn(false);
     }

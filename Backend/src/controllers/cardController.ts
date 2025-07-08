@@ -2,19 +2,20 @@
  * Card Controller
  *
  * Handles HTTP requests for flashcard operations including:
- * - CRUD operations for individual cards
- * - Batch operations for cards within folders
+ * - User-based CRUD operations for individual cards
+ * - Batch operations for cards within user-owned folders
  * - Filtering, sorting, and pagination
- * - Folder-context specific card management
+ * - Folder-context specific card management with ownership verification
  */
 
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import * as cardService from '../services/cardService';
 import * as folderService from '../services/folderService';
 import { AppError } from '../utils/AppError';
 import { cardSchema, cardUpdateSchema, cardCreateInFolderSchema, cardFilterSchema, cardSortSchema } from '../validation/cardValidation';
 import { idSchema } from '../validation/common';
 import { paginationSchema } from '../validation/pagination';
+import { AuthenticatedRequest } from '../types/authTypes';
 
 // Constants for default values and configuration
 const DEFAULT_LIMIT = 20;
@@ -24,28 +25,27 @@ const DEFAULT_OFFSET = 0;
 const querySchema = cardFilterSchema.merge(paginationSchema).merge(cardSortSchema);
 
 /**
- * Retrieves all cards with optional filtering, sorting, and pagination
- *
- * Query parameters:
- * - folderId: Filter cards by folder
- * - tags: Filter cards by tags
- * - title: Filter cards by title (partial match)
- * - limit: Number of cards per page (default: 20)
- * - offset: Number of cards to skip for pagination
- * - sortBy: Field to sort by ('currentLearningLevel' or 'created_at')
- * - order: Sort order ('ASC' or 'DESC')
+ * Retrieves all cards belonging to the authenticated user with optional filtering, sorting, and pagination
  */
-export const getAllCards = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getAllCards = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         // Parse and validate query parameters
         const { folderId, tags, title, limit, offset, sortBy, order } = querySchema.parse(req.query);
         
-        // Convert string pagination values to numbers (like in the old working version)
+        // Convert string pagination values to numbers
         const limitNum = limit ?? DEFAULT_LIMIT;
         const offsetNum = offset ?? DEFAULT_OFFSET;
         
-        // Fetch cards from service layer
-        const { cards, total } = await cardService.getAllCards({
+        // If folderId is provided, verify user owns the folder
+        if (folderId) {
+            const folderOwnership = await folderService.verifyFolderOwnership(folderId, req.user!.id);
+            if (!folderOwnership) {
+                throw new AppError('Access denied to specified folder', 403);
+            }
+        }
+        
+        // Fetch user's cards from service layer
+        const { cards, total } = await cardService.getUserCards(req.user!.id, {
             folderId,
             tags,
             title,
@@ -54,8 +54,7 @@ export const getAllCards = async (req: Request, res: Response, next: NextFunctio
             sortBy,
             order
         });
-
-        // Return standardized response format
+        
         res.status(200).json({
             status: 'success',
             results: cards.length,
@@ -69,21 +68,12 @@ export const getAllCards = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
-/**
- * Retrieves a single card by its unique identifier
- *
- * @param id - UUID of the card to retrieve
- * @throws {AppError} 404 - If card with given ID is not found
- */
-export const getCardById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getCardById = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
-        
-        // Validate UUID format
         idSchema.parse(id);
         
-        // Fetch card from service layer
-        const card = await cardService.getCardById(id);
+        const card = await cardService.getUserCard(id, req.user!.id);
         
         if (!card) {
             throw new AppError(`Card with ID ${id} not found`, 404);
@@ -98,27 +88,11 @@ export const getCardById = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
-/**
- * Creates a new flashcard
- *
- * Validates the request body and ensures the target folder exists
- * before creating the card. Tags are optional and default to null.
- *
- * @throws {AppError} 400 - If folder does not exist
- */
-export const createCard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createCard = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-        // Validate and parse request body
         const parsed = cardSchema.parse(req.body);
         
-        // Verify that the target folder exists
-        const folderExists = await folderService.folderExists(parsed.folderId);
-        if (!folderExists) {
-            throw new AppError(`Folder with ID ${parsed.folderId} does not exist.`, 400);
-        }
-
-        // Create card with optional tags defaulting to null and set defaults
-        const card = await cardService.createCard({
+        const card = await cardService.createUserCard(req.user!.id, {
             ...parsed,
             tags: parsed.tags ?? null,
             currentLearningLevel: parsed.currentLearningLevel ?? 0,
@@ -134,36 +108,13 @@ export const createCard = async (req: Request, res: Response, next: NextFunction
     }
 };
 
-/**
- * Updates an existing flashcard
- *
- * Supports partial updates. If folderId is being changed,
- * validates that the new folder exists.
- *
- * @param id - UUID of the card to update
- * @throws {AppError} 400 - If new folder does not exist
- * @throws {AppError} 404 - If card with given ID is not found
- */
-export const updateCard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const updateCard = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
-        
-        // Validate UUID format
         idSchema.parse(id);
         
-        // Validate and parse update data
         const parsed = cardUpdateSchema.parse(req.body);
-        
-        // If folderId is being changed, verify the new folder exists
-        if (parsed.folderId) {
-            const folderExists = await folderService.folderExists(parsed.folderId);
-            if (!folderExists) {
-                throw new AppError(`Folder with ID ${parsed.folderId} does not exist.`, 400);
-            }
-        }
-
-        // Update card in service layer
-        const card = await cardService.updateCard(id, parsed);
+        const card = await cardService.updateUserCard(id, req.user!.id, parsed);
         
         if (!card) {
             throw new AppError(`Card with ID ${id} not found`, 404);
@@ -178,21 +129,16 @@ export const updateCard = async (req: Request, res: Response, next: NextFunction
     }
 };
 
-/**
- * Deletes a flashcard by its unique identifier
- *
- * @param id - UUID of the card to delete
- * @returns 204 No Content on successful deletion
- */
-export const deleteCard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const deleteCard = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
-        
-        // Validate UUID format
         idSchema.parse(id);
         
-        // Delete card through service layer
-        await cardService.deleteCard(id);
+        const deleted = await cardService.deleteUserCard(id, req.user!.id);
+        
+        if (!deleted) {
+            throw new AppError(`Card with ID ${id} not found`, 404);
+        }
         
         res.status(204).send();
     } catch (error) {
@@ -200,20 +146,12 @@ export const deleteCard = async (req: Request, res: Response, next: NextFunction
     }
 };
 
-/**
- * Retrieves all cards belonging to a specific folder
- *
- * @param id - UUID of the folder (renamed from folderId for clarity)
- */
-export const getCardsByFolder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getCardsByFolder = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id: folderId } = req.params;
-        
-        // Validate UUID format
         idSchema.parse(folderId);
         
-        // Fetch cards from service layer
-        const cards = await cardService.getCardsByFolder(folderId);
+        const cards = await cardService.getUserCardsByFolder(req.user!.id, folderId);
         
         res.status(200).json({
             status: 'success',
@@ -224,22 +162,19 @@ export const getCardsByFolder = async (req: Request, res: Response, next: NextFu
     }
 };
 
-// Folder-context card operations
-export const createCardInFolder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createCardInFolder = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id: folderId } = req.params;
         idSchema.parse(folderId);
         
-        // Check if folder exists
-        const folderExists = await folderService.folderExists(folderId);
-        if (!folderExists) {
-            throw new AppError(`Folder with ID ${folderId} does not exist.`, 404);
+        const folderOwnership = await folderService.verifyFolderOwnership(folderId, req.user!.id);
+        if (!folderOwnership) {
+            throw new AppError(`Folder with ID ${folderId} not found`, 404);
         }
 
-        // Parse request body - use dedicated schema for folder context creation
         const parsed = cardCreateInFolderSchema.parse(req.body);
         
-        const card = await cardService.createCard({
+        const card = await cardService.createUserCard(req.user!.id, {
             ...parsed,
             folderId,
             tags: parsed.tags ?? null,
@@ -256,20 +191,18 @@ export const createCardInFolder = async (req: Request, res: Response, next: Next
     }
 };
 
-export const updateCardInFolder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const updateCardInFolder = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id: folderId, cardId } = req.params;
         idSchema.parse(folderId);
         idSchema.parse(cardId);
         
-        // Check if folder exists
-        const folderExists = await folderService.folderExists(folderId);
-        if (!folderExists) {
-            throw new AppError(`Folder with ID ${folderId} does not exist.`, 404);
+        const folderOwnership = await folderService.verifyFolderOwnership(folderId, req.user!.id);
+        if (!folderOwnership) {
+            throw new AppError(`Folder with ID ${folderId} not found`, 404);
         }
 
-        // Ensure card belongs to this folder
-        const existingCard = await cardService.getCardById(cardId);
+        const existingCard = await cardService.getUserCard(cardId, req.user!.id);
         if (!existingCard) {
             throw new AppError(`Card with ID ${cardId} not found`, 404);
         }
@@ -278,23 +211,17 @@ export const updateCardInFolder = async (req: Request, res: Response, next: Next
             throw new AppError(`Card ${cardId} does not belong to folder ${folderId}`, 400);
         }
 
-        // Parse update data (allow partial updates, but keep folderId fixed)
         const parsed = cardUpdateSchema.parse(req.body);
-        
-        // Ensure folderId cannot be changed via this endpoint - remove any folderId from parsed data
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { folderId: _, ...updateDataWithoutFolderId } = parsed;
         const updateData = { ...updateDataWithoutFolderId, folderId };
 
-        // Logging entfernt
-
-        const card = await cardService.updateCard(cardId, updateData);
-
-        // Logging entfernt
+        const card = await cardService.updateUserCard(cardId, req.user!.id, updateData);
 
         if (!card) {
             throw new AppError(`Failed to update card with ID ${cardId}`, 500);
         }
+        
         res.status(200).json({
             status: 'success',
             data: { card }
@@ -304,20 +231,18 @@ export const updateCardInFolder = async (req: Request, res: Response, next: Next
     }
 };
 
-export const deleteCardInFolder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const deleteCardInFolder = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id: folderId, cardId } = req.params;
         idSchema.parse(folderId);
         idSchema.parse(cardId);
         
-        // Check if folder exists
-        const folderExists = await folderService.folderExists(folderId);
-        if (!folderExists) {
-            throw new AppError(`Folder with ID ${folderId} does not exist.`, 404);
+        const folderOwnership = await folderService.verifyFolderOwnership(folderId, req.user!.id);
+        if (!folderOwnership) {
+            throw new AppError(`Folder with ID ${folderId} not found`, 404);
         }
 
-        // Ensure card belongs to this folder
-        const existingCard = await cardService.getCardById(cardId);
+        const existingCard = await cardService.getUserCard(cardId, req.user!.id);
         if (!existingCard) {
             throw new AppError(`Card with ID ${cardId} not found`, 404);
         }
@@ -326,7 +251,11 @@ export const deleteCardInFolder = async (req: Request, res: Response, next: Next
             throw new AppError(`Card ${cardId} does not belong to folder ${folderId}`, 400);
         }
 
-        await cardService.deleteCard(cardId);
+        const deleted = await cardService.deleteUserCard(cardId, req.user!.id);
+        
+        if (!deleted) {
+            throw new AppError(`Failed to delete card with ID ${cardId}`, 500);
+        }
         
         res.status(204).send();
     } catch (error) {

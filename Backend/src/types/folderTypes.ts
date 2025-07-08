@@ -11,6 +11,7 @@
 import { z } from 'zod';
 import { Request } from 'express';
 import { 
+  folderInputSchema,
   folderSchema, 
   folderUpdateSchema 
 } from '../validation/folderValidation';
@@ -22,13 +23,16 @@ export interface BaseEntity {
 }
 
 // Infer core types from Zod schemas - single source of truth
-export type FolderInput = z.infer<typeof folderSchema>;
+export type FolderInput = z.infer<typeof folderInputSchema>; // For user input (no userId)
 export type FolderUpdateInput = z.infer<typeof folderUpdateSchema>;
+export type FolderComplete = z.infer<typeof folderSchema>; // Complete folder with all fields
 
 // Full Folder entity (extends inferred type with database fields)
-export interface Folder extends BaseEntity, FolderInput {
+export interface Folder extends BaseEntity {
+  name: string;
+  parentId?: string | null;
+  userId: string; // User ownership
   lastOpenedAt: string | null;
-  // All other fields come from FolderInput via Zod inference
 }
 
 // Generic typed request interface

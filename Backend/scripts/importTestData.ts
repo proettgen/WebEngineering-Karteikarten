@@ -31,12 +31,15 @@ async function importFolders() {
     const raw = await fs.readFile(filePath, 'utf-8');
     const { folders } = JSON.parse(raw) as { folders: Folder[] };
 
+    // Test-User ID (sollte von der Migration erstellt worden sein)
+    const testUserId = '550e8400-e29b-41d4-a716-446655440000';
+
     for (const folder of folders) {
         await pool.query(
-        `INSERT INTO folders (id, name, parent_id, created_at, last_opened_at)
-        VALUES ($1, $2, $3, $4, $5)
+        `INSERT INTO folders (id, name, parent_id, created_at, last_opened_at, user_id)
+        VALUES ($1, $2, $3, $4, $5, $6)
         ON CONFLICT (id) DO NOTHING`,
-        [folder.id, folder.name, folder.parentId, folder.createdAt, folder.lastOpenedAt]
+        [folder.id, folder.name, folder.parentId, folder.createdAt, folder.lastOpenedAt, testUserId]
     );
     }
     console.log('Ordner importiert!');

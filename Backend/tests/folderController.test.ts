@@ -1,26 +1,32 @@
 /**
  * Folder Controller Tests
  * 
- * Einfacher Demo-Test für folderController - zeigt Controller-Layer Testing
+ * Tests für folderController mit user-basierte Operationen
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { Request, Response, NextFunction } from 'express'
+import { Response, NextFunction } from 'express'
 import * as folderController from '../src/controllers/folderController'
+import { AuthenticatedRequest } from '../src/types/authTypes'
 
 // Mock für folderService
 vi.mock('../src/services/folderService', () => ({
-  getAllFolders: vi.fn(),
-  getFolderById: vi.fn(),
-  createFolder: vi.fn(),
+  getUserFolders: vi.fn(),
+  getUserFolder: vi.fn(),
+  createUserFolder: vi.fn(),
+  updateUserFolder: vi.fn(),
+  deleteUserFolder: vi.fn(),
+  getUserRootFolders: vi.fn(),
+  searchUserFolders: vi.fn(),
+  verifyFolderOwnership: vi.fn(),
 }))
 
 // Import der gemockten Services
 import * as folderService from '../src/services/folderService'
 
-describe('Folder Controller Demo', () => {
-  // Mock Request, Response und NextFunction
-  let mockRequest: Partial<Request>
+describe('Folder Controller', () => {
+  // Mock AuthenticatedRequest, Response und NextFunction
+  let mockRequest: Partial<AuthenticatedRequest>
   let mockResponse: Partial<Response>
   let mockNext: NextFunction
 
@@ -28,6 +34,13 @@ describe('Folder Controller Demo', () => {
     vi.clearAllMocks()
 
     mockRequest = {
+      user: {
+        id: 'user-123',
+        username: 'testuser',
+        email: 'test@example.com',
+        created_at: '2025-01-01T10:00:00Z',
+        updated_at: '2025-01-01T10:00:00Z'
+      },
       query: {},
       params: {},
       body: {}
@@ -49,18 +62,18 @@ describe('Folder Controller Demo', () => {
         {
           id: 'folder-1',
           name: 'JavaScript Basics',
-          description: 'Learn JS fundamentals',
+          parentId: null,
+          userId: 'user-1',
           createdAt: '2025-01-01T10:00:00Z',
-          lastOpenedAt: '2025-01-01T10:00:00Z',
-          cardCount: 10
+          lastOpenedAt: '2025-01-01T10:00:00Z'
         },
         {
           id: 'folder-2',
           name: 'TypeScript Advanced',
-          description: 'Advanced TS concepts',
+          parentId: null,
+          userId: 'user-1',
           createdAt: '2025-01-02T10:00:00Z',
-          lastOpenedAt: '2025-01-02T10:00:00Z',
-          cardCount: 15
+          lastOpenedAt: '2025-01-02T10:00:00Z'
         }
       ]
 
@@ -70,18 +83,18 @@ describe('Folder Controller Demo', () => {
       }
 
       // Mock der Service-Funktion
-      const mockGetAllFolders = vi.mocked(folderService.getAllFolders)
-      mockGetAllFolders.mockResolvedValue(mockServiceResult)
+      const mockGetUserFolders = vi.mocked(folderService.getUserFolders)
+      mockGetUserFolders.mockResolvedValue(mockServiceResult)
 
       // Act
       await folderController.getAllFolders(
-        mockRequest as Request,
+        mockRequest as AuthenticatedRequest,
         mockResponse as Response,
         mockNext
       )
 
       // Assert
-      expect(mockGetAllFolders).toHaveBeenCalledWith(20, 0)
+      expect(mockGetUserFolders).toHaveBeenCalledWith('user-123', 20, 0)
 
       expect(mockResponse.status).toHaveBeenCalledWith(200)
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -99,12 +112,12 @@ describe('Folder Controller Demo', () => {
     it('should handle service errors', async () => {
       // Arrange
       const mockError = new Error('Database connection failed')
-      const mockGetAllFolders = vi.mocked(folderService.getAllFolders)
-      mockGetAllFolders.mockRejectedValue(mockError)
+      const mockGetUserFolders = vi.mocked(folderService.getUserFolders)
+      mockGetUserFolders.mockRejectedValue(mockError)
 
       // Act
       await folderController.getAllFolders(
-        mockRequest as Request,
+        mockRequest as AuthenticatedRequest,
         mockResponse as Response,
         mockNext
       )

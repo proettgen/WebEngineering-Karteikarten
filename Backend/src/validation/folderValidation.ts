@@ -28,15 +28,15 @@ const MAX_FOLDER_NAME_LENGTH = 100;
 // =============================================================================
 
 /**
- * Schema for validating folder creation and full folder data
+ * Schema for validating folder creation input from users
  *
- * Validates all required fields for a folder including:
+ * Validates required fields for folder creation:
  * - name: Folder name (1-100 characters, trimmed)
  * - parentId: Optional UUID of parent folder (null for root folders)
- * - createdAt: ISO datetime string when folder was created
- * - lastOpenedAt: ISO datetime string when folder was last accessed
+ * 
+ * Note: userId, createdAt, and lastOpenedAt are set automatically by the server
  */
-export const folderSchema = z.object({
+export const folderInputSchema = z.object({
     name: z.string()
         .min(MIN_FOLDER_NAME_LENGTH, 'Folder name must not be empty')
         .max(MAX_FOLDER_NAME_LENGTH, `Folder name must not exceed ${MAX_FOLDER_NAME_LENGTH} characters`)
@@ -46,6 +46,17 @@ export const folderSchema = z.object({
         .uuid('Parent ID must be a valid UUID')
         .nullable()
         .optional(),
+});
+
+/**
+ * Schema for validating complete folder data (including server-set fields)
+ *
+ * This is used for validating complete folder objects that include
+ * server-generated fields like userId, createdAt, etc.
+ */
+export const folderSchema = folderInputSchema.extend({
+    userId: z.string()
+        .uuid('User ID must be a valid UUID'),
     createdAt: z.string()
         .datetime('Invalid datetime format for createdAt'),
     lastOpenedAt: z.string()
@@ -56,13 +67,12 @@ export const folderSchema = z.object({
 /**
  * Schema for validating folder updates
  *
- * Same validation rules as folderSchema but all fields are optional,
+ * Same validation rules as folderInputSchema but all fields are optional,
  * allowing partial updates of folder data. Commonly used for:
  * - Renaming folders (name only)
  * - Moving folders (parentId only)
- * - Updating access timestamps (lastOpenedAt only)
  */
-export const folderUpdateSchema = folderSchema.partial();
+export const folderUpdateSchema = folderInputSchema.partial();
 
 // =============================================================================
 // FOLDER OPERATION SCHEMAS
