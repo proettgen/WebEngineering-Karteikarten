@@ -1,22 +1,22 @@
 import type { ReactNode } from "react";
 
 /**
- * Typdefinitionen für das LearningModeTemplate (Template-Komponente).
+ * LearningModeTemplate Type Definitions
  *
- * Diese Datei enthält die zentralen Typen für das Layout-Template des Lernmodus.
+ * This file contains the central types for the learning mode layout template.
  *
- * Übersicht der Typen:
- * - LearningModeTemplateProps: Props für das Template (siehe ./index.tsx)
+ * Type Overview:
+ * - LearningModeTemplateProps: Props for the template component
  *
- * Cross-Referenzen:
- * - ./index.tsx: Verwendet diese Typen für Props
- * - ./styles.ts: Styled Components für das Layout
+ * Cross-References:
+ * - ./index.tsx: Uses these types for props
+ * - ./styles.ts: Styled components for layout
  */
 
-// Props für das LearningModeTemplate
+// Props for the LearningModeTemplate component
 export type LearningModeTemplateProps = {
-  children: ReactNode; // Die eigentlichen Inhalte, die im Template angezeigt werden
-  elapsedSeconds?: number; // Optional: Zeit für Timer-Anzeige
-  currentLearningLevel?: number; // Optional: Lernlevel/Box-Stufe für Anzeige
-  boxCount?: number; // Optional: Anzahl Karten in der aktuellen Box
+  children: ReactNode; // The actual content to be displayed in the template
+  elapsedSeconds?: number; // Optional: Time for timer display
+  currentLearningLevel?: number; // Optional: Learning level/box stage for display
+  boxCount?: number; // Optional: Number of cards in the current box
 };

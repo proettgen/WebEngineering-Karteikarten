@@ -42,7 +42,7 @@ interface UseAnalyticsReturn {
   cancelEdit: () => void;
   setFormField: (_field: keyof CreateAnalyticsInput, _value: number) => void;
   
-  // PHASE 4: Live Analytics Updates
+  // Live Analytics Updates
   refreshAnalytics: () => Promise<void>;
   startAutoRefresh: () => void;
   stopAutoRefresh: () => void;
@@ -68,7 +68,7 @@ export const useAnalytics = (): UseAnalyticsReturn => {
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState<CreateAnalyticsInput>(defaultForm);
 
-  // PHASE 4: Auto-refresh functionality
+  // Auto-refresh functionality
   const refreshIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const AUTO_REFRESH_INTERVAL = 10000; // Refresh every 10 seconds
 
@@ -172,7 +172,7 @@ export const useAnalytics = (): UseAnalyticsReturn => {
     loadAnalytics();
   }, [loadAnalytics]);
 
-  // PHASE 4: Cleanup auto-refresh on unmount
+  // Cleanup auto-refresh on unmount
   useEffect(() => (): void => {
     if (refreshIntervalRef.current) {
       clearInterval(refreshIntervalRef.current);
@@ -194,7 +194,7 @@ export const useAnalytics = (): UseAnalyticsReturn => {
     cancelEdit,
     setFormField,
     
-    // PHASE 4: Live Analytics Updates
+    // Live Analytics Updates
     refreshAnalytics: loadAnalytics,
     startAutoRefresh: useCallback(() => {
       if (refreshIntervalRef.current) {

@@ -1,30 +1,31 @@
 import styled from "styled-components";
 
 /**
- * Styled Components für die LearningMode-Komponente (Organism).
+ * LearningMode Styled Components
  *
- * Diese Datei enthält alle Layout- und Style-Elemente, die im Lernmodus für die Anzeige und Interaktion mit einer Karte verwendet werden.
+ * This file contains all layout and styling elements used in learning mode
+ * for displaying and interacting with cards.
  *
- * Die Komponenten werden in index.tsx importiert und dort für das Layout genutzt.
+ * These components are imported in index.tsx and used for layout.
  *
- * Übersicht der Styled Components:
- * - Container: Wrapper für die gesamte Lernmodus-Ansicht
- * - Title: Überschrift für den Kartentitel
- * - Question: Frage-Text auf der Karte
- * - Answer: Antwort-Text auf der Karte
- * - LearningContainer: Wrapper für Karte und Buttons
- * - ButtonContainer: (optional) Wrapper für Buttons unter der Karte
- * - TopRow: Zeile für den Zurück-Button
- * - ButtonRow: Zeile für Bewertungs- und Navigationsbuttons
- * - HintArea: Bereich für Flip-Hinweis
- * - HintWrapper: Wrapper für den Hinweistext
+ * Styled Components Overview:
+ * - Container: Wrapper for the entire learning mode view
+ * - Title: Heading for card title
+ * - Question: Question text on the card
+ * - Answer: Answer text on the card
+ * - LearningContainer: Wrapper for card and buttons
+ * - ButtonContainer: (optional) Wrapper for buttons below the card
+ * - TopRow: Row for the back button
+ * - ButtonRow: Row for evaluation and navigation buttons
+ * - HintArea: Area for flip hint
+ * - HintWrapper: Wrapper for hint text
  *
- * Verwandte Dateien:
- * - ../LearningMode/index.tsx: Verwendet diese Styled Components
- * - ../LearningMode/types.ts: Typdefinitionen für Props und Karten
+ * Related Files:
+ * - ../LearningMode/index.tsx: Uses these styled components
+ * - ../LearningMode/types.ts: Type definitions for props and cards
  */
 
-// Container für die gesamte Lernmodus-Ansicht
+// Container for the entire learning mode view
 export const Container = styled.div`
   padding: 20px;
   display: flex;

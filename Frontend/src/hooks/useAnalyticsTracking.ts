@@ -1,32 +1,23 @@
 /**
- * Analytics Tracking Hook - Phase 4: Learning-Analytics Integration
+ * Analytics Tracking Hook - Learning-Analytics Integration
  *
- * Custom React hook für automatisches Tracking von Learning-Aktionen und deren
- * Live-Synchronisation mit Analytics. Dieser Hook stellt die Verbindung zwischen
-    setSession(prev => ({
-      ...prev,
-      isActive: fals    setSession(prev => ({
-      ...prev,
-      timeSpent: prev.timeSpent + seconds,
-    }));
-
-    // console.log(`Time tracked: +${seconds} seconds`);  }));
-
-    // console.log('Analytics tracking session paused');rning Mode und Analytics her.
+ * Custom React hook for automatic tracking of learning actions and their
+ * live synchronization with analytics. This hook provides the connection between
+ * Learning Mode and Analytics.
  *
  * Features:
- * - Session-basiertes Tracking von Lernaktivitäten
- * - Automatische Synchronisation mit Backend Analytics
- * - Batch-Updates für Performance-Optimierung
- * - Error Handling und Retry-Logic
- * - Optimistic Updates für bessere UX
+ * - Session-based tracking of learning activities
+ * - Automatic synchronization with backend analytics
+ * - Batch updates for performance optimization
+ * - Error handling and retry logic
+ * - Optimistic updates for better user experience
  *
  * Integration Points:
- * - useLearningMode: Timer und Card Evaluation Integration
- * - LearningModeManager: Reset und Progress Tracking
- * - useAnalytics: Live Updates der Analytics Display
+ * - useLearningMode: Timer and card evaluation integration
+ * - LearningModeManager: Reset and progress tracking
+ * - useAnalytics: Live updates of analytics display
  *
- * Verwendung:
+ * Usage:
  * ```typescript
  * const { 
  *   startSession, 
@@ -49,7 +40,7 @@ import { analyticsService } from '@/services/analyticsService';
 import type { Analytics } from '@/database/analyticsTypes';
 
 /**
- * Session-Daten für das aktuelle Learning-Session Tracking
+ * Session data for current learning session tracking
  */
 export interface AnalyticsSession {
   isActive: boolean;
@@ -61,7 +52,7 @@ export interface AnalyticsSession {
 }
 
 /**
- * Hook-Return-Interface für useAnalyticsTracking
+ * Hook return interface for useAnalyticsTracking
  */
 export interface UseAnalyticsTrackingReturn {
   // Session State
@@ -122,7 +113,7 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
   const batchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /**
-   * Sendet die gesammelten Session-Daten als Batch an das Backend
+   * Submits collected session data as a batch to the backend
    */
   const submitSessionBatch = useCallback(async (): Promise<Analytics | null> => {
     if (!session.isActive || session.cardsStudied === 0) {
@@ -164,7 +155,7 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
   }, [session]);
 
   /**
-   * Startet eine neue Learning-Session
+   * Starts a new learning session
    */
   const startSession = useCallback(() => {
     const now = Date.now();
@@ -213,7 +204,7 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
   }, [session.isActive, submitSessionBatch]);
 
   /**
-   * Beendet die aktuelle Learning-Session und sendet finale Daten
+   * Ends the current learning session and sends final data
    */
   const endSession = useCallback(async (): Promise<Analytics | null> => {
     if (!session.isActive) {
@@ -242,7 +233,7 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
   }, [session.isActive, submitSessionBatch]);
 
   /**
-   * Pausiert die Session (stoppt Timer)
+   * Pauses the session (stops timer)
    */
   const pauseSession = useCallback(() => {
     if (timerRef.current) {
@@ -259,7 +250,7 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
   }, []);
 
   /**
-   * Setzt die Session fort (startet Timer wieder)
+   * Resumes the session (restarts timer)
    */
   const resumeSession = useCallback(() => {
     if (!session.isActive && session.startTime > 0) {
@@ -281,7 +272,7 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
   }, [session.isActive, session.startTime]);
 
   /**
-   * Trackt die Bewertung einer Karte (richtig/falsch)
+   * Tracks card evaluation (correct/wrong)
    */
   const trackCardEvaluation = useCallback(async (correct: boolean): Promise<void> => {
     if (!session.isActive) {
@@ -300,7 +291,7 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
   }, [session.isActive]);
 
   /**
-   * Trackt explizite Zeitspannen (für manuelle Zeit-Updates)
+   * Tracks explicit time spans (for manual time updates)
    */
   const trackTimeSpent = useCallback(async (seconds: number): Promise<void> => {
     if (!session.isActive) {
@@ -317,7 +308,7 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
   }, [session.isActive]);
 
   /**
-   * Trackt Reset-Aktionen
+   * Tracks reset actions
    */
   const trackReset = useCallback(async (resetType: 'folder' | 'learning_session'): Promise<Analytics | null> => {
     setLoading(true);
@@ -338,10 +329,6 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
       setLoading(false);
     }
   }, []);
-
-  /**
-   * Sendet die gesammelten Session-Daten als Batch an das Backend
-   */
 
   // Cleanup on unmount
   useEffect(() => () => {

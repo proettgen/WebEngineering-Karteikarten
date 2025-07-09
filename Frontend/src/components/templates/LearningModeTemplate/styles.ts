@@ -1,31 +1,32 @@
 import styled from "styled-components";
 
 /**
- * Styled Components für das LearningModeTemplate (Template-Komponente).
+ * LearningModeTemplate Styled Components
  *
- * Diese Datei enthält Styles für das Layout des Lernmodus-Templates, insbesondere für Header, Timer und Box-Anzeige.
+ * This file contains styles for the learning mode template layout,
+ * particularly for header, timer, and box display components.
  *
- * Übersicht der Styled Components:
- * - Container: Wrapper für die gesamte Seite im Lernmodus
- * - Header: Kopfzeile mit Titel, Timer und Box-Anzeige
- * - Title: Titel-Überschrift (optional)
- * - Timer: Timer-Anzeige
- * - TimerRow: Zeile für Timer und Icon
- * - BoxLevel: Anzeige der aktuellen Box-Stufe
+ * Styled Components Overview:
+ * - Container: Wrapper for the entire learning mode page
+ * - Header: Header section with title, timer, and box display
+ * - Title: Title heading (optional use)
+ * - Timer: Timer display component
+ * - TimerRow: Row layout for timer and icon
+ * - BoxLevel: Display for current box level
  *
- * Verwandte Dateien:
- * - ./index.tsx: Verwendet diese Styled Components
- * - ./types.ts: Typdefinitionen für Props
+ * Related Files:
+ * - ./index.tsx: Uses these styled components
+ * - ./types.ts: Type definitions for props
  */
 
-// Container für die gesamte Seite im Lernmodus
+// Container for the entire learning mode page
 export const Container = styled.div`
   background-color: ${({ theme }) => theme.background};
   color: ${({ theme }) => theme.textPrimary};
   padding: 24px;
 `;
 
-// Kopfzeile mit Titel, Timer und Box-Anzeige
+// Header section with title, timer, and box display
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;
@@ -36,12 +37,12 @@ export const Header = styled.div`
   background: transparent;
 `;
 
-// Titel-Überschrift (optional, kann für eigene Titel genutzt werden)
+// Title heading (optional, can be used for custom titles)
 export const Title = styled.h1`
   margin: 0 0 0 16px;
 `;
 
-// Timer-Anzeige
+// Timer display component
 export const Timer = styled.span`
   font-size: 1.2rem;
   margin-right: 32px;
@@ -49,14 +50,14 @@ export const Timer = styled.span`
   font-variant-numeric: tabular-nums;
 `;
 
-// Zeile für Timer und Icon
+// Row layout for timer and icon
 export const TimerRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
 `;
 
-// Anzeige der aktuellen Box-Stufe
+// Display for current box level
 export const BoxLevel = styled.div`
   font-size: 1.1rem;
   color: ${({ theme }) => theme.primary};

@@ -1,41 +1,42 @@
 /**
- * Typdefinitionen für die LearningModeManager-Komponente (Organism).
+ * LearningModeManager Type Definitions
  *
- * Diese Datei enthält die zentralen Typen für die Verwaltung des Lernvorgangs einer Box.
+ * This file contains the central types for managing the learning process
+ * of a specific box.
  *
- * Übersicht der Typen:
- * - Folder: Beschreibt einen Ordner mit Karteikarten
- * - LearningModeManagerProps: Props für die LearningModeManager-Komponente (siehe ../LearningModeManager/index.tsx)
- * - LearningModeManagerState: (optional) State-Interface für Klassenkomponenten
+ * Type Overview:
+ * - Folder: Describes a folder containing flashcards
+ * - LearningModeManagerProps: Props for the LearningModeManager component
+ * - LearningModeManagerState: (optional) State interface for class components
  *
- * Cross-Referenzen:
- * - ../LearningModeManager/index.tsx: Verwendet diese Typen für Props und State
- * - ../LearningModeManager/styles.ts: Styled Components für das Layout
+ * Cross-References:
+ * - ../LearningModeManager/index.tsx: Uses these types for props and state
+ * - ../LearningModeManager/styles.ts: Styled components for layout
  */
 
-// Folder beschreibt einen Ordner mit Karteikarten.
+// Folder describes a folder containing flashcards
 export type Folder = {
-  id: string; // Eindeutige ID des Ordners
-  name: string; // Name des Ordners
-  cards?: any[]; // Karten im Ordner (optional, für Kompatibilität)
-  // ggf. weitere Eigenschaften
+  id: string; // Unique folder ID
+  name: string; // Folder name
+  cards?: any[]; // Cards in the folder (optional, for compatibility)
+  // Additional properties as needed
 };
 
-// Props für die LearningModeManager-Komponente
+// Props for the LearningModeManager component
 export type LearningModeManagerProps = {
-  folder: Folder; // Aktuell ausgewählter Ordner
-  currentLearningLevel: number; // Aktuelles Lernlevel/Box-Stufe (0-3)
-  elapsedSeconds: number; // Bisher vergangene Zeit im Lernmodus
-  onBack: () => void; // Callback für Zurück-Button
-  onRestart?: () => void; // Callback für Neustart des Lernmodus
-  onRefreshCounts?: () => Promise<void>; // Callback zum Aktualisieren der Box-Counts
-  onBackToFolders?: () => void; // Callback für Rückkehr zur Ordnerauswahl
+  folder: Folder; // Currently selected folder
+  currentLearningLevel: number; // Current learning level/box stage (0-3)
+  elapsedSeconds: number; // Time elapsed in learning mode so far
+  onBack: () => void; // Callback for back button
+  onRestart?: () => void; // Callback for restarting learning mode
+  onRefreshCounts?: () => Promise<void>; // Callback to update box counts
+  onBackToFolders?: () => void; // Callback for returning to folder selection
 };
 
-// State-Interface für den Manager (optional, falls mit Klassenkomponenten gearbeitet wird)
+// State interface for the manager (optional, if working with class components)
 export interface LearningModeManagerState {
-  cards: any[]; // Karten im aktuellen Lernvorgang
-  isCompleted: boolean; // Ob alle Karten gelernt wurden
-  completedTime: number | null; // Zeit, die für das Lernen benötigt wurde
-  resetKey: number; // Schlüssel zum Erzwingen eines Remounts
+  cards: any[]; // Cards in the current learning session
+  isCompleted: boolean; // Whether all cards have been learned
+  completedTime: number | null; // Time required for learning
+  resetKey: number; // Key to force component remount
 }

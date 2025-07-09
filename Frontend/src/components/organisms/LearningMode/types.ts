@@ -1,33 +1,34 @@
 /**
- * Typdefinitionen für die LearningMode-Komponente (Organism).
+ * LearningMode Type Definitions
  *
- * Diese Datei enthält die zentralen Typen für die Anzeige und Interaktion mit Karteikarten im Lernmodus.
+ * This file contains the central types for displaying and interacting
+ * with flashcards in learning mode.
  *
- * Übersicht der Typen:
- * - CardType: Beschreibt eine einzelne Karteikarte, wie sie im Lernmodus verwendet wird
- * - LearningModeProps: Props für die LearningMode-Komponente (siehe ../LearningMode/index.tsx)
+ * Type Overview:
+ * - CardType: Describes a single flashcard as used in learning mode
+ * - LearningModeProps: Props for the LearningMode component
  *
- * Cross-Referenzen:
- * - ../LearningMode/index.tsx: Verwendet diese Typen für Props und Karten
- * - ../LearningMode/styles.ts: Styled Components für das Layout
+ * Cross-References:
+ * - ../LearningMode/index.tsx: Uses these types for props and cards
+ * - ../LearningMode/styles.ts: Styled components for layout
  */
 
-// CardType beschreibt eine einzelne Karteikarte, wie sie im Lernmodus verwendet wird.
+// CardType describes a single flashcard as used in learning mode
 export type CardType = {
-  id: string; // Eindeutige ID der Karte
-  title: string; // Titel der Karte
-  question: string; // Frage/Text auf der Vorderseite
-  answer: string; // Antwort/Text auf der Rückseite
-  tags?: string[] | null; // Optionale Tags zur Kategorisierung
-  currentLearningLevel?: number; // Aktuelles Lernlevel/Box-Stufe (0-3)
+  id: string; // Unique card ID
+  title: string; // Card title
+  question: string; // Question/text on the front side
+  answer: string; // Answer/text on the back side
+  tags?: string[] | null; // Optional tags for categorization
+  currentLearningLevel?: number; // Current learning level/box stage (0-3)
 };
 
-// Props für die LearningMode-Komponente
+// Props for the LearningMode component
 export type LearningModeProps = {
-  elapsedSeconds: number; // Bisher vergangene Zeit im Lernmodus (für Timer)
-  cards: CardType[]; // Karten, die aktuell gelernt werden (nur aktuelle Box)
-  onEvaluate?: (_cardId: string, _correct: boolean) => void; // Callback für Bewertung (richtig/falsch)
-  onNextCard?: () => void; // Callback für Wechsel zur nächsten Karte
-  onBack?: () => void; // Callback für Zurück-Button
-  currentLearningLevel?: number; // Aktuelles Lernlevel/Box-Stufe (0-3)
+  elapsedSeconds: number; // Time elapsed in learning mode (for timer)
+  cards: CardType[]; // Cards currently being learned (current box only)
+  onEvaluate?: (_cardId: string, _correct: boolean) => void; // Callback for evaluation (correct/wrong)
+  onNextCard?: () => void; // Callback for switching to next card
+  onBack?: () => void; // Callback for back button
+  currentLearningLevel?: number; // Current learning level/box stage (0-3)
 };

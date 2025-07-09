@@ -8,27 +8,38 @@ import Headline from "@/components/atoms/Headline";
 import Text from "@/components/atoms/Text";
 import * as SC from "./styles";
 
-const clampBox = (level: number) => Math.max(0, Math.min(4, level)); // Hilfsfunktion: begrenzt Box-Level auf 0-4 (Box 5 ist unsichtbar)
-const LAST_VISIBLE_BOX = 3; // Box 4 (letzte sichtbare Box)
-const MASTERED_BOX = 4; // Box 5 (unsichtbare "gemeisterte" Box)
+/**
+ * Ensures box level stays within valid range (0-4)
+ * Box 5 (level 4) is invisible and represents mastered cards
+ */
+const clampBox = (level: number) => Math.max(0, Math.min(4, level));
 
 /**
- * Organism-Komponente für den eigentlichen Lernvorgang einer Box.
+ * Box level constants for learning system
+ * - LAST_VISIBLE_BOX: Box 4 (highest visible box level)
+ * - MASTERED_BOX: Box 5 (invisible box for mastered cards)
+ */
+const LAST_VISIBLE_BOX = 3;
+const MASTERED_BOX = 4;
+
+/**
+ * LearningModeManager Component
  *
- * Diese Komponente übernimmt die Logik für das Lernen der Karten in einer bestimmten Box eines Ordners:
- * - Lädt und filtert die Karten für die aktuelle Box (API-Aufruf)
- * - Verarbeitet Bewertungen (richtig/falsch) und verschiebt Karten in die nächste/andere Box (API-Aufruf)
- * - Erkennt, wenn alle Karten in der letzten Box sind (Lernziel erreicht) und zeigt eine Abschlussanzeige
- * - Bietet Funktionen zum Neustart (alle Karten zurücksetzen) und Rückkehr zur Auswahl
+ * Manages the actual learning process for cards in a selected box.
+ * This component handles the core learning logic including:
+ * - Loading and filtering cards for the current box (API call)
+ * - Processing right/wrong evaluations and moving cards between boxes (API call)
+ * - Detecting when all cards reach the final box (learning goal achieved)
+ * - Providing restart functionality and navigation options
  *
- * State:
- * - cards: Karten in der aktuellen Box
- * - loadingCards, error: Lade- und Fehlerstatus
- * - isCompleted, completedTime: Abschlussstatus und benötigte Zeit
- * - resetKey: Schlüssel zum Erzwingen eines Remounts (z.B. nach Reset)
+ * State Management:
+ * - cards: Cards currently in the selected box
+ * - loadingCards, error: Loading and error states
+ * - isCompleted, completedTime: Completion status and elapsed time
+ * - resetKey: Key for forcing component remount (e.g., after reset)
  *
- * Diese Komponente bindet die Komponente LearningMode ein und gibt ihr die Karten und Callbacks.
- * Sie ist für die gesamte Logik des Lernvorgangs einer Box zuständig.
+ * This component integrates with the LearningMode component and provides
+ * cards and callback functions for the learning interface.
  */
 const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
   folder,
@@ -39,25 +50,29 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
   onBackToFolders,
   onRefreshCounts,
 }: LearningModeManagerProps) => {
-  // State für die aktuell zu lernenden Karten
+  // State for cards currently being learned
   const [cards, setCards] = useState<any[]>([]);
   const [loadingCards, setLoadingCards] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // State, ob der Lernvorgang abgeschlossen ist
+  
+  // State for learning completion status
   const [isCompleted, setIsCompleted] = useState(false);
-  // State für die benötigte Zeit bis zum Abschluss
+  
+  // State for tracking completion time
   const [completedTime, setCompletedTime] = useState<number | null>(null);
-  // Schlüssel zum Erzwingen eines Remounts (z.B. nach Reset)
+  
+  // Key for forcing component remount (e.g., after reset)
   const [resetKey, setResetKey] = useState(0);
   /**
-   * Effekt: Lädt die Karten für die aktuelle Box und setzt Abschluss-Status zurück, wenn Ordner, Box oder Reset sich ändern.
+   * Effect: Loads cards for the current box and resets completion status
+   * when folder, box level, or reset key changes.
    */
   useEffect(() => {
     setLoadingCards(true);
     cardAndFolderService
       .getCardsByFolder(folder.id)
       .then((res) => {
-        // Typ: { data: { cards: any[] } }
+        // Type: { data: { cards: any[] } }
         const allCards = (res as { data: { cards: any[] } }).data.cards || [];
         setCards(
           allCards.filter((card: any) => (card.currentLearningLevel ?? 0) === currentLearningLevel),
@@ -72,36 +87,43 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
       });
   }, [folder.id, currentLearningLevel, resetKey]);
   /**
-   * Bewertet eine Karte als richtig/falsch, verschiebt sie in die nächste/letzte Box und prüft, ob alle Karten gelernt wurden.
-   * Box 0-3: Sichtbare Boxen, Box 4: Unsichtbare "gemeisterte" Box
-   * Speziallogik: Karten in Box 3 wandern nur bei korrekter Antwort in Box 4 (unsichtbar)
+   * Evaluates a card as correct/incorrect, moves it to the next/previous box,
+   * and checks if all cards have been learned.
+   * 
+   * Box Logic:
+   * - Boxes 0-3: Visible boxes for learning progression
+   * - Box 4: Invisible "mastered" box for completed cards
+   * - Special rule: Cards in box 3 only move to box 4 when answered correctly
+   * 
+   * @param cardId - ID of the card being evaluated
+   * @param correct - Whether the answer was correct
    */
   const handleEvaluate = useCallback(async (cardId: string, correct: boolean) => {
-    // Finde die Karte
+    // Find the card being evaluated
     const card = cards.find((c: any) => c.id === cardId);
     if (!card) return;
     
     let newLevel = card.currentLearningLevel ?? 0;
     
     if (correct) {
-      // Bei korrekter Antwort: Eine Box höher (Box 3 -> Box 4 unsichtbar)
+      // Correct answer: Move one box higher (box 3 -> box 4 invisible)
       newLevel = clampBox(newLevel + 1);
     } else {
-      // Bei falscher Antwort: Eine Box niedriger, aber mindestens Box 0
+      // Wrong answer: Move one box lower, but minimum box 0
       newLevel = clampBox(newLevel - 1);
     }
     
     try {
-      // Optimierte Kartenaktualisierung: Entferne die bewertete Karte sofort aus dem lokalen State
+      // Optimized card update: Remove evaluated card from local state immediately
       const updatedCards = cards.filter((c: any) => c.id !== cardId);
       setCards(updatedCards);
       
-      // Backend-Update im Hintergrund
+      // Update backend in background
       await cardAndFolderService.updateCardInFolder(folder.id, cardId, {
         currentLearningLevel: newLevel,
       });
 
-      // PHASE 4: Live Analytics Tracking - Track card evaluation
+      // Live Analytics Tracking - Track card evaluation
       try {
         await analyticsService.incrementAnalytics({
           totalCardsLearned: 1,
@@ -114,12 +136,12 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
         console.warn('Failed to track analytics for card evaluation:', analyticsError);
       }
       
-      // Rufe das Callback auf, um Box-Counts zu aktualisieren
+      // Call callback to update box counts
       if (onRefreshCounts) {
         await onRefreshCounts();
       }
       
-      // Prüfen, ob alle Karten in Box 4 (unsichtbar) sind (Lernziel erreicht)
+      // Check if all cards are in box 4 (invisible) - learning goal achieved
       const res = await cardAndFolderService.getCardsByFolder(folder.id);
       const allCards = (res as { data: { cards: any[] } }).data.cards || [];
       const allInMasteredBox =
@@ -132,7 +154,7 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
       }
     } catch {
       setError("Error updating card");
-      // Bei Fehler: Karten neu laden
+      // On error: Reload cards
       const res = await cardAndFolderService.getCardsByFolder(folder.id);
       const allCards = (res as { data: { cards: any[] } }).data.cards || [];
       setCards(allCards.filter((c: any) => (c.currentLearningLevel ?? 0) === currentLearningLevel));
@@ -140,10 +162,10 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
   }, [cards, folder.id, elapsedSeconds, onRefreshCounts, currentLearningLevel]);
 
   /**
-   * Lädt die Karten für die aktuelle Box neu (z.B. nach Bewertung oder Zurück).
+   * Reloads cards for the current box (e.g., after evaluation or navigation).
    */
   const handleNextCard = useCallback(async () => {
-    // Nur Loading-State setzen, wenn wir wirklich neu laden müssen
+    // Only set loading state when we actually need to reload
     try {
       const res = await cardAndFolderService.getCardsByFolder(folder.id);
       const allCards = (res as { data: { cards: any[] } }).data.cards || [];
@@ -156,7 +178,7 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
   }, [folder.id, currentLearningLevel]);
   
   /**
-   * Geht zurück zur vorherigen Ansicht und lädt die Karten neu.
+   * Navigates back to the previous view and reloads cards.
    */
   const handleBack = useCallback(() => {
     handleNextCard();
@@ -164,7 +186,7 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
   }, [handleNextCard, onBack]);
 
   /**
-   * Setzt alle Karten im aktuellen Ordner auf Box 0 zurück (Neustart).
+   * Resets all cards in the current folder to box 0 (restart learning).
    */
   const resetAllCardsToBox0 = useCallback(async () => {
     setLoadingCards(true);
@@ -186,15 +208,15 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
   }, [folder.id]);
 
   /**
-   * Setzt alle Karten aus Box 5 (unsichtbar) zurück in Box 4 (sichtbar).
-   * Dies wird verwendet, wenn der Benutzer "Back to Folders" wählt.
+   * Resets mastered cards from box 5 (invisible) back to box 4 (visible).
+   * This is used when the user chooses "Back to Folders" to preserve learning progress.
    */
   const resetMasteredCardsToLastBox = useCallback(async () => {
     try {
       const res = await cardAndFolderService.getCardsByFolder(folder.id);
       const allCards = (res as { data: { cards: any[] } }).data.cards || [];
       
-      // Nur Karten aus Box 5 zurück in Box 4 setzen
+      // Only reset cards from box 5 back to box 4
       const masteredCards = allCards.filter((card: any) => (card.currentLearningLevel ?? 0) === MASTERED_BOX);
       
       await Promise.all(
@@ -210,13 +232,13 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
   }, [folder.id]);
 
   /**
-   * Startet den Lernmodus neu (setzt alle Karten zurück und erhöht den Reset-Key).
+   * Restarts the learning mode by resetting all cards and incrementing the reset key.
    */
   const handleRestart = useCallback(async () => {
     await resetAllCardsToBox0();
     setResetKey((prev) => prev + 1);
 
-    // PHASE 4: Live Analytics Tracking - Track folder reset
+    // Live Analytics Tracking - Track folder reset
     try {
       await analyticsService.trackReset('folder');
     } catch (analyticsError) {
@@ -225,7 +247,7 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
       console.warn('Failed to track analytics for folder reset:', analyticsError);
     }
 
-    // Aktualisiere Box-Counts nach dem Reset
+    // Update box counts after reset
     if (onRefreshCounts) {
       await onRefreshCounts();
     }
@@ -233,14 +255,15 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
   }, [resetAllCardsToBox0, onRefreshCounts, onRestart]);
 
   /**
-   * Geht zurück zur Ordnerauswahl. Wenn das Lernen abgeschlossen ist, werden alle Karten
-   * aus Box 5 (unsichtbar) zurück in Box 4 (sichtbar) gesetzt, da sie mit der Zeit vergessen werden.
+   * Navigates back to folder selection. If learning is completed, moves all
+   * mastered cards from box 5 (invisible) back to box 4 (visible) since 
+   * cards can be forgotten over time.
    */
   const handleBackToFolders = useCallback(async () => {
-    // Wenn das Lernen abgeschlossen ist, setze alle gemeisterten Karten zurück in Box 4
+    // If learning is completed, reset all mastered cards back to box 4
     if (isCompleted) {
       await resetMasteredCardsToLastBox();
-      // Aktualisiere Box-Counts nach dem Reset
+      // Update box counts after reset
       if (onRefreshCounts) {
         await onRefreshCounts();
       }
@@ -250,7 +273,7 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
     else handleBack();
   }, [onBackToFolders, handleBack, isCompleted, resetMasteredCardsToLastBox, onRefreshCounts]);
 
-  // Wenn alle Karten gelernt wurden, könnte hier eine Abschlussanzeige gerendert werden
+  // Render completion screen when all cards are mastered
   if (loadingCards) {
     return (
       <SC.CenteredContainer>
@@ -295,7 +318,7 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
     );
   }
 
-  // Haupt-Rendering: Übergibt die Karten und Callbacks an die LearningMode-Komponente
+  // Main render: Pass cards and callbacks to LearningMode component
   return (
     <LearningMode
       elapsedSeconds={elapsedSeconds}

@@ -1,20 +1,21 @@
 import styled from "styled-components";
 
 /**
- * Styled Components für die LearningModeManager-Komponente (Organism).
+ * LearningModeManager Styled Components
  *
- * Diese Datei enthält Styles für die Anzeige des Abschlussbildschirms und die Anordnung der Buttons im Lernmodus-Manager.
+ * This file contains styles for the completion screen display and button
+ * arrangement in the learning mode manager.
  *
- * Übersicht der Styled Components:
- * - CongratsWrapper: Wrapper für die Glückwunsch-/Abschlussanzeige nach Abschluss des Lernens
- * - ButtonRow: Zeile für Buttons (z.B. Neustart, Zurück)
+ * Styled Components Overview:
+ * - CongratsWrapper: Wrapper for congratulations/completion display after learning
+ * - ButtonRow: Row layout for buttons (e.g., restart, back)
  *
- * Verwandte Dateien:
- * - ../LearningModeManager/index.tsx: Verwendet diese Styled Components
- * - ../LearningModeManager/types.ts: Typdefinitionen für Props und State
+ * Related Files:
+ * - ../LearningModeManager/index.tsx: Uses these styled components
+ * - ../LearningModeManager/types.ts: Type definitions for props and state
  */
 
-// Wrapper für die Glückwunsch-Anzeige nach Abschluss des Lernens
+// Wrapper for congratulations display after completing learning
 export const CongratsWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -24,7 +25,7 @@ export const CongratsWrapper = styled.div`
   gap: 24px;
 `;
 
-// Zeile für Buttons (z.B. Neustart, Zurück)
+// Row layout for buttons (e.g., restart, back)
 export const ButtonRow = styled.div`
   display: flex;
   gap: 16px;
