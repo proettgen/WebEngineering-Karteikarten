@@ -33,7 +33,7 @@ export const FormContainer = styled.div`
 export const FormTitle = styled.h3`
   color: ${({ theme }) => theme.textPrimary};
   font-size: ${({ theme }) => theme.fontSizes.large};
-  margin: 0 0 16px 0;
+  margin: 0 0 24px 0; /* Increased margin bottom for more spacing */
   font-weight: 600;
 `;
 
@@ -54,6 +54,13 @@ export const Label = styled.label`
   color: ${({ theme }) => theme.textPrimary};
   font-size: ${({ theme }) => theme.fontSizes.small};
   font-weight: 500;
+`;
+
+export const TimeHelper = styled.span`
+  color: ${({ theme }) => theme.textSecondary};
+  font-size: ${({ theme }) => theme.fontSizes.xsmall};
+  font-weight: 400;
+  margin-left: 8px;
 `;
 
 export const Input = styled.input`
@@ -80,4 +87,36 @@ export const ButtonRow = styled.div`
   display: flex;
   gap: 12px;
   justify-content: flex-end;
+`;
+
+export const TimeSection = styled.div`
+  grid-column: 1 / -1; /* Span full width */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+export const TimeInputRow = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: center;
+`;
+
+export const TimeInputGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  
+  /* Make time inputs smaller */
+  ${Input} {
+    width: 60px;
+    padding: 8px 12px;
+  }
+`;
+
+export const TimeLabel = styled.span`
+  color: ${({ theme }) => theme.textSecondary};
+  font-size: ${({ theme }) => theme.fontSizes.small};
+  font-weight: 500;
+  min-width: 16px;
 `;

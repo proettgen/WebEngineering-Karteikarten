@@ -78,10 +78,10 @@ const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: 
   };
 
   /**
-   * Effect: When the card stack changes, select a new card and reset flip state.
+   * Effect: When the card stack changes significantly, select a new card and reset flip state.
    * If no cards are available, set currentCard to null.
-   * When multiple cards exist, tries to select a different card from the current one.
-   * If only one card exists or no different card is available, uses the available card.
+   * This effect only triggers when the cards array changes in length or composition,
+   * not on every re-render, allowing for smooth optimistic updates.
    */
   useEffect(() => {
     setIsEvaluating(false); // Reset evaluation state
@@ -92,16 +92,26 @@ const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: 
       return;
     }
     
-    // Try to select a different card if possible
-    const newCard = selectDifferentCard(cards, currentCard?.id);
+    // If we don't have a current card, select one
+    if (!currentCard) {
+      const newCard = selectDifferentCard(cards, undefined);
+      const finalCard = newCard || (cards.length > 0 ? cards[0] : null);
+      setCurrentCard(finalCard);
+      setIsFlipped(false);
+      return;
+    }
     
-    // If no different card was found and we have cards, use the first one
-    const finalCard = newCard || (cards.length > 0 ? cards[0] : null);
+    // If current card is no longer in the cards array, select a new one
+    const currentCardStillExists = cards.some(card => card.id === currentCard.id);
+    if (!currentCardStillExists) {
+      const newCard = selectDifferentCard(cards, currentCard.id);
+      const finalCard = newCard || (cards.length > 0 ? cards[0] : null);
+      setCurrentCard(finalCard);
+      setIsFlipped(false);
+    }
     
-    setCurrentCard(finalCard);
-    setIsFlipped(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cards]);
+  }, [cards.length, cards.map(c => c.id).join(',')]);
   
   /**
    * Shows a brief hint that the card can be flipped (e.g., on mouseover).
@@ -116,25 +126,59 @@ const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: 
   
   /**
    * Marks the current card as answered correctly and calls the callback.
+   * Immediately shows the next card for smooth user experience (optimistic update).
    */
   const markCorrect = () => {
     if (currentCard && onEvaluate) {
       // Set evaluation state for smooth transition
       setIsEvaluating(true);
       setIsFlipped(false);
+      
+      // Optimistic update: immediately show next card for smooth UX
+      const nextCard = selectDifferentCard(cards, currentCard.id);
+      
+      // Call the evaluation callback (this updates the backend)
       onEvaluate(currentCard.id, true);
+      
+      // Immediately switch to the next card if available
+      setTimeout(() => {
+        setIsEvaluating(false);
+        if (nextCard) {
+          setCurrentCard(nextCard);
+        } else {
+          // No more cards available in this box
+          setCurrentCard(null);
+        }
+      }, 300); // Short delay for smooth transition animation
     }
   };
   
   /**
    * Marks the current card as answered incorrectly and calls the callback.
+   * Immediately shows the next card for smooth user experience (optimistic update).
    */
   const markWrong = () => {
     if (currentCard && onEvaluate) {
       // Set evaluation state for smooth transition
       setIsEvaluating(true);
       setIsFlipped(false);
+      
+      // Optimistic update: immediately show next card for smooth UX
+      const nextCard = selectDifferentCard(cards, currentCard.id);
+      
+      // Call the evaluation callback (this updates the backend)
       onEvaluate(currentCard.id, false);
+      
+      // Immediately switch to the next card if available
+      setTimeout(() => {
+        setIsEvaluating(false);
+        if (nextCard) {
+          setCurrentCard(nextCard);
+        } else {
+          // No more cards available in this box
+          setCurrentCard(null);
+        }
+      }, 300); // Short delay for smooth transition animation
     }
   };
   
@@ -267,7 +311,7 @@ const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: 
             </SC.CompleteIconWrapper>
             <Headline size="lg">Congratulations!</Headline>
             <Text size="large">
-              You&apos;ve successfully completed all cards in this learning box!
+              You&apos;ve completed all cards in this learning box!
             </Text>
             <Text size="medium" color="textSecondary">
               Great progress! Use the &quot;Back&quot; button to choose another box or return to folder selection to continue your learning journey.

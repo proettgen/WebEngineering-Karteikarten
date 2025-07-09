@@ -90,6 +90,10 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
    * Evaluates a card as correct/incorrect, moves it to the next/previous box,
    * and checks if all cards have been learned.
    * 
+   * This function now performs all backend updates in the background without
+   * immediately updating the local card state, allowing the LearningMode
+   * component to handle UI transitions smoothly.
+   * 
    * Box Logic:
    * - Boxes 0-3: Visible boxes for learning progression
    * - Box 4: Invisible "mastered" box for completed cards
@@ -114,9 +118,9 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
     }
     
     try {
-      // Optimized card update: Remove evaluated card from local state immediately
+      // Remove the evaluated card from the local state for next useEffect trigger
+      // This ensures the card list gets updated eventually for the LearningMode
       const updatedCards = cards.filter((c: any) => c.id !== cardId);
-      setCards(updatedCards);
       
       // Update backend in background
       await cardAndFolderService.updateCardInFolder(folder.id, cardId, {
@@ -140,6 +144,11 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
       if (onRefreshCounts) {
         await onRefreshCounts();
       }
+      
+      // Update local card state after a delay to allow smooth UI transition
+      setTimeout(() => {
+        setCards(updatedCards);
+      }, 500); // Delay to allow LearningMode to handle the transition
       
       // Check if all cards are in box 4 (invisible) - learning goal achieved
       const res = await cardAndFolderService.getCardsByFolder(folder.id);
@@ -276,7 +285,7 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
       <SC.CongratsWrapper>
         <Headline size="lg">Congratulations!</Headline>
         <Text size="medium">
-          You have successfully mastered all flashcards in this folder!
+          You have mastered all flashcards in this folder!
         </Text>
         <Text size="medium" color="textSecondary">
           All cards have been answered correctly and are now fully learned.

@@ -31,7 +31,7 @@ export const learningTimeSchema = z
   .number()
   .int()
   .min(0, { message: "Learning time must be a non-negative integer" })
-  .max(86400 * 365, { message: "Learning time cannot exceed one year in seconds" }); // Max 1 year
+  .max(86400 * 365 * 10, { message: "Learning time cannot exceed ten years in seconds" }); // Max 10 years
 
 export const cardsLearnedSchema = z
   .number()

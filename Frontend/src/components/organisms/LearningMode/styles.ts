@@ -106,6 +106,16 @@ export const HintWrapper = styled.span`
 export const HintArea = styled.div`
   min-height: 24px;
   margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Add spacing between multiple hint texts */
+  align-items: center;
+  text-align: center;
+  
+  /* Ensure proper spacing for individual text elements */
+  > * {
+    margin: 0; /* Remove default margins from Text components */
+  }
 `;
 
 // Container für den Evaluating-Status

@@ -45,13 +45,24 @@ export const AnalyticsDisplay: React.FC<AnalyticsDisplayProps> = React.memo(({
     ? ((analytics.totalCorrect / (analytics.totalCorrect + analytics.totalWrong)) * 100).toFixed(1)
     : '0';
 
-  const learningTimeMinutes = analytics 
-    ? Math.floor(analytics.totalLearningTime / 60)
-    : 0;
+  /**
+   * Formats time in seconds to hours:minutes:seconds format
+   * Always shows hours for consistency (e.g., "0h 13m 45s", "2h 13m 45s")
+   * @param totalSeconds - Time in seconds
+   * @returns Formatted time string (e.g., "0h 23m 45s", "2h 13m 45s")
+   */
+  const formatTime = (totalSeconds: number): string => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
 
-  const learningTimeSeconds = analytics 
-    ? analytics.totalLearningTime % 60
-    : 0;
+    // Always show hours for consistency in analytics
+    return `${hours}h ${minutes}m ${seconds}s`;
+  };
+
+  const formattedLearningTime = analytics 
+    ? formatTime(analytics.totalLearningTime)
+    : '0h 0m 0s';
 
   const formatLastUpdated = (dateString: string) => {
     try {
@@ -122,7 +133,7 @@ export const AnalyticsDisplay: React.FC<AnalyticsDisplayProps> = React.memo(({
       <SC.MetricsGrid>
         <AnalyticsMetric
           label="Study Time"
-          value={`${learningTimeMinutes}m ${learningTimeSeconds}s`}
+          value={formattedLearningTime}
           color="primary"
           testId="metric-learning-time"
         />
@@ -145,7 +156,7 @@ export const AnalyticsDisplay: React.FC<AnalyticsDisplayProps> = React.memo(({
           testId="metric-wrong"
         />
         <AnalyticsMetric
-          label="Study Sessions Reset"
+          label="Learning Folder Resets"
           value={analytics.resets}
           color="warning"
           testId="metric-resets"
