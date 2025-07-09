@@ -23,15 +23,8 @@ import Headline from '../../atoms/Headline';
 import Text from '../../atoms/Text';
 import Icon from '../../atoms/Icon';
 import { EmptyStateContainer } from '../../shared/StyledComponents';
-import type { Analytics } from '../../../database/analyticsTypes';
+import type { AnalyticsDisplayProps } from './types';
 import * as SC from './styles';
-
-interface AnalyticsDisplayProps {
-  analytics: Analytics | null;
-  onEdit?: (_analytics: Analytics) => void;
-  isEditing?: boolean;
-  testId?: string;
-}
 
 export const AnalyticsDisplay: React.FC<AnalyticsDisplayProps> = React.memo(({
   analytics,

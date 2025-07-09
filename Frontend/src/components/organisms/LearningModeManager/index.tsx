@@ -7,8 +7,9 @@ import Headline from "@/components/atoms/Headline";
 import Text from "@/components/atoms/Text";
 import * as SC from "./styles";
 
-const clampBox = (level: number) => Math.max(0, Math.min(3, level)); // Hilfsfunktion: begrenzt Box-Level auf 0-3
-const LAST_BOX = 3; // Maximale Box-Stufe
+const clampBox = (level: number) => Math.max(0, Math.min(4, level)); // Hilfsfunktion: begrenzt Box-Level auf 0-4 (Box 5 ist unsichtbar)
+const LAST_VISIBLE_BOX = 3; // Box 4 (letzte sichtbare Box)
+const MASTERED_BOX = 4; // Box 5 (unsichtbare "gemeisterte" Box)
 /**
  * Organism-Komponente für den eigentlichen Lernvorgang einer Box.
  *
@@ -70,14 +71,23 @@ const LearningModeManager = ({
   }, [folder.id, currentLearningLevel, resetKey]);
   /**
    * Bewertet eine Karte als richtig/falsch, verschiebt sie in die nächste/letzte Box und prüft, ob alle Karten gelernt wurden.
+   * Box 0-3: Sichtbare Boxen, Box 4: Unsichtbare "gemeisterte" Box
+   * Speziallogik: Karten in Box 3 wandern nur bei korrekter Antwort in Box 4 (unsichtbar)
    */
   const handleEvaluate = useCallback(async (cardId: string, correct: boolean) => {
     // Finde die Karte
     const card = cards.find((c: any) => c.id === cardId);
     if (!card) return;
+    
     let newLevel = card.currentLearningLevel ?? 0;
-    if (correct) newLevel = clampBox(newLevel + 1);
-    else newLevel = clampBox(newLevel - 1);
+    
+    if (correct) {
+      // Bei korrekter Antwort: Eine Box höher (Box 3 -> Box 4 unsichtbar)
+      newLevel = clampBox(newLevel + 1);
+    } else {
+      // Bei falscher Antwort: Eine Box niedriger, aber mindestens Box 0
+      newLevel = clampBox(newLevel - 1);
+    }
     
     try {
       // Optimierte Kartenaktualisierung: Entferne die bewertete Karte sofort aus dem lokalen State
@@ -94,14 +104,14 @@ const LearningModeManager = ({
         await onRefreshCounts();
       }
       
-      // Prüfen, ob alle Karten in der letzten Box sind (Lernziel erreicht)
-      // Hier müssen wir trotzdem alle Karten laden, um den Abschluss-Status zu prüfen
+      // Prüfen, ob alle Karten in Box 4 (unsichtbar) sind (Lernziel erreicht)
       const res = await cardAndFolderService.getCardsByFolder(folder.id);
       const allCards = (res as { data: { cards: any[] } }).data.cards || [];
-      const allInLastBox =
+      const allInMasteredBox =
         allCards.length > 0 &&
-        allCards.every((c: any) => (c.currentLearningLevel ?? 0) === LAST_BOX);
-      if (allInLastBox) {
+        allCards.every((c: any) => (c.currentLearningLevel ?? 0) === MASTERED_BOX);
+      
+      if (allInMasteredBox) {
         setIsCompleted(true);
         setCompletedTime(elapsedSeconds);
       }
@@ -161,6 +171,30 @@ const LearningModeManager = ({
   }, [folder.id]);
 
   /**
+   * Setzt alle Karten aus Box 5 (unsichtbar) zurück in Box 4 (sichtbar).
+   * Dies wird verwendet, wenn der Benutzer "Back to Folders" wählt.
+   */
+  const resetMasteredCardsToLastBox = useCallback(async () => {
+    try {
+      const res = await cardAndFolderService.getCardsByFolder(folder.id);
+      const allCards = (res as { data: { cards: any[] } }).data.cards || [];
+      
+      // Nur Karten aus Box 5 zurück in Box 4 setzen
+      const masteredCards = allCards.filter((card: any) => (card.currentLearningLevel ?? 0) === MASTERED_BOX);
+      
+      await Promise.all(
+        masteredCards.map((card: any) =>
+          cardAndFolderService.updateCardInFolder(folder.id, card.id, {
+            currentLearningLevel: LAST_VISIBLE_BOX,
+          }),
+        ),
+      );
+    } catch {
+      setError("Error resetting mastered cards");
+    }
+  }, [folder.id]);
+
+  /**
    * Startet den Lernmodus neu (setzt alle Karten zurück und erhöht den Reset-Key).
    */
   const handleRestart = useCallback(async () => {
@@ -174,26 +208,36 @@ const LearningModeManager = ({
   }, [resetAllCardsToBox0, onRefreshCounts, onRestart]);
 
   /**
-   * Geht zurück zur Ordnerauswahl oder zur vorherigen Ansicht.
+   * Geht zurück zur Ordnerauswahl. Wenn das Lernen abgeschlossen ist, werden alle Karten
+   * aus Box 5 (unsichtbar) zurück in Box 4 (sichtbar) gesetzt, da sie mit der Zeit vergessen werden.
    */
-  const handleBackToFolders = useCallback(() => {
+  const handleBackToFolders = useCallback(async () => {
+    // Wenn das Lernen abgeschlossen ist, setze alle gemeisterten Karten zurück in Box 4
+    if (isCompleted) {
+      await resetMasteredCardsToLastBox();
+      // Aktualisiere Box-Counts nach dem Reset
+      if (onRefreshCounts) {
+        await onRefreshCounts();
+      }
+    }
+    
     if (typeof onBackToFolders === "function") onBackToFolders();
     else handleBack();
-  }, [onBackToFolders, handleBack]);
+  }, [onBackToFolders, handleBack, isCompleted, resetMasteredCardsToLastBox, onRefreshCounts]);
 
   // Wenn alle Karten gelernt wurden, könnte hier eine Abschlussanzeige gerendert werden
   if (loadingCards) {
     return (
-      <div style={{ textAlign: "center", padding: 32 }}>
+      <SC.CenteredContainer>
         <p>Loading cards ...</p>
-      </div>
+      </SC.CenteredContainer>
     );
   }
   if (error) {
     return (
-      <div style={{ textAlign: "center", padding: 32 }}>
+      <SC.CenteredContainer>
         <p>{error}</p>
-      </div>
+      </SC.CenteredContainer>
     );
   }
   if (isCompleted) {
@@ -201,7 +245,10 @@ const LearningModeManager = ({
       <SC.CongratsWrapper>
         <Headline size="lg">Congratulations!</Headline>
         <Text size="medium">
-          You have successfully learned all flashcards.
+          You have successfully mastered all flashcards in this folder!
+        </Text>
+        <Text size="medium" color="textSecondary">
+          All cards have been answered correctly and are now fully learned.
         </Text>
         {typeof completedTime === "number" && (
           <Text size="medium">
@@ -216,6 +263,9 @@ const LearningModeManager = ({
             Back to folder selection
           </Button>
         </SC.ButtonRow>
+        <Text size="small" color="textSecondary">
+          Choose &quot;Learn again&quot; to start from scratch, or &quot;Back to folder selection&quot; to keep your progress and continue later.
+        </Text>
       </SC.CongratsWrapper>
     );
   }

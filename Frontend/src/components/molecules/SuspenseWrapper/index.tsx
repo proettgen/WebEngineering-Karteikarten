@@ -6,23 +6,14 @@
  */
 
 import React, { Suspense } from 'react';
-import styled from 'styled-components';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
+import { SuspenseContainer } from './styles';
 
 interface SuspenseWrapperProps {
   children: React.ReactNode;
   fallbackText?: string;
   minHeight?: string;
 }
-
-const SuspenseContainer = styled.div<{ $minHeight?: string }>`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: ${({ $minHeight }) => $minHeight || '200px'};
-  width: 100%;
-  background-color: ${({ theme }) => theme.background};
-`;
 
 const SuspenseWrapper: React.FC<SuspenseWrapperProps> = ({
   children,

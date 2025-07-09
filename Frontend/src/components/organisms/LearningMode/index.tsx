@@ -148,17 +148,44 @@ const LearningMode = ({ elapsedSeconds: _elapsedSeconds, cards, onEvaluate, onNe
             <SC.ButtonRow>
               <SC.HintWrapper onMouseDown={handleHint} onMouseEnter={handleHint} tabIndex={-1}>
                 <Button $variant="accept" onClick={markCorrect} disabled={!isFlipped}>
-                  ✓ I Got It Right
+                  <Icon size="s" color="textPrimary">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 -960 960 960"
+                      fill="currentColor"
+                    >
+                      <path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z" />
+                    </svg>
+                  </Icon>
+                  I Got It Right
                 </Button>
               </SC.HintWrapper>
               <SC.HintWrapper onMouseDown={handleHint} onMouseEnter={handleHint} tabIndex={-1}>
                 <Button $variant="deny" onClick={markWrong} disabled={!isFlipped}>
-                  ✗ I Got It Wrong
+                  <Icon size="s" color="textPrimary">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 -960 960 960"
+                      fill="currentColor"
+                    >
+                      <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
+                    </svg>
+                  </Icon>
+                  I Got It Wrong
                 </Button>
               </SC.HintWrapper>
               <SC.HintWrapper>
                 <Button $variant="secondary" onClick={handleNextCard}>
-                  Next Card →
+                  <Icon size="s" color="textPrimary">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 -960 960 960"
+                      fill="currentColor"
+                    >
+                      <path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z" />
+                    </svg>
+                  </Icon>
+                  Next Card
                 </Button>
               </SC.HintWrapper>
             </SC.ButtonRow>

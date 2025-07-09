@@ -31,3 +31,9 @@ export const ButtonRow = styled.div`
   margin-top: 32px;
   justify-content: center;
 `;
+
+// Loading and error state containers
+export const CenteredContainer = styled.div`
+  text-align: center;
+  padding: 32px;
+`;

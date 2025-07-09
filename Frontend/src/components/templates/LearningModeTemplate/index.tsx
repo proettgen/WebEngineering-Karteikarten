@@ -1,76 +1,219 @@
-import React, { useMemo } from "react";
-import * as SC from "./styles";
-import Headline from "@/components/atoms/Headline";
-import { LearningModeTemplateProps } from "./types";
-
 /**
- * Legacy LearningModeTemplate (Layout-Wrapper).
+ * LearningModeTemplate (Modernized)
  *
- * This is the legacy template component used by LearningModeManager and LearningMode.
- * For the main learning mode page, use the modernized template from index_modern.tsx.
+ * The main template component for the learning mode page.
+ * Orchestrates all learning-related components and manages the overall layout.
  *
- * This component provides layout for the learning mode:
- * - Header with title, timer and box display
- * - Container for the respective content (children)
- *
- * Props:
- * - children: The actual content (e.g. selection, card, buttons)
- * - elapsedSeconds: Time elapsed in learning mode (optional, for timer display)
- * - currentLearningLevel: Current learning level/box level (optional, for display)
- * - boxCount: Number of cards in the current box (optional)
- *
- * This component contains no logic of its own, but only serves as a layout wrapper for the content.
+ * Features:
+ * - Authentication protection
+ * - State management via custom hook
+ * - Error handling and loading states
+ * - Consistent with AnalyticsTemplate pattern
  */
-const formatTime = (seconds: number) => {
-  const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
-  const ss = String(seconds % 60).padStart(2, "0");
-  return `${mm}:${ss}`;
-};
 
-const LearningModeTemplate = React.memo(({ children, elapsedSeconds, currentLearningLevel, boxCount }: LearningModeTemplateProps & { currentLearningLevel?: number; boxCount?: number }) => {
-  // Memoize formatted time
-  const formattedTime = useMemo(() => 
-    typeof elapsedSeconds === "number" ? formatTime(elapsedSeconds) : null
-  , [elapsedSeconds]);
+import React, { useCallback } from 'react';
+import Headline from '../../atoms/Headline';
+import LoadingSpinner from '../../atoms/LoadingSpinner';
+import ErrorMessage from '../../atoms/ErrorMessage';
+import Button from '../../atoms/Button';
+import Timer from '../../atoms/Timer';
+import LearningModeManager from '../../organisms/LearningModeManager';
+import FolderSelection from '../../molecules/FolderSelection';
+import BoxSelection from '../../molecules/BoxSelection';
+import { useLearningMode } from '../../../hooks/useLearningMode';
+import type { FolderWithCardCount } from '../../../hooks/types';
+import * as SC from './styles';
 
-  // Memoize box level text
-  const boxLevelText = useMemo(() => {
-    if (typeof currentLearningLevel === "number") {
-      return `Box ${currentLearningLevel + 1}${typeof boxCount === "number" ? ` (${boxCount})` : ""}`;
-    }
-    return null;
-  }, [currentLearningLevel, boxCount]);
+interface LearningModeTemplateProps {
+  testId?: string;
+}
+
+const LearningModeTemplateComponent: React.FC<LearningModeTemplateProps> = ({
+  testId
+}) => {
+  const {
+    step,
+    selectedFolder,
+    selectedLearningLevel,
+    elapsedSeconds,
+    resetTrigger,
+    folders,
+    boxCounts,
+    masteredCount,
+    loadingFolders,
+    loadingCards,
+    loading,
+    error,
+    canRetry,
+    isRetrying,
+    startLearning,
+    selectFolder,
+    selectBox,
+    startBoxLearning,
+    resetLearning,
+    goBack,
+    goBackToFolders,
+    retryLastOperation,
+    refreshBoxCounts,
+    navigateToCards,
+  } = useLearningMode();
+
+  const handleFolderSelect = useCallback((folder: FolderWithCardCount) => {
+    selectFolder(folder);
+  }, [selectFolder]);
+
+  const handleBoxSelect = useCallback((level: number) => {
+    selectBox(level);
+  }, [selectBox]);
+
+  const handleStartBoxLearning = useCallback(() => {
+    startBoxLearning();
+  }, [startBoxLearning]);
+
+  const handleNavigateToCards = useCallback(() => {
+    navigateToCards();
+  }, [navigateToCards]);
+
+  if (loading && step === 'start') {
+    return (
+      <SC.Container data-testid={testId}>
+        <SC.LoadingContainer>
+          <LoadingSpinner 
+            size="large" 
+            text="Loading learning mode..." 
+          />
+        </SC.LoadingContainer>
+      </SC.Container>
+    );
+  }
 
   return (
-    <SC.Container>
+    <SC.Container data-testid={testId}>
       <SC.Header>
         <Headline size="md">Learning Mode</Headline>
-        {boxLevelText && (
+        {step === 'learn' && typeof selectedLearningLevel === "number" && (
           <SC.BoxLevel>
-            {boxLevelText}
+            {`Box ${selectedLearningLevel + 1} (${boxCounts.find(b => b.level === selectedLearningLevel)?.count ?? 0})`}
           </SC.BoxLevel>
         )}
-        {formattedTime && (
+        {step === 'learn' && typeof elapsedSeconds === "number" && (
           <SC.TimerRow>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24px"
-              viewBox="0 -960 960 960"
-              width="24px"
-              fill="#e3e3e3"
-              aria-label="Clock"
-            >
-              <path d="M360-840v-80h240v80H360Zm80 440h80v-240h-80v240Zm40 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l56-56 56 56-56 56q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Zm0-80q116 0 198-82t82-198q0-116-82-198t-198-82q-116 0-198 82t-82 198q0 116 82 198t198 82Zm0-280Z" />
-            </svg>
-            <SC.Timer>{formattedTime}</SC.Timer>
+            <Timer seconds={elapsedSeconds} size="medium" />
           </SC.TimerRow>
         )}
       </SC.Header>
-      {children}
+
+      <SC.Content>
+        {error && (
+          <ErrorMessage 
+            message={error} 
+            type="error"
+            onRetry={canRetry ? retryLastOperation : undefined}
+            retryText={isRetrying ? "Retrying..." : "Retry"}
+          />
+        )}
+
+        {step === 'start' && (
+          <SC.StartSection>
+            <SC.WelcomeText>
+              Welcome to Learning Mode! Choose a folder and start learning your flashcards 
+              using the scientifically proven spaced repetition system.
+            </SC.WelcomeText>
+            <SC.ButtonGroup>
+              <Button 
+                $variant="primary" 
+                onClick={startLearning}
+              >
+                Start Learning Mode
+              </Button>
+              <Button 
+                $variant="secondary" 
+                onClick={handleNavigateToCards}
+              >
+                Edit Flashcards Before Learning
+              </Button>
+            </SC.ButtonGroup>
+          </SC.StartSection>
+        )}
+
+        {step === 'select-folder' && (
+          <SC.SelectionSection>
+            <SC.StepTitle>Select a Folder</SC.StepTitle>
+            <SC.StepDescription>
+              Choose the folder containing the flashcards you want to study.
+            </SC.StepDescription>
+            
+            <FolderSelection
+              folders={folders}
+              selectedFolderId={selectedFolder?.id || null}
+              onSelect={handleFolderSelect}
+              loading={loadingFolders}
+              testId="folder-selection"
+            />
+            
+            <SC.ButtonGroup>
+              <Button 
+                $variant="secondary" 
+                onClick={goBack}
+              >
+                Back
+              </Button>
+            </SC.ButtonGroup>
+          </SC.SelectionSection>
+        )}
+
+        {step === 'select-box' && selectedFolder && (
+          <SC.SelectionSection>
+            <SC.StepTitle>Select Learning Box</SC.StepTitle>
+            <SC.StepDescription>
+              Choose which learning box to study. Higher boxes contain cards you know better.
+            </SC.StepDescription>
+            
+            <BoxSelection
+              boxes={boxCounts}
+              selectedLevel={selectedLearningLevel}
+              onSelect={handleBoxSelect}
+              masteredCount={masteredCount}
+              loading={loadingCards}
+              testId="box-selection"
+            />
+            
+            <SC.ButtonGroup>
+              <Button 
+                $variant="primary" 
+                onClick={handleStartBoxLearning}
+                disabled={selectedLearningLevel === null || loadingCards}
+              >
+                Start Learning
+              </Button>
+              <Button 
+                $variant="secondary" 
+                onClick={goBack}
+              >
+                Back to Folders
+              </Button>
+            </SC.ButtonGroup>
+          </SC.SelectionSection>
+        )}
+
+        {step === 'learn' && selectedFolder && selectedLearningLevel !== null && (
+          <SC.LearningSection>
+            <LearningModeManager
+              key={resetTrigger}
+              folder={selectedFolder}
+              currentLearningLevel={selectedLearningLevel}
+              elapsedSeconds={elapsedSeconds}
+              onBack={goBack}
+              onRestart={resetLearning}
+              onBackToFolders={goBackToFolders}
+              onRefreshCounts={refreshBoxCounts}
+            />
+          </SC.LearningSection>
+        )}
+      </SC.Content>
     </SC.Container>
   );
-});
+};
 
-LearningModeTemplate.displayName = 'LearningModeTemplate';
-
-export default LearningModeTemplate;
+export { LearningModeTemplateComponent as LearningModeTemplate };
+export default LearningModeTemplateComponent;

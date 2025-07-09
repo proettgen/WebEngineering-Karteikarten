@@ -19,66 +19,27 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { cardAndFolderService } from '@/services/cardAndFolderService';
-import { Folder } from '@/database/folderTypes';
 import { Card } from '@/database/cardTypes';
 import { useEnhancedError } from './useEnhancedError';
-
-export type LearningModeStep = 'start' | 'select-folder' | 'select-box' | 'learn';
-
-interface BoxCount {
-  level: number;
-  count: number;
-}
-
-interface UseLearningModeReturn {
-  // Current state
-  step: LearningModeStep;
-  selectedFolder: Folder | null;
-  selectedLearningLevel: number | null;
-  elapsedSeconds: number;
-  resetTrigger: number;
-  
-  // Data
-  folders: Folder[];
-  boxCounts: BoxCount[];
-  cards: Card[];
-  
-  // Loading states
-  loadingFolders: boolean;
-  loadingCards: boolean;
-  loading: boolean;
-  
-  // Enhanced error states
-  error: string | null;
-  canRetry: boolean;
-  isRetrying: boolean;
-  
-  // Actions
-  startLearning: () => void;
-  selectFolder: (_folder: Folder) => void;
-  selectBox: (_level: number) => void;
-  startBoxLearning: () => void;
-  resetLearning: () => void;
-  goBack: () => void;
-  goBackToFolders: () => void;
-  retryLastOperation: () => Promise<void>;
-  refreshBoxCounts: () => Promise<void>;
-  
-  // Navigation
-  navigateToCards: () => void;
-}
+import type { 
+  LearningModeStep, 
+  FolderWithCardCount, 
+  BoxCount, 
+  UseLearningModeReturn 
+} from './types';
 
 export const useLearningMode = (): UseLearningModeReturn => {
   // Core state
   const [step, setStep] = useState<LearningModeStep>('start');
-  const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
+  const [selectedFolder, setSelectedFolder] = useState<FolderWithCardCount | null>(null);
   const [selectedLearningLevel, setSelectedLearningLevel] = useState<number | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [resetTrigger, setResetTrigger] = useState(0);
   
   // Data state
-  const [folders, setFolders] = useState<Folder[]>([]);
+  const [folders, setFolders] = useState<FolderWithCardCount[]>([]);
   const [boxCounts, setBoxCounts] = useState<BoxCount[]>([]);
+  const [masteredCount, setMasteredCount] = useState<number>(0);
   const [cards, setCards] = useState<Card[]>([]);
   
   // Loading states
@@ -103,7 +64,29 @@ export const useLearningMode = (): UseLearningModeReturn => {
     
     const operation = async () => {
       const response = await cardAndFolderService.getFolders();
-      setFolders(response.data.folders);
+      const folderList = response.data.folders;
+      
+      // Load card counts for each folder in parallel for better performance
+      const foldersWithCounts = await Promise.all(
+        folderList.map(async (folder) => {
+          try {
+            const cardsResponse = await cardAndFolderService.getCardsByFolder(folder.id);
+            return {
+              ...folder,
+              cardCount: cardsResponse.data?.cards?.length || 0
+            };
+          } catch {
+            // If we can't get cards for a folder, assume 0 cards
+            // This ensures folders without cards are filtered out
+            return {
+              ...folder,
+              cardCount: 0
+            };
+          }
+        })
+      );
+      
+      setFolders(foldersWithCounts);
     };
 
     lastOperationRef.current = operation;
@@ -127,13 +110,18 @@ export const useLearningMode = (): UseLearningModeReturn => {
       const folderCards = response.data?.cards || [];
       setCards(folderCards);
       
-      // Calculate box counts (learning levels 0-3)
+      // Calculate box counts (learning levels 0-4, but only show 0-3)
+      // Level 4 is the invisible "mastered" level
       const counts: BoxCount[] = [];
       for (let level = 0; level <= 3; level++) {
         const count = folderCards.filter(card => card.currentLearningLevel === level).length;
         counts.push({ level, count });
       }
       setBoxCounts(counts);
+      
+      // Calculate mastered cards count (Level 4 - invisible)
+      const masteredCardsCount = folderCards.filter(card => card.currentLearningLevel === 4).length;
+      setMasteredCount(masteredCardsCount);
     };
 
     lastOperationRef.current = operation;
@@ -180,7 +168,7 @@ export const useLearningMode = (): UseLearningModeReturn => {
     loadFolders();
   }, [loadFolders]);
   
-  const selectFolder = useCallback((folder: Folder) => {
+  const selectFolder = useCallback((folder: FolderWithCardCount) => {
     setSelectedFolder(folder);
     setStep('select-box');
     loadBoxCounts(folder.id);
@@ -278,6 +266,7 @@ export const useLearningMode = (): UseLearningModeReturn => {
     // Data
     folders,
     boxCounts,
+    masteredCount,
     cards,
     
     // Loading states

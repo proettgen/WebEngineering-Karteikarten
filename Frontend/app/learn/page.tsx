@@ -16,7 +16,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../src/context/AuthContext";
-import { LearningModeTemplate } from "@/components/templates/LearningModeTemplate/index_modern";
+import { LearningModeTemplate } from "@/utils/lazyImports";
 
 export default function LearnPage() {
   const { isLoggedIn } = useAuth();

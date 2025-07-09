@@ -19,16 +19,8 @@
 import React from 'react';
 import Button from '../../atoms/Button';
 import type { CreateAnalyticsInput } from '../../../database/analyticsTypes';
+import type { AnalyticsFormProps } from './types';
 import * as SC from './styles';
-
-interface AnalyticsFormProps {
-  form: CreateAnalyticsInput;
-  onFieldChange: (_field: keyof CreateAnalyticsInput, _value: number) => void;
-  onSave: () => void;
-  onCancel: () => void;
-  loading?: boolean;
-  testId?: string;
-}
 
 const formFields = [
   {
