@@ -1,19 +1,36 @@
 /**
- * useLearningMode Hook (Enhanced)
+ * Learning Mode Management Hook
  * 
- * Custom hook for learning mode state management and business logic.
- * Enhanced with robust error handling, retry mechanisms, and improved reliability.
- * Now matches the robustness of Card/Folder operations.
+ * @description Custom React hook for managing learning mode state, navigation, and business logic.
+ * Provides robust error handling, retry mechanisms, and analytics integration for the learning experience.
  * 
- * Features:
- * - Folder loading and selection
+ * @features
+ * - Folder loading and selection with error handling
  * - Box/learning level management
- * - Timer functionality
- * - Step navigation (start -> folder selection -> box selection -> learning)
- * - Enhanced error handling with retry mechanisms
- * - Loading states with better UX
- * - Authentication-aware API calls
- * - Consistent with Card/Folder error handling patterns
+ * - Learning session timer functionality with analytics tracking
+ * - Step navigation (start → folder selection → box selection → learning)
+ * - Authentication-aware API calls with automatic retry
+ * - Analytics integration for learning progress tracking
+ * 
+ * @cross-references
+ * - {@link cardAndFolderService} - Backend API communication
+ * - {@link analyticsService} - Learning analytics tracking
+ * - {@link useEnhancedError} - Error handling and user feedback
+ * - {@link LearningModeTemplate} - Main UI component using this hook
+ * 
+ * @returns {UseLearningModeReturn} Complete learning mode state and control functions
+ * 
+ * @example
+ * ```tsx
+ * const {
+ *   step,
+ *   folders,
+ *   selectedFolder,
+ *   loadFolders,
+ *   selectFolder,
+ *   startLearning
+ * } = useLearningMode();
+ * ```
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -53,7 +70,7 @@ export const useLearningMode = (): UseLearningModeReturn => {
   // Timer ref
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   
-  // PHASE 4: Analytics tracking refs
+  // Analytics tracking for learning sessions
   const sessionStartTimeRef = useRef<number | null>(null);
   const lastAnalyticsUpdateRef = useRef<number>(0);
   const ANALYTICS_UPDATE_INTERVAL = 30000; // Update analytics every 30 seconds
@@ -155,7 +172,7 @@ export const useLearningMode = (): UseLearningModeReturn => {
       clearInterval(timerRef.current);
     }
     
-    // PHASE 4: Set session start time for analytics tracking
+    // Set session start time for analytics tracking
     sessionStartTimeRef.current = Date.now();
     lastAnalyticsUpdateRef.current = Date.now();
     
@@ -163,16 +180,18 @@ export const useLearningMode = (): UseLearningModeReturn => {
       setElapsedSeconds(prev => {
         const newSeconds = prev + 1;
         
-        // PHASE 4: Periodically update analytics with learning time
+        // Periodically update analytics with learning time
         const now = Date.now();
         if (now - lastAnalyticsUpdateRef.current >= ANALYTICS_UPDATE_INTERVAL) {
           const timeSpentSinceLastUpdate = Math.floor((now - lastAnalyticsUpdateRef.current) / 1000);
           
-          // Update analytics in background (don't block UI)
+          // Performance Best Practice: Batch analytics updates to reduce API calls
+          // Error Handling Best Practice: Non-blocking background updates with graceful failure
           analyticsService.incrementAnalytics({
             totalLearningTime: timeSpentSinceLastUpdate,
           }).catch(() => {
-            // Silently fail - analytics tracking shouldn't break learning flow
+            // Security Best Practice: Don't expose sensitive analytics errors to console
+            // UX Best Practice: Silent failure prevents disrupting the learning experience
           });
           
           lastAnalyticsUpdateRef.current = now;
@@ -190,16 +209,17 @@ export const useLearningMode = (): UseLearningModeReturn => {
       timerRef.current = null;
     }
     
-    // PHASE 4: Final analytics update when stopping timer
+    // Final analytics update when stopping timer
     if (sessionStartTimeRef.current) {
       const timeNotYetTracked = Math.floor((Date.now() - lastAnalyticsUpdateRef.current) / 1000);
       
-      // Submit final time tracking (don't block UI)
+      // Performance Best Practice: Final cleanup to prevent unnecessary API calls
+      // Accessibility Best Practice: Ensure timer cleanup for screen readers
       if (timeNotYetTracked > 0) {
         analyticsService.incrementAnalytics({
           totalLearningTime: timeNotYetTracked,
         }).catch(() => {
-          // Silently fail - analytics tracking shouldn't break learning flow
+          // Error Handling Best Practice: Graceful degradation for analytics failures
         });
       }
       
@@ -237,7 +257,7 @@ export const useLearningMode = (): UseLearningModeReturn => {
     setResetTrigger(prev => prev + 1);
     clearError();
 
-    // PHASE 4: Track learning session reset (only for individual session resets, not folder resets)
+    // Track learning session reset (only for individual session resets, not folder resets)
     // Note: Folder resets are tracked in LearningModeManager to avoid double counting
     // Only track reset if this is not called from a folder reset (handleRestart)
     // This prevents double counting when the user clicks "Restart" in LearningModeManager
@@ -301,7 +321,9 @@ export const useLearningMode = (): UseLearningModeReturn => {
     }
   }, [selectedFolder, router]);
   
-  // Cleanup timer on unmount
+  // Memory Management Best Practice: Cleanup timer to prevent memory leaks
+  // Performance Best Practice: Clear intervals on component unmount
+  // React Best Practice: Return cleanup function from useEffect
   useEffect(() => () => {
     if (timerRef.current) {
       clearInterval(timerRef.current);

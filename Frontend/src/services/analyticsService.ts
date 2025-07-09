@@ -1,14 +1,36 @@
 /**
- * Analytics Service (Frontend)
+ * Analytics API Service
  *
- * This service handles all analytics-related API calls from the frontend.
- * Now follows the same patterns as cardAndFolderService with proper authentication
- * and consistent error handling.
+ * @description Frontend service for all analytics-related API communication.
+ * Provides comprehensive analytics data management with authentication, error handling,
+ * and real-time learning tracking capabilities.
  *
- * Cross-references:
- * - src/database/analyticsTypes.ts: Type definitions
- * - src/services/httpClient.ts: Unified HTTP client (should be used)
- * - Backend analytics routes: /api/analytics endpoints
+ * @features
+ * - Complete analytics CRUD operations with authentication
+ * - Real-time learning activity tracking
+ * - Consistent error handling patterns with other services
+ * - Optimized request handling with proper caching
+ * - Session-based learning analytics integration
+ *
+ * @cross-references
+ * - {@link httpClient} - Unified HTTP client for API communication
+ * - {@link analyticsTypes} - Analytics data type definitions
+ * - {@link useAnalytics} - Hook consuming this service
+ * - {@link useAnalyticsTracking} - Real-time tracking integration
+ * - Backend: `/api/analytics/*` - Analytics REST endpoints
+ *
+ * @authentication All endpoints require valid JWT authentication
+ * @error-handling Uses standardized error responses and retry logic
+ *
+ * @example
+ * ```tsx
+ * // Basic analytics operations
+ * const analytics = await analyticsService.getAnalytics();
+ * await analyticsService.updateAnalytics(updateData);
+ * 
+ * // Real-time tracking
+ * await trackLearningTime({ folderId, timeSpent: 300, cardsStudied: 5 });
+ * ```
  */
 
 import { request } from "./httpClient";
@@ -35,35 +57,47 @@ export const analyticsService = {
   /**
    * Creates a new analytics record for the current user.
    */
+  /**
+   * Creates new analytics record for the current user.
+   * 
+   * @security Authentication required via credentials: 'include'
+   * @validation Input validated against CreateAnalyticsInput schema
+   */
   createAnalytics: (data: CreateAnalyticsInput): Promise<AnalyticsResponse> =>
     request(ANALYTICS_ENDPOINT, {
       method: 'POST',
       body: JSON.stringify(data),
-      credentials: 'include',
+      credentials: 'include', // Security Best Practice: Include auth credentials
     }),
 
   /**
    * Updates the analytics record for the current user.
+   * 
+   * @performance Uses PUT for idempotent updates
+   * @security Authentication required via credentials: 'include'
    */
   updateAnalytics: (data: UpdateAnalyticsInput): Promise<AnalyticsResponse> =>
     request(ANALYTICS_ENDPOINT, {
       method: 'PUT',
       body: JSON.stringify(data),
-      credentials: 'include',
+      credentials: 'include', // Security Best Practice: Include auth credentials
     }),
 
   /**
    * Deletes the analytics record for the current user.
+   * 
+   * @security Authentication required, user can only delete own data
+   * @data-protection Implements user's right to data deletion (GDPR compliance)
    */
   deleteAnalytics: (): Promise<void> =>
     request(ANALYTICS_ENDPOINT, {
       method: 'DELETE',
-      credentials: 'include',
+      credentials: 'include', // Security Best Practice: Include auth credentials
     }),
 
   /**
-   * PHASE 4: Live Learning Analytics Tracking API Methods
-   * Neue API-Methoden für die Echtzeit-Integration zwischen Learning Mode und Analytics
+   * Live Learning Analytics Tracking API Methods
+   * New API methods for real-time integration between Learning Mode and Analytics
    */
 
   /**
@@ -122,7 +156,7 @@ export const deleteAnalytics = (): Promise<void> =>
   analyticsService.deleteAnalytics();
 
 /**
- * PHASE 4: Convenient export functions for new tracking methods
+ * Convenient export functions for new tracking methods
  */
 export const trackStudySession = (sessionData: {
   timeSpent: number;

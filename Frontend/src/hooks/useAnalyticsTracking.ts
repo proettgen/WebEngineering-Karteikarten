@@ -1,24 +1,33 @@
 /**
- * Analytics Tracking Hook - Learning-Analytics Integration
+ * Real-time Learning Analytics Tracking Hook
  *
- * Custom React hook for automatic tracking of learning actions and their
- * live synchronization with analytics. This hook provides the connection between
- * Learning Mode and Analytics.
+ * @description Custom React hook for automatic tracking of learning activities and real-time
+ * synchronization with backend analytics. Provides seamless integration between learning
+ * sessions and analytics data collection.
  *
- * Features:
- * - Session-based tracking of learning activities
- * - Automatic synchronization with backend analytics
- * - Batch updates for performance optimization
- * - Error handling and retry logic
- * - Optimistic updates for better user experience
+ * @features
+ * - Session-based tracking of learning activities with start/end management
+ * - Automatic background synchronization with backend analytics
+ * - Batch updates for optimal performance and reduced API calls
+ * - Comprehensive error handling with retry logic
+ * - Optimistic updates for responsive user experience
+ * - Real-time progress tracking and statistics
  *
- * Integration Points:
- * - useLearningMode: Timer and card evaluation integration
- * - LearningModeManager: Reset and progress tracking
- * - useAnalytics: Live updates of analytics display
+ * @integration-points
+ * - {@link useLearningMode} - Timer and card evaluation tracking
+ * - {@link LearningModeManager} - Reset and progress event handling
+ * - {@link useAnalytics} - Live analytics display updates
+ * - {@link analyticsService} - Backend API communication
  *
- * Usage:
- * ```typescript
+ * @cross-references
+ * - {@link AnalyticsTracking} - Core tracking types and interfaces
+ * - {@link LearningModeTemplate} - Primary consumer component
+ * - {@link AnalyticsDisplay} - Real-time data visualization
+ *
+ * @returns {UseAnalyticsTrackingReturn} Session management and tracking functions
+ *
+ * @example
+ * ```tsx
  * const { 
  *   startSession, 
  *   endSession, 
@@ -26,13 +35,12 @@
  *   trackReset,
  *   sessionStats 
  * } = useAnalyticsTracking();
+ * 
+ * // Start tracking when learning begins
+ * useEffect(() => {
+ *   startSession(folderId);
+ * }, [folderId]);
  * ```
- *
- * Cross-references:
- * - src/hooks/useLearningMode.ts: Learning Mode State Management
- * - src/hooks/useAnalytics.ts: Analytics State Management
- * - src/services/analyticsService.ts: Analytics API Calls
- * - Backend: /api/analytics/track-* endpoints
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';

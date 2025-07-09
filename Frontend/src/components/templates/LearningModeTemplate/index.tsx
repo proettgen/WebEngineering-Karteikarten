@@ -1,14 +1,39 @@
 /**
- * LearningModeTemplate (Modernized)
+ * Learning Mode Page Template
  *
- * The main template component for the learning mode page.
- * Orchestrates all learning-related components and manages the overall layout.
+ * @description Main template component for the learning mode interface. Orchestrates
+ * the complete learning experience with step-by-step navigation, authentication,
+ * and integrated analytics tracking.
  *
- * Features:
- * - Authentication protection
- * - State management via custom hook
- * - Error handling and loading states
- * - Consistent with AnalyticsTemplate pattern
+ * @features
+ * - Multi-step learning workflow (folder → box → learning)
+ * - Built-in authentication protection and loading states
+ * - Integrated analytics tracking for learning sessions
+ * - Error handling with user-friendly feedback
+ * - Responsive layout with modern UI components
+ * - Real-time timer and progress tracking
+ *
+ * @architecture
+ * - Template-level: Page layout and navigation orchestration
+ * - Organism-level: {@link LearningModeManager} for core learning logic
+ * - Molecule-level: {@link FolderSelection}, {@link BoxSelection} for navigation
+ * - Atom-level: {@link Timer}, {@link Button}, {@link ErrorMessage} for UI elements
+ *
+ * @cross-references
+ * - {@link useLearningMode} - Core state management hook
+ * - {@link useAnalyticsTracking} - Learning session tracking
+ * - {@link LearningModeManager} - Main learning interface organism
+ * - `/app/learn/page.tsx` - Next.js page consuming this template
+ *
+ * @props None - Uses internal hooks for state management
+ *
+ * @example
+ * ```tsx
+ * // Used in app/learn/page.tsx
+ * export default function LearnPage() {
+ *   return <LearningModeTemplate />;
+ * }
+ * ```
  */
 
 import React, { useCallback } from 'react';
@@ -90,9 +115,11 @@ const LearningModeTemplateComponent: React.FC<LearningModeTemplateProps> = React
     return (
       <SC.Container data-testid={testId}>
         <SC.LoadingContainer>
+          {/* Accessibility Best Practice: Descriptive loading text for screen readers */}
           <LoadingSpinner 
             size="large" 
             text="Loading learning mode..." 
+            aria-label="Loading learning mode interface" 
           />
         </SC.LoadingContainer>
       </SC.Container>

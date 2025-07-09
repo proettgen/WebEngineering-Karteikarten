@@ -1,19 +1,35 @@
 /**
- * useAnalytics Hook
+ * Analytics Data Management Hook
  *
- * Custom hook for managing analytics data and operations.
- * Encapsulates all analytics-related state management and API calls.
+ * @description Custom React hook for managing user analytics data and operations.
+ * Provides comprehensive state management for learning statistics with optimistic updates
+ * and robust error handling.
  *
- * Features:
- * - Loads analytics data on mount
- * - Provides CRUD operations for analytics
- * - Manages loading and error states
- * - Optimistic updates for better UX
+ * @features
+ * - Automatic analytics data loading on component mount
+ * - CRUD operations for analytics with error recovery
+ * - Loading states and error management
+ * - Optimistic updates for improved user experience
+ * - Authentication-aware API calls
  *
- * Cross-references:
- * - src/services/analyticsService.ts: API service calls
- * - src/database/analyticsTypes.ts: Type definitions
- * - app/analytics/page.tsx: Main consumer
+ * @cross-references
+ * - {@link analyticsService} - Backend API communication for analytics
+ * - {@link Analytics} - Core analytics data types
+ * - {@link AnalyticsTemplate} - Main UI component consuming this hook
+ * - {@link useAnalyticsTracking} - Real-time learning analytics tracking
+ *
+ * @returns {UseAnalyticsReturn} Analytics state and management functions
+ *
+ * @example
+ * ```tsx
+ * const {
+ *   analytics,
+ *   loading,
+ *   error,
+ *   loadAnalytics,
+ *   updateAnalyticsData
+ * } = useAnalytics();
+ * ```
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';

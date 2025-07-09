@@ -1,21 +1,39 @@
 /**
- * Analytics Controller
+ * Analytics REST API Controller
  *
- * HTTP controllers for analytics endpoints, handling learning statistics and progress tracking.
- * Processes HTTP requests, validates input, calls service methods, and sends formatted responses.
+ * @description HTTP request controllers for analytics endpoints, managing learning statistics
+ * and progress tracking operations. Handles request validation, authentication, and response
+ * formatting for all analytics-related API operations.
  *
- * Architecture:
- * - Controllers handle HTTP-specific logic (status codes, request/response formatting)
- * - Business logic is delegated to analyticsService.ts
- * - Used by analyticsRoutes.ts for REST API endpoints
- * - Works with analyticsTypes.ts for type definitions
- * - Integrates with learning components for real-time progress tracking
+ * @responsibilities
+ * - HTTP request/response handling and status code management
+ * - Request validation and error response formatting
+ * - Authentication verification for protected analytics operations
+ * - Delegation of business logic to analytics service layer
+ * - Real-time learning progress tracking endpoint management
  *
- * Cross-references:
- * - src/services/analyticsService.ts: Business logic for analytics
- * - src/routes/analyticsRoutes.ts: Routing for analytics endpoints
- * - src/validation/analyticsValidation.ts: Request validation
- * - drizzle/schema.ts: Database schema
+ * @architecture
+ * - Controller Layer: HTTP-specific logic and request/response handling
+ * - Service Layer: {@link analyticsService} - Business logic and database operations
+ * - Validation Layer: {@link analyticsValidation} - Request schema validation
+ * - Database Layer: {@link drizzle/schema} - Analytics data persistence
+ *
+ * @cross-references
+ * - {@link analyticsService} - Core business logic for analytics operations
+ * - {@link analyticsRoutes} - Express routing configuration
+ * - {@link analyticsValidation} - Zod validation schemas
+ * - {@link AuthenticatedRequest} - Authenticated request type definitions
+ * - Frontend: `analyticsService.ts` - Client-side API communication
+ *
+ * @authentication All endpoints require valid JWT authentication via AuthenticatedRequest
+ * @validation All request bodies validated using Zod schemas before processing
+ *
+ * @example
+ * ```typescript
+ * // Route usage in analyticsRoutes.ts
+ * router.get('/', authenticateJWT, getAnalytics);
+ * router.put('/', authenticateJWT, validateBody(updateAnalyticsBody), updateAnalytics);
+ * ```
  */
 
 import { Response, NextFunction } from 'express';
@@ -35,17 +53,21 @@ export const getAnalytics = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
+    // Security Best Practice: Always verify authentication state
     if (!req.user) {
       throw new AppError('User not authenticated', 401);
     }
 
+    // Security Best Practice: User can only access their own analytics data
     const data = await analyticsService.getUserAnalytics(req.user.id);
     
+    // API Best Practice: Consistent response format with status field
     res.status(200).json({
       status: 'success',
       data: data
     });
   } catch (error) {
+    // Error Handling Best Practice: Delegate to centralized error handler
     next(error);
   }
 };
@@ -86,13 +108,17 @@ export const updateAnalytics = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
+    // Security Best Practice: Verify authentication before processing
     if (!req.user) {
       throw new AppError('User not authenticated', 401);
     }
 
+    // Validation Best Practice: Parse and validate request body with Zod
     const validatedData = updateAnalyticsBody.parse(req.body);
+    // Security Best Practice: User can only update their own analytics
     const data = await analyticsService.updateUserAnalytics(req.user.id, validatedData);
     
+    // Error Handling Best Practice: Handle resource not found gracefully
     if (!data) {
       throw new AppError('Analytics not found for this user', 404);
     }

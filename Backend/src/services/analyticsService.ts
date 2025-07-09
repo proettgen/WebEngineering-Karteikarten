@@ -1,22 +1,48 @@
 /**
- * Analytics Service
+ * Analytics Business Logic Service
  *
- * Business logic for managing analytics data and learning statistics.
- * Handles database operations, validation, and real-time progress tracking integration.
- * Follows established service patterns for consistency across the application.
+ * @description Core business logic service for analytics data management and learning
+ * statistics tracking. Handles all database operations, validation, and real-time
+ * progress tracking for the learning analytics system.
  *
- * Features:
- * - CRUD operations for user analytics
- * - Real-time learning progress tracking
- * - Integration with learning mode components
- * - Reset functionality for learning sessions
- * - Comprehensive error handling and validation
+ * @responsibilities
+ * - CRUD operations for user analytics with error handling
+ * - Real-time learning progress tracking and session management
+ * - Learning statistics calculation and aggregation
+ * - Analytics data validation and sanitization
+ * - Integration with learning mode for live tracking
+ * - Reset functionality for learning sessions and folders
  *
- * Cross-references:
- * - src/controllers/analyticsController.ts: HTTP controllers for analytics endpoints
- * - drizzle/schema.ts: Database schema for analytics
- * - src/types/analyticsTypes.ts: TypeScript type definitions for analytics
- * - src/validation/analyticsValidation.ts: Zod validation schemas
+ * @architecture
+ * - Service Layer: Business logic and database operations
+ * - Database Layer: {@link drizzle/db} - Drizzle ORM operations
+ * - Validation Layer: Input validation and data integrity checks
+ * - Type Layer: {@link analyticsTypes} - TypeScript type definitions
+ *
+ * @cross-references
+ * - {@link analyticsController} - HTTP request handling layer
+ * - {@link drizzle/schema} - Database schema definitions
+ * - {@link analyticsTypes} - Core type definitions
+ * - {@link analyticsValidation} - Zod validation schemas
+ * - Frontend: `useAnalyticsTracking` - Real-time learning integration
+ *
+ * @database-operations
+ * - Table: `analytics` - User learning statistics storage
+ * - Relationships: `users` table foreign key relationship
+ * - Indexes: User ID for efficient querying
+ *
+ * @error-handling Comprehensive error handling with AppError for API responses
+ * @validation Input validation using Zod schemas and manual checks
+ *
+ * @example
+ * ```typescript
+ * // Basic analytics operations
+ * const analytics = await getAnalytics(userId);
+ * await updateAnalytics(userId, { cardsLearned: 100 });
+ * 
+ * // Real-time tracking
+ * await trackLearningTime(userId, { timeSpent: 300, cardsStudied: 5 });
+ * ```
  */
 
 import { db } from '../../drizzle/db';
@@ -37,18 +63,19 @@ import type { CreateAnalyticsBody, UpdateAnalyticsBody } from '../validation/ana
  */
 export const getUserAnalytics = async (userId: string): Promise<Analytics> => {
   try {
-    // Validate userId format (should be UUID)
+    // Input Validation Best Practice: Validate format before database operations
     if (!userId || typeof userId !== 'string') {
       throw new AppError('Invalid user ID format', 400);
     }
 
-    // First, try to get existing analytics for the user
+    // Database Best Practice: Use indexed queries for optimal performance
     const result = await db
       .select()
       .from(analytics)
-      .where(eq(analytics.userId, userId));
+      .where(eq(analytics.userId, userId)); // Uses indexed userId column
 
     if (result.length > 0) {
+      // Logging Best Practice: Log successful operations for monitoring
       console.log(`Successfully retrieved analytics for user: ${userId}`);
       return result[0] as Analytics;
     }
@@ -65,11 +92,12 @@ export const getUserAnalytics = async (userId: string): Promise<Analytics> => {
 
     return newAnalytics;
   } catch (error) {
-    // Re-throw AppErrors as-is, wrap others
+    // Error Handling Best Practice: Preserve specific errors, wrap unknown ones
     if (error instanceof AppError) {
       throw error;
     }
     
+    // Security Best Practice: Don't expose internal database errors to clients
     console.error('Database error in getUserAnalytics:', error);
     throw new AppError('Failed to retrieve analytics data due to database error', 500);
   }

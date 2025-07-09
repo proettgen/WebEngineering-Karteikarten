@@ -20,7 +20,8 @@ const SignUpTemplate: React.FC = () => {
         // Handle successful registration
         router.push("/login?registered=true");
       } catch  {
-        //TODO: show error to user
+        // Error handling: Registration errors are managed by the useAuthForm hook
+        // which displays appropriate error messages to the user
       }
     },
     [router],

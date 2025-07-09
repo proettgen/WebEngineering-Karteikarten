@@ -25,35 +25,35 @@
 
 import { lazy } from 'react';
 
-// Analytics-Komponenten (werden nur bei /analytics benötigt)
+// Analytics components (only needed for /analytics route)
 export const AnalyticsTemplate = lazy(() => 
   import('../components/templates/AnalyticsTemplate').then(module => ({
     default: module.default
   }))
 );
 
-// CardManager-Komponenten (werden nur bei /cards benötigt)
+// CardManager components (only needed for /cards route)
 export const CardManagerTemplate = lazy(() => 
   import('../components/templates/CardManagerTemplate').then(module => ({
     default: module.default
   }))
 );
 
-// Learning Mode Template (wird direkt von der /learn page verwendet)
+// Learning Mode Template (used directly by /learn page)
 export const LearningModeTemplate = lazy(() => 
   import('../components/templates/LearningModeTemplate/index').then(module => ({
     default: module.LearningModeTemplate
   }))
 );
 
-// Profile-Komponenten (werden nur bei /profile benötigt)
+// Profile components (only needed for /profile route)
 export const ProfileTemplate = lazy(() => 
   import('../components/templates/ProfileTemplate').then(module => ({
     default: module.default
   }))
 );
 
-// Heavy Modal-Komponenten
+// Heavy modal components (loaded on-demand)
 export const CardForm = lazy(() => 
   import('../components/molecules/CardForm').then(module => ({
     default: module.default

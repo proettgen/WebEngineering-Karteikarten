@@ -1,20 +1,39 @@
 /**
- * AnalyticsTemplate
+ * Analytics Dashboard Template
  *
- * The main template component for the analytics page.
- * Orchestrates all analytics-related components and manages the overall layout.
+ * @description Main template component for the analytics dashboard page. Provides
+ * comprehensive learning statistics visualization with data editing capabilities
+ * and responsive layout management.
  *
- * Features:
- * - Responsive layout management
- * - Component orchestration
- * - State management delegation to custom hook
- * - Error boundary integration
- * - Loading state management
+ * @features
+ * - Responsive analytics dashboard layout
+ * - Real-time learning statistics display
+ * - Interactive data editing with form validation
+ * - Error boundary integration with user feedback
+ * - Loading state management with smooth transitions
+ * - Authentication-aware data access
  *
- * Cross-references:
- * - src/hooks/useAnalytics.ts: Main state management
- * - src/components/organisms/AnalyticsDisplay: Data display
- * - src/components/molecules/AnalyticsForm: Data editing
+ * @architecture
+ * - Template-level: Page layout and component orchestration
+ * - Organism-level: {@link AnalyticsDisplay} for data visualization
+ * - Molecule-level: {@link AnalyticsForm} for data editing
+ * - Atom-level: {@link ErrorMessage}, {@link LoadingSpinner} for UI feedback
+ *
+ * @cross-references
+ * - {@link useAnalytics} - Analytics data state management
+ * - {@link AnalyticsDisplay} - Main statistics visualization component
+ * - {@link AnalyticsForm} - Data editing and input component
+ * - `/app/analytics/page.tsx` - Next.js page consuming this template
+ *
+ * @props None - Uses internal hooks for state management
+ *
+ * @example
+ * ```tsx
+ * // Used in app/analytics/page.tsx
+ * export default function AnalyticsPage() {
+ *   return <AnalyticsTemplate />;
+ * }
+ * ```
  */
 
 import React, { useCallback } from 'react';

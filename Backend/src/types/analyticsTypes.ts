@@ -38,7 +38,7 @@ export type UpdateAnalyticsInput = z.infer<typeof updateAnalyticsBody>;
 export type AnalyticsResponse = z.infer<typeof analyticsResponseSchema>;
 
 // Legacy interface kept for database operations (matches drizzle schema)
-// TODO: Consider migrating to Zod-inferred types for full consistency
+// Note: Maintained for compatibility with Drizzle ORM operations
 export interface Analytics {
   id: string;
   userId: string;
