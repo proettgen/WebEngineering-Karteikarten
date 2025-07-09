@@ -79,10 +79,12 @@ export const LoadingState = styled.div`
 
 export const InfoBox = styled.div`
   grid-column: 1 / -1;
-  background-color: ${({ theme }) => theme.surface};
-  border: 1px solid ${({ theme }) => theme.border};
+  background-color: ${({ theme }) => `${theme.primary}05`};
+  border: 1px solid ${({ theme }) => `${theme.primary}20`};
   border-radius: 8px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  text-align: center;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

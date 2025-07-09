@@ -188,6 +188,11 @@ const LearningModeTemplateComponent: React.FC<LearningModeTemplateProps> = React
               masteredCount={masteredCount}
               loading={loadingCards}
               testId="box-selection"
+              folderInfo={selectedFolder ? {
+                id: selectedFolder.id,
+                name: selectedFolder.name,
+                totalCards: selectedFolder.cardCount || 0
+              } : undefined}
             />
             
             <SC.ButtonGroup>

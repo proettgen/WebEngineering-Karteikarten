@@ -33,7 +33,13 @@ import {
   MasteredIconWrapper,
   MasteredText,
   MasteredCount,
-  MasteredLabel
+  MasteredLabel,
+  FolderInfoContainer,
+  FolderIconWrapper,
+  FolderDetails,
+  FolderName,
+  FolderStats,
+  FolderStat
 } from './styles';
 
 const getBoxDescription = (level: number): string => {
@@ -100,11 +106,38 @@ export const BoxSelection: React.FC<BoxSelectionProps> = React.memo(({
   onSelect,
   masteredCount = 0,
   loading = false,
-  testId
+  testId,
+  folderInfo
 }) => {
   if (boxes.length === 0) {
     return (
       <div>
+        {/* Folder Information Display */}
+        {folderInfo && (
+          <FolderInfoContainer>
+            <FolderIconWrapper>
+              <Icon size="s" color="primary">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
+                  <path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v400q0 33-23.5 56.5T800-160H160Z" />
+                </svg>
+              </Icon>
+            </FolderIconWrapper>
+            <FolderDetails>
+              <FolderName>{folderInfo.name}</FolderName>
+              <FolderStats>
+                <FolderStat>
+                  <Icon size="s" color="textSecondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
+                      <path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T760-80H240Z" />
+                    </svg>
+                  </Icon>
+                  {folderInfo.totalCards} {folderInfo.totalCards === 1 ? 'card' : 'cards'} total
+                </FolderStat>
+              </FolderStats>
+            </FolderDetails>
+          </FolderInfoContainer>
+        )}
+        
         <BoxGrid data-testid={testId}>
           <EmptyState>
             <Text size="medium" color="textSecondary">
@@ -132,7 +165,32 @@ export const BoxSelection: React.FC<BoxSelectionProps> = React.memo(({
   }
 
   return (
-    <div>
+    <div>        {/* Folder Information Display */}
+        {folderInfo && (
+          <FolderInfoContainer>
+            <FolderIconWrapper>
+              <Icon size="s" color="primary">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
+                  <path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v400q0 33-23.5 56.5T800-160H160Z" />
+                </svg>
+              </Icon>
+            </FolderIconWrapper>
+            <FolderDetails>
+              <FolderName>{folderInfo.name}</FolderName>
+              <FolderStats>
+                <FolderStat>
+                  <Icon size="s" color="textSecondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
+                      <path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T760-80H240Z" />
+                    </svg>
+                  </Icon>
+                  {folderInfo.totalCards} {folderInfo.totalCards === 1 ? 'card' : 'cards'} total
+                </FolderStat>
+              </FolderStats>
+            </FolderDetails>
+          </FolderInfoContainer>
+        )}
+      
       <BoxGrid data-testid={testId}>
         {boxes.map(({ level, count }) => {
           const isSelected = selectedLevel === level;

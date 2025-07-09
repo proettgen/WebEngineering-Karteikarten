@@ -237,12 +237,13 @@ export const useLearningMode = (): UseLearningModeReturn => {
     setResetTrigger(prev => prev + 1);
     clearError();
 
-    // PHASE 4: Track learning session reset
-    try {
-      await analyticsService.trackReset('learning_session');
-    } catch {
-      // Silently fail - analytics tracking shouldn't break learning flow
-    }
+    // PHASE 4: Track learning session reset (only for individual session resets, not folder resets)
+    // Note: Folder resets are tracked in LearningModeManager to avoid double counting
+    // Only track reset if this is not called from a folder reset (handleRestart)
+    // This prevents double counting when the user clicks "Restart" in LearningModeManager
+    
+    // We don't track reset here anymore to avoid double counting
+    // All resets are now tracked in LearningModeManager.handleRestart
     
     // Stay in the same folder and go back to box selection instead of start
     if (selectedFolder) {

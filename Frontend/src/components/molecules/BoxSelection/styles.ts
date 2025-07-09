@@ -7,6 +7,61 @@
 
 import styled from 'styled-components';
 
+// Container für Folder-Informationen - kompakter und weniger auffällig
+export const FolderInfoContainer = styled.div`
+  background: ${({ theme }) => `${theme.primary}05`};
+  border: 1px solid ${({ theme }) => `${theme.primary}15`};
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+`;
+
+export const FolderIconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: ${({ theme }) => `${theme.primary}15`};
+  border-radius: 4px;
+  color: ${({ theme }) => theme.primary};
+  flex-shrink: 0;
+`;
+
+export const FolderDetails = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+export const FolderName = styled.h3`
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: ${({ theme }) => theme.textPrimary};
+  margin: 0;
+`;
+
+export const FolderStats = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: ${({ theme }) => theme.textSecondary};
+`;
+
+export const FolderStat = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
 export const BoxGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
