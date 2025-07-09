@@ -3,7 +3,16 @@
  *
  * Custom React hook für automatisches Tracking von Learning-Aktionen und deren
  * Live-Synchronisation mit Analytics. Dieser Hook stellt die Verbindung zwischen
- * Learning Mode und Analytics her.
+    setSession(prev => ({
+      ...prev,
+      isActive: fals    setSession(prev => ({
+      ...prev,
+      timeSpent: prev.timeSpent + seconds,
+    }));
+
+    // console.log(`Time tracked: +${seconds} seconds`);  }));
+
+    // console.log('Analytics tracking session paused');rning Mode und Analytics her.
  *
  * Features:
  * - Session-basiertes Tracking von Lernaktivitäten
@@ -228,9 +237,9 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
     // Reset session
     setSession(defaultSession);
 
-    console.log('Analytics tracking session ended');
+    // console.log('Analytics tracking session ended');
     return finalResult;
-  }, [session.isActive]);
+  }, [session.isActive, submitSessionBatch]);
 
   /**
    * Pausiert die Session (stoppt Timer)
@@ -246,7 +255,7 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
       isActive: false
     }));
 
-    console.log('Analytics tracking session paused');
+    // console.log('Analytics tracking session paused');
   }, []);
 
   /**
@@ -267,7 +276,7 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
         }));
       }, 1000);
 
-      console.log('Analytics tracking session resumed');
+      // console.log('Analytics tracking session resumed');
     }
   }, [session.isActive, session.startTime]);
 
@@ -276,7 +285,7 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
    */
   const trackCardEvaluation = useCallback(async (correct: boolean): Promise<void> => {
     if (!session.isActive) {
-      console.warn('Cannot track card evaluation: no active session');
+      // console.warn('Cannot track card evaluation: no active session');
       return;
     }
 
@@ -287,7 +296,7 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
       wrongAnswers: prev.wrongAnswers + (correct ? 0 : 1),
     }));
 
-    console.log(`Card evaluation tracked: ${correct ? 'correct' : 'wrong'}`);
+    // console.log(`Card evaluation tracked: ${correct ? 'correct' : 'wrong'}`);
   }, [session.isActive]);
 
   /**
@@ -295,7 +304,7 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
    */
   const trackTimeSpent = useCallback(async (seconds: number): Promise<void> => {
     if (!session.isActive) {
-      console.warn('Cannot track time: no active session');
+      // console.warn('Cannot track time: no active session');
       return;
     }
 
@@ -304,7 +313,7 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
       timeSpent: prev.timeSpent + seconds
     }));
 
-    console.log(`Time tracked: +${seconds} seconds`);
+    // console.log(`Time tracked: +${seconds} seconds`);
   }, [session.isActive]);
 
   /**
@@ -318,12 +327,12 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
       const result = await analyticsService.trackReset(resetType);
       setLastUpdated(new Date());
       
-      console.log(`Reset tracked: ${resetType}`);
+      // console.log(`Reset tracked: ${resetType}`);
       return result.data;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to track reset';
       setError(errorMessage);
-      console.error('Error tracking reset:', err);
+      // console.error('Error tracking reset:', err);
       return null;
     } finally {
       setLoading(false);
@@ -335,15 +344,13 @@ export const useAnalyticsTracking = (): UseAnalyticsTrackingReturn => {
    */
 
   // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-      if (batchTimeoutRef.current) {
-        clearTimeout(batchTimeoutRef.current);
-      }
-    };
+  useEffect(() => () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    if (batchTimeoutRef.current) {
+      clearTimeout(batchTimeoutRef.current);
+    }
   }, []);
 
   return {
