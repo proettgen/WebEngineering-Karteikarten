@@ -39,7 +39,7 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
   message,
   type = 'error',
   onRetry,
-  retryText = 'Erneut versuchen',
+  retryText = 'Retry',
   testId
 }) => (
   <div 

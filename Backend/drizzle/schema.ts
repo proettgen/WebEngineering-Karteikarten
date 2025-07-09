@@ -1,3 +1,28 @@
+/**
+ * Database Schema Definitions
+ *
+ * Drizzle ORM schema definitions for all database tables.
+ * Defines table structures, relationships, and constraints for the flashcard application.
+ *
+ * Tables:
+ * - folders: Hierarchical folder structure for organizing flashcards
+ * - cards: Individual flashcard data with learning progress tracking
+ * - users: User account information and authentication
+ * - analytics: Learning statistics and progress tracking data
+ *
+ * Features:
+ * - UUID primary keys for security and scalability
+ * - Foreign key relationships with cascade delete
+ * - Automatic timestamp management
+ * - Unique constraints for data integrity
+ * - Learning level tracking for spaced repetition
+ *
+ * Cross-references:
+ * - src/types/: TypeScript interfaces derived from these schemas
+ * - src/services/: Business logic using these database structures
+ * - migrations: Version-controlled schema changes in drizzle/ folder
+ */
+
 import { pgTable, text, timestamp, foreignKey, integer, unique, uuid, varchar } from "drizzle-orm/pg-core"
 
 
@@ -51,15 +76,21 @@ export const users = pgTable("users", {
 	unique("users_email_unique").on(table.email),
 ]);
 
+/**
+ * Analytics Table
+ * 
+ * Stores learning statistics and progress tracking data for each user.
+ * Supports real-time updates from learning mode and comprehensive analytics reporting.
+ */
 export const analytics = pgTable("analytics", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
-	userId: uuid("user_id").notNull(),
-	totalLearningTime: integer("total_learning_time").default(0).notNull(),
-	totalCardsLearned: integer("total_cards_learned").default(0).notNull(),
-	totalCorrect: integer("total_correct").default(0).notNull(),
-	totalWrong: integer("total_wrong").default(0).notNull(),
-	resets: integer().default(0).notNull(),
-	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().notNull(),
+	userId: uuid("user_id").notNull(), // Foreign key to users table
+	totalLearningTime: integer("total_learning_time").default(0).notNull(), // Learning time in seconds
+	totalCardsLearned: integer("total_cards_learned").default(0).notNull(), // Number of cards learned
+	totalCorrect: integer("total_correct").default(0).notNull(), // Correct answers count
+	totalWrong: integer("total_wrong").default(0).notNull(), // Wrong answers count
+	resets: integer().default(0).notNull(), // Number of learning progress resets
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().notNull(), // Last update timestamp
 }, (table) => [
 	foreignKey({
 		columns: [table.userId],

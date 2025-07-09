@@ -5,6 +5,9 @@
  * Defines the schema for learning statistics and progress tracking data.
  * Used across backend services and shared with frontend via type synchronization.
  *
+ * Pattern: Types are inferred from Zod validation schemas (single source of truth)
+ * This ensures consistency between validation logic and TypeScript types.
+ *
  * Main Interface - Analytics:
  * - id: Unique record identifier (UUID)
  * - userId: User who owns the analytics data (foreign key)
@@ -21,6 +24,21 @@
  * - src/controllers/analyticsController.ts: HTTP controllers using these types
  * - src/validation/analyticsValidation.ts: Validation schemas for these types
  */
+
+import { z } from "zod";
+import {
+  createAnalyticsBody,
+  updateAnalyticsBody,
+  analyticsResponseSchema,
+} from "../validation/analyticsValidation";
+
+// Infer all types from Zod schemas - single source of truth
+export type CreateAnalyticsInput = z.infer<typeof createAnalyticsBody>;
+export type UpdateAnalyticsInput = z.infer<typeof updateAnalyticsBody>;
+export type AnalyticsResponse = z.infer<typeof analyticsResponseSchema>;
+
+// Legacy interface kept for database operations (matches drizzle schema)
+// TODO: Consider migrating to Zod-inferred types for full consistency
 export interface Analytics {
   id: string;
   userId: string;

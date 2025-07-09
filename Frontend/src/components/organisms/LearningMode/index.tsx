@@ -29,7 +29,7 @@ import { CardType, LearningModeProps } from "./types";
  * - onEvaluate: Callback when a card is evaluated as correct/wrong
  * - onNextCard: Callback when switching to next card
  * - onBack: Callback to exit learning mode
- * - currentLearningLevel: Current learning level/box stage (0-3)
+ * - currentLearningLevel: Current learning level/box stage (0-4)
  *
  * This component is purely for UI and interaction with a card, but not for loading
  * or evaluating cards in the backend. The logic for loading and evaluating cards

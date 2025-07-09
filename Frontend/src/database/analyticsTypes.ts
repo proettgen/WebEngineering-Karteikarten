@@ -1,23 +1,25 @@
 /**
- * Analytics TypeScript-Typdefinition (Frontend)
+ * Analytics Type Definitions (Frontend)
  *
- * Beschreibt die Struktur eines Analytics-Datensatzes (Lernstatistiken) im Frontend.
- * Wird für die Typisierung der Analytics-Daten verwendet, die von der API geladen werden.
- * Entspricht dem Backend-Schema.
+ * TypeScript type definitions for analytics data structures in the frontend application.
+ * Provides type safety for analytics data used across components and API interactions.
+ * Synchronized with backend analytics types for consistency.
  *
- * Felder:
- * - id: Eindeutige ID des Datensatzes (UUID)
- * - userId: ID des Benutzers, dem die Analytics gehören (Foreign Key)
- * - totalLearningTime: Gesamte Lernzeit in Sekunden
- * - totalCardsLearned: Anzahl gelernter Karten
- * - totalCorrect: Anzahl richtiger Antworten
- * - totalWrong: Anzahl falscher Antworten
- * - resets: Anzahl der Resets (Zurücksetzen des Lernfortschritts)
- * - updatedAt: Letztes Änderungsdatum (ISO-String)
+ * Main Interface - Analytics:
+ * - id: Unique record identifier (UUID)
+ * - userId: User who owns the analytics data (foreign key)
+ * - totalLearningTime: Total learning time in seconds
+ * - totalCardsLearned: Number of cards successfully learned
+ * - totalCorrect: Number of correct answers given
+ * - totalWrong: Number of incorrect answers given
+ * - resets: Number of times learning progress was reset
+ * - updatedAt: Last modification timestamp (ISO string)
  *
- * Querverweise:
- * - src/services/analyticsService.ts: API-Aufrufe für Analytics
- * - Backend/src/types/analyticsTypes.ts: Backend Typdefinition
+ * Cross-references:
+ * - src/services/analyticsService.ts: API calls using these types
+ * - Backend/src/types/analyticsTypes.ts: Backend type definitions
+ * - src/components/organisms/AnalyticsDisplay/: Components using these types
+ * - src/hooks/useAnalytics.ts: Analytics data management hooks
  */
 export interface Analytics {
   id: string;

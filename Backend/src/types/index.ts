@@ -13,6 +13,7 @@
 export * from './cardTypes';
 export * from './folderTypes';
 export * from './authTypes';
+export * from './analyticsTypes';
 
 // Only keep types that are actually used across multiple modules
 export interface BaseEntity {

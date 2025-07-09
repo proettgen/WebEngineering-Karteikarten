@@ -1,3 +1,22 @@
+/**
+ * AnalyticsMetric Styled Components
+ *
+ * Styled components for the AnalyticsMetric atom component.
+ * Provides consistent styling for individual analytics metric displays.
+ *
+ * Components:
+ * - MetricContainer: Main wrapper with hover effects and spacing
+ * - MetricIconWrapper: Icon container with proper spacing
+ * - MetricLabel: Label text with secondary color
+ * - MetricValue: Value display with color variations based on type
+ *
+ * Features:
+ * - Theme-aware styling using styled-components theme
+ * - Color variants: primary, success, warning, danger
+ * - Hover effects for enhanced interactivity
+ * - Responsive design principles
+ */
+
 import styled from 'styled-components';
 
 export const MetricContainer = styled.div`

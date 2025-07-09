@@ -1,16 +1,20 @@
 /**
- * Einstiegspunkt für die Lernmodus-Seite (/learn).
+ * Learning Mode Page Entry Point (/learn)
  *
- * Diese Datei ist die Page-Komponente für Next.js und wird beim Aufruf von /learn geladen.
- * Sie bindet das LearningModeTemplate direkt ein, entsprechend der Architektur-Hierarchie:
+ * Next.js page component that loads when accessing the /learn route.
+ * Integrates the LearningModeTemplate following the architectural hierarchy:
  * pages -> templates -> organisms -> molecules -> atoms
  * 
  * Features:
  * - Authentication protection (redirects to login if not authenticated)
  * - Direct template integration following proper architecture
  * - Consistent with other protected pages (/analytics, /cards)
+ * - Template manages all learning mode logic via useLearningMode hook
  *
- * Das Template verwaltet die gesamte Lernmodus-Logik über die useLearningMode Hook.
+ * Architecture:
+ * - Page-level component for Next.js routing
+ * - Wraps LearningModeTemplate for complete learning functionality
+ * - Integrates with AuthContext for user authentication
  */
 "use client";
 import React, { useEffect } from "react";

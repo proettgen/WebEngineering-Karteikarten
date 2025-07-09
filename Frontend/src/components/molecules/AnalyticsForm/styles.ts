@@ -1,3 +1,25 @@
+/**
+ * AnalyticsForm Styled Components
+ *
+ * Styled components for the AnalyticsForm molecule component.
+ * Provides consistent form styling for analytics data input and editing.
+ *
+ * Components:
+ * - FormContainer: Main form wrapper with surface styling
+ * - FormTitle: Section title with proper typography
+ * - FormGrid: Responsive grid layout for form fields
+ * - FormField: Individual field container with column layout
+ * - Label: Form field labels with consistent styling
+ * - Input: Form input elements with focus states
+ * - ButtonRow: Action button container with proper spacing
+ *
+ * Features:
+ * - Theme-aware styling for consistency
+ * - Responsive grid layout adapts to screen size
+ * - Focus states for accessibility
+ * - Proper spacing and visual hierarchy
+ */
+
 import styled from 'styled-components';
 
 export const FormContainer = styled.div`

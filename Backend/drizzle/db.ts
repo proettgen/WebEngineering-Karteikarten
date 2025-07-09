@@ -1,16 +1,23 @@
 /**
- * Datenbankverbindung (drizzle/db.ts)
+ * Database Connection Configuration
  *
- * Stellt die Verbindung zur PostgreSQL-Datenbank über drizzle-orm und pg her.
+ * Establishes PostgreSQL database connection using drizzle-orm and pg.
+ * Provides the main database instance used throughout the backend application.
  *
- * Hinweise für Einsteiger:
- * - Dieses Modul wird von allen Service-Dateien verwendet, um auf die Datenbank zuzugreifen.
- * - Die Konfiguration erfolgt über die Umgebungsvariable DATABASE_URL.
- * - Das Schema wird aus drizzle/schema.ts importiert (dort sind alle Tabellen definiert).
+ * Configuration:
+ * - Uses DATABASE_URL environment variable for connection
+ * - Imports complete schema for type safety
+ * - Configured for PostgreSQL with connection pooling
  *
- * Querverweise:
- * - drizzle/schema.ts: Datenbankschema (Tabellen)
- * - src/services/analyticsService.ts: Beispiel für die Nutzung der db-Instanz
+ * Usage:
+ * - Import 'db' instance in service files for database operations
+ * - All database queries should go through this configured instance
+ * - Schema provides TypeScript types for all tables and relationships
+ *
+ * Cross-references:
+ * - drizzle/schema.ts: Database schema definitions
+ * - src/services/: Service files using this database instance
+ * - Environment: Requires DATABASE_URL configuration
  */
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';

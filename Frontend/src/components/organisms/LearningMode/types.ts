@@ -20,7 +20,7 @@ export type CardType = {
   question: string; // Question/text on the front side
   answer: string; // Answer/text on the back side
   tags?: string[] | null; // Optional tags for categorization
-  currentLearningLevel?: number; // Current learning level/box stage (0-3)
+  currentLearningLevel?: number; // Current learning level/box stage (0-4)
 };
 
 // Props for the LearningMode component
@@ -30,5 +30,5 @@ export type LearningModeProps = {
   onEvaluate?: (_cardId: string, _correct: boolean) => void; // Callback for evaluation (correct/wrong)
   onNextCard?: () => void; // Callback for switching to next card
   onBack?: () => void; // Callback for back button
-  currentLearningLevel?: number; // Current learning level/box stage (0-3)
+  currentLearningLevel?: number; // Current learning level/box stage (0-4)
 };
