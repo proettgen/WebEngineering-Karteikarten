@@ -1,14 +1,15 @@
 /**
  * Analytics Controller
  *
- * This file contains HTTP controllers for all analytics endpoints.
- * It handles HTTP requests, calls service methods, and sends HTTP responses.
+ * HTTP controllers for analytics endpoints, handling learning statistics and progress tracking.
+ * Processes HTTP requests, validates input, calls service methods, and sends formatted responses.
  *
- * Notes:
- * - Controllers are responsible for HTTP-specific logic (e.g., status codes, error handling).
- * - The actual database logic is in the service (see src/services/analyticsService.ts).
- * - Controllers are used in routes (src/routes/analyticsRoutes.ts).
- * - Now follows the same patterns as authController and cardController.
+ * Architecture:
+ * - Controllers handle HTTP-specific logic (status codes, request/response formatting)
+ * - Business logic is delegated to analyticsService.ts
+ * - Used by analyticsRoutes.ts for REST API endpoints
+ * - Works with analyticsTypes.ts for type definitions
+ * - Integrates with learning components for real-time progress tracking
  *
  * Cross-references:
  * - src/services/analyticsService.ts: Business logic for analytics
@@ -132,8 +133,8 @@ export const deleteAnalytics = async (
 };
 
 /**
- * PHASE 4: Live Learning Analytics Tracking Controllers
- * Neue Controller für die Echtzeit-Integration zwischen Learning Mode und Analytics
+ * Live Learning Analytics Tracking Controllers
+ * New controllers for real-time integration between Learning Mode and Analytics
  */
 
 /**

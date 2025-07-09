@@ -3,13 +3,27 @@ import { z } from "zod";
 /**
  * Analytics Validation Schemas
  *
- * Zod validation schemas for Analytics operations following the established
- * validation patterns used throughout the application.
+ * Comprehensive Zod validation schemas for analytics operations and data structures.
+ * Provides type-safe request validation, data sanitization, and error handling.
+ * Follows established validation patterns used throughout the application.
  *
- * Follows the same structure as other validation files:
- * - authValidation.ts: Authentication validation
- * - cardValidation.ts: Card validation
- * - folderValidation.ts: Folder validation
+ * Schema Categories:
+ * - Field schemas: Individual validation rules for analytics data fields
+ * - Request schemas: Complete validation for API request bodies
+ * - Response schemas: Type definitions for API responses
+ * - Export types: TypeScript types derived from validation schemas
+ *
+ * Validation Features:
+ * - Range validation for numeric fields
+ * - Required field enforcement
+ * - Optional field handling for updates
+ * - Comprehensive error messages for better user experience
+ *
+ * Cross-references:
+ * - src/controllers/analyticsController.ts: Uses these schemas for request validation
+ * - src/types/analyticsTypes.ts: Related type definitions
+ * - src/validation/common.ts: Shared validation utilities
+ * - Other validation files: authValidation.ts, cardValidation.ts, folderValidation.ts
  */
 
 // Base analytics field schemas

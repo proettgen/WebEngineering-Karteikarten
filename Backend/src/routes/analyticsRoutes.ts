@@ -1,14 +1,20 @@
 /**
  * Analytics Routes
  *
- * Defines REST API endpoints for the analytics module (learning statistics).
- * Now follows the same patterns as other route files with proper authentication and validation.
+ * REST API endpoints for analytics and learning statistics management.
+ * Provides comprehensive routing for CRUD operations and real-time learning tracking.
+ * Includes proper authentication, validation, and Swagger documentation.
  *
- * Notes:
- * - This file connects HTTP routes with controller methods.
- * - The actual logic is in the controller (src/controllers/analyticsController.ts).
- * - Routes are integrated into the main Express server (api/index.ts).
- * - All routes now require authentication and use proper validation middleware.
+ * Route Groups:
+ * - Basic CRUD: GET, POST, PUT, DELETE for analytics records
+ * - Real-time tracking: endpoints for live learning progress updates
+ * - Integration: seamless connection with learning mode components
+ *
+ * Features:
+ * - JWT authentication on all endpoints
+ * - Request validation using Zod schemas
+ * - Comprehensive Swagger/OpenAPI documentation
+ * - Error handling and standardized responses
  *
  * Cross-references:
  * - src/controllers/analyticsController.ts: Controller logic
@@ -245,8 +251,8 @@ router.put('/', authenticateJWT, validateBody(updateAnalyticsBody), analyticsCon
 router.delete('/', authenticateJWT, analyticsController.deleteAnalytics);
 
 /**
- * PHASE 4: Live Learning Analytics Tracking Routes
- * Neue Endpunkte für die Echtzeit-Integration zwischen Learning Mode und Analytics
+ * Live Learning Analytics Tracking Routes
+ * New endpoints for real-time integration between Learning Mode and Analytics
  */
 
 /**

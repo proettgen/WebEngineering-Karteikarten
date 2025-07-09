@@ -1,15 +1,16 @@
 /**
- * Analytics Service (Enhanced)
+ * Analytics Service
  *
- * Enhanced business logic for managing analytics data (learning statistics).
- * Now follows the same robust patterns as cardService and folderService.
+ * Business logic for managing analytics data and learning statistics.
+ * Handles database operations, validation, and real-time progress tracking integration.
+ * Follows established service patterns for consistency across the application.
  *
- * Improvements:
- * - Better error handling with specific error types
- * - Consistent validation patterns
- * - Improved database interaction patterns
- * - Better logging and monitoring
- * - Follows Card/Folder service patterns exactly
+ * Features:
+ * - CRUD operations for user analytics
+ * - Real-time learning progress tracking
+ * - Integration with learning mode components
+ * - Reset functionality for learning sessions
+ * - Comprehensive error handling and validation
  *
  * Cross-references:
  * - src/controllers/analyticsController.ts: HTTP controllers for analytics endpoints
@@ -277,8 +278,8 @@ export const deleteAnalytics = async (id: string): Promise<boolean> => {
 };
 
 /**
- * PHASE 4: Live Learning Analytics Tracking
- * Neue Funktionen für die Echtzeit-Integration zwischen Learning Mode und Analytics
+ * Live Learning Analytics Tracking
+ * New functions for real-time integration between Learning Mode and Analytics
  */
 
 /**

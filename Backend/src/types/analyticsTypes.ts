@@ -1,23 +1,25 @@
 /**
- * Analytics TypeScript-Typdefinition
+ * Analytics Type Definitions
  *
- * Beschreibt die Struktur eines Analytics-Datensatzes (Lernstatistiken).
- * Wird sowohl im Backend als auch im Frontend verwendet (siehe sync-types.js).
+ * TypeScript interfaces and types for analytics data structures.
+ * Defines the schema for learning statistics and progress tracking data.
+ * Used across backend services and shared with frontend via type synchronization.
  *
- * Felder:
- * - id: Eindeutige ID des Datensatzes (UUID)
- * - userId: ID des Benutzers, dem die Analytics gehören (Foreign Key)
- * - totalLearningTime: Gesamte Lernzeit in Sekunden
- * - totalCardsLearned: Anzahl gelernter Karten
- * - totalCorrect: Anzahl richtiger Antworten
- * - totalWrong: Anzahl falscher Antworten
- * - resets: Anzahl der Resets (Zurücksetzen des Lernfortschritts)
- * - updatedAt: Letztes Änderungsdatum (ISO-String)
+ * Main Interface - Analytics:
+ * - id: Unique record identifier (UUID)
+ * - userId: User who owns the analytics data (foreign key)
+ * - totalLearningTime: Total learning time in seconds
+ * - totalCardsLearned: Number of cards successfully learned
+ * - totalCorrect: Number of correct answers given
+ * - totalWrong: Number of incorrect answers given
+ * - resets: Number of times learning progress was reset
+ * - updatedAt: Last modification timestamp (ISO string)
  *
- * Querverweise:
- * - drizzle/schema.ts: Datenbankschema
- * - src/services/analyticsService.ts: Service-Logik
- * - src/controllers/analyticsController.ts: Controller-Logik
+ * Cross-references:
+ * - drizzle/schema.ts: Database schema definition
+ * - src/services/analyticsService.ts: Business logic using these types
+ * - src/controllers/analyticsController.ts: HTTP controllers using these types
+ * - src/validation/analyticsValidation.ts: Validation schemas for these types
  */
 export interface Analytics {
   id: string;
