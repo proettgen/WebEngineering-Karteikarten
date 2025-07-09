@@ -244,4 +244,202 @@ router.put('/', authenticateJWT, validateBody(updateAnalyticsBody), analyticsCon
  */
 router.delete('/', authenticateJWT, analyticsController.deleteAnalytics);
 
+/**
+ * PHASE 4: Live Learning Analytics Tracking Routes
+ * Neue Endpunkte für die Echtzeit-Integration zwischen Learning Mode und Analytics
+ */
+
+/**
+ * @swagger
+ * /api/analytics/track-study-session:
+ *   post:
+ *     summary: Track study session
+ *     description: Tracks a study session and updates analytics incrementally
+ *     tags: [Analytics]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [timeSpent, cardsStudied, correctAnswers, wrongAnswers]
+ *             properties:
+ *               timeSpent:
+ *                 type: integer
+ *                 minimum: 0
+ *                 description: Time spent studying in seconds
+ *                 example: 300
+ *               cardsStudied:
+ *                 type: integer
+ *                 minimum: 0
+ *                 description: Number of cards studied in this session
+ *                 example: 10
+ *               correctAnswers:
+ *                 type: integer
+ *                 minimum: 0
+ *                 description: Number of correct answers in this session
+ *                 example: 8
+ *               wrongAnswers:
+ *                 type: integer
+ *                 minimum: 0
+ *                 description: Number of wrong answers in this session
+ *                 example: 2
+ *     responses:
+ *       200:
+ *         description: Study session tracked successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   $ref: '#/components/schemas/Analytics'
+ *                 message:
+ *                   type: string
+ *                   example: Study session tracked successfully
+ *       400:
+ *         description: Invalid request data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Authentication required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post('/track-study-session', authenticateJWT, analyticsController.trackStudySession);
+
+/**
+ * @swagger
+ * /api/analytics/track-reset:
+ *   post:
+ *     summary: Track reset action
+ *     description: Tracks a reset action and updates analytics
+ *     tags: [Analytics]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [resetType]
+ *             properties:
+ *               resetType:
+ *                 type: string
+ *                 enum: [folder, learning_session]
+ *                 description: Type of reset being performed
+ *                 example: folder
+ *     responses:
+ *       200:
+ *         description: Reset tracked successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   $ref: '#/components/schemas/Analytics'
+ *                 message:
+ *                   type: string
+ *                   example: Reset (folder) tracked successfully
+ *       400:
+ *         description: Invalid request data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Authentication required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post('/track-reset', authenticateJWT, analyticsController.trackReset);
+
+/**
+ * @swagger
+ * /api/analytics/increment:
+ *   post:
+ *     summary: Increment analytics
+ *     description: Incremental update for real-time analytics
+ *     tags: [Analytics]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               totalLearningTime:
+ *                 type: integer
+ *                 minimum: 0
+ *                 description: Time to add to total learning time in seconds
+ *                 example: 60
+ *               totalCardsLearned:
+ *                 type: integer
+ *                 minimum: 0
+ *                 description: Number of cards to add to total cards learned
+ *                 example: 1
+ *               totalCorrect:
+ *                 type: integer
+ *                 minimum: 0
+ *                 description: Number to add to total correct answers
+ *                 example: 1
+ *               totalWrong:
+ *                 type: integer
+ *                 minimum: 0
+ *                 description: Number to add to total wrong answers
+ *                 example: 0
+ *               resets:
+ *                 type: integer
+ *                 minimum: 0
+ *                 description: Number to add to reset counter
+ *                 example: 1
+ *     responses:
+ *       200:
+ *         description: Analytics incremented successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   $ref: '#/components/schemas/Analytics'
+ *                 message:
+ *                   type: string
+ *                   example: Analytics incremented successfully
+ *       400:
+ *         description: Invalid request data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Authentication required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post('/increment', authenticateJWT, analyticsController.incrementAnalytics);
+
 export default router;

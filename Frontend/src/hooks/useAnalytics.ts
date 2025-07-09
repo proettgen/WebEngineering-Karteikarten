@@ -16,7 +16,7 @@
  * - app/analytics/page.tsx: Main consumer
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   getAnalytics, 
   updateAnalytics 
@@ -42,6 +42,11 @@ interface UseAnalyticsReturn {
   cancelEdit: () => void;
   setFormField: (_field: keyof CreateAnalyticsInput, _value: number) => void;
   
+  // PHASE 4: Live Analytics Updates
+  refreshAnalytics: () => Promise<void>;
+  startAutoRefresh: () => void;
+  stopAutoRefresh: () => void;
+  
   // Computed values
   successRate: number;
   totalQuestions: number;
@@ -62,6 +67,10 @@ export const useAnalytics = (): UseAnalyticsReturn => {
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState<CreateAnalyticsInput>(defaultForm);
+
+  // PHASE 4: Auto-refresh functionality
+  const refreshIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const AUTO_REFRESH_INTERVAL = 10000; // Refresh every 10 seconds
 
   const loadAnalytics = useCallback(async () => {
     try {
@@ -163,6 +172,13 @@ export const useAnalytics = (): UseAnalyticsReturn => {
     loadAnalytics();
   }, [loadAnalytics]);
 
+  // PHASE 4: Cleanup auto-refresh on unmount
+  useEffect(() => (): void => {
+    if (refreshIntervalRef.current) {
+      clearInterval(refreshIntervalRef.current);
+    }
+  }, []);
+
   return {
     // State
     analytics,
@@ -177,6 +193,25 @@ export const useAnalytics = (): UseAnalyticsReturn => {
     startEdit,
     cancelEdit,
     setFormField,
+    
+    // PHASE 4: Live Analytics Updates
+    refreshAnalytics: loadAnalytics,
+    startAutoRefresh: useCallback(() => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+      
+      refreshIntervalRef.current = setInterval(() => {
+        loadAnalytics();
+      }, AUTO_REFRESH_INTERVAL);
+    }, [loadAnalytics]),
+    
+    stopAutoRefresh: useCallback(() => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+        refreshIntervalRef.current = null;
+      }
+    }, []),
     
     // Computed values
     successRate,

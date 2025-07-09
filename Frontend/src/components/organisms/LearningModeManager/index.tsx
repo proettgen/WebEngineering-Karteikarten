@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import LearningMode from "@/components/organisms/LearningMode";
 import { cardAndFolderService } from "@/services/cardAndFolderService";
+import { analyticsService } from "@/services/analyticsService";
 import { LearningModeManagerProps } from "./types";
 import Button from "@/components/atoms/Button";
 import Headline from "@/components/atoms/Headline";
@@ -99,6 +100,19 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
       await cardAndFolderService.updateCardInFolder(folder.id, cardId, {
         currentLearningLevel: newLevel,
       });
+
+      // PHASE 4: Live Analytics Tracking - Track card evaluation
+      try {
+        await analyticsService.incrementAnalytics({
+          totalCardsLearned: 1,
+          totalCorrect: correct ? 1 : 0,
+          totalWrong: correct ? 0 : 1,
+        });
+      } catch (analyticsError) {
+        // Analytics tracking is optional - don't break the learning flow
+        // eslint-disable-next-line no-console
+        console.warn('Failed to track analytics for card evaluation:', analyticsError);
+      }
       
       // Rufe das Callback auf, um Box-Counts zu aktualisieren
       if (onRefreshCounts) {
@@ -201,6 +215,16 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
   const handleRestart = useCallback(async () => {
     await resetAllCardsToBox0();
     setResetKey((prev) => prev + 1);
+
+    // PHASE 4: Live Analytics Tracking - Track folder reset
+    try {
+      await analyticsService.trackReset('folder');
+    } catch (analyticsError) {
+      // Analytics tracking is optional - don't break the learning flow
+      // eslint-disable-next-line no-console
+      console.warn('Failed to track analytics for folder reset:', analyticsError);
+    }
+
     // Aktualisiere Box-Counts nach dem Reset
     if (onRefreshCounts) {
       await onRefreshCounts();

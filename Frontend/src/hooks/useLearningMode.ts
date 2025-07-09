@@ -19,6 +19,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { cardAndFolderService } from '@/services/cardAndFolderService';
+import { analyticsService } from '@/services/analyticsService';
 import { Card } from '@/database/cardTypes';
 import { useEnhancedError } from './useEnhancedError';
 import type { 
@@ -51,6 +52,11 @@ export const useLearningMode = (): UseLearningModeReturn => {
   
   // Timer ref
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  
+  // PHASE 4: Analytics tracking refs
+  const sessionStartTimeRef = useRef<number | null>(null);
+  const lastAnalyticsUpdateRef = useRef<number>(0);
+  const ANALYTICS_UPDATE_INTERVAL = 30000; // Update analytics every 30 seconds
   
   // Track last operation for retry
   const lastOperationRef = useRef<(() => Promise<void>) | null>(null);
@@ -149,8 +155,31 @@ export const useLearningMode = (): UseLearningModeReturn => {
       clearInterval(timerRef.current);
     }
     
+    // PHASE 4: Set session start time for analytics tracking
+    sessionStartTimeRef.current = Date.now();
+    lastAnalyticsUpdateRef.current = Date.now();
+    
     timerRef.current = setInterval(() => {
-      setElapsedSeconds(prev => prev + 1);
+      setElapsedSeconds(prev => {
+        const newSeconds = prev + 1;
+        
+        // PHASE 4: Periodically update analytics with learning time
+        const now = Date.now();
+        if (now - lastAnalyticsUpdateRef.current >= ANALYTICS_UPDATE_INTERVAL) {
+          const timeSpentSinceLastUpdate = Math.floor((now - lastAnalyticsUpdateRef.current) / 1000);
+          
+          // Update analytics in background (don't block UI)
+          analyticsService.incrementAnalytics({
+            totalLearningTime: timeSpentSinceLastUpdate,
+          }).catch(() => {
+            // Silently fail - analytics tracking shouldn't break learning flow
+          });
+          
+          lastAnalyticsUpdateRef.current = now;
+        }
+        
+        return newSeconds;
+      });
     }, 1000);
   }, []);
   
@@ -159,6 +188,22 @@ export const useLearningMode = (): UseLearningModeReturn => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
+    }
+    
+    // PHASE 4: Final analytics update when stopping timer
+    if (sessionStartTimeRef.current) {
+      const timeNotYetTracked = Math.floor((Date.now() - lastAnalyticsUpdateRef.current) / 1000);
+      
+      // Submit final time tracking (don't block UI)
+      if (timeNotYetTracked > 0) {
+        analyticsService.incrementAnalytics({
+          totalLearningTime: timeNotYetTracked,
+        }).catch(() => {
+          // Silently fail - analytics tracking shouldn't break learning flow
+        });
+      }
+      
+      sessionStartTimeRef.current = null;
     }
   }, []);
   
@@ -191,6 +236,13 @@ export const useLearningMode = (): UseLearningModeReturn => {
     setElapsedSeconds(0);
     setResetTrigger(prev => prev + 1);
     clearError();
+
+    // PHASE 4: Track learning session reset
+    try {
+      await analyticsService.trackReset('learning_session');
+    } catch {
+      // Silently fail - analytics tracking shouldn't break learning flow
+    }
     
     // Stay in the same folder and go back to box selection instead of start
     if (selectedFolder) {

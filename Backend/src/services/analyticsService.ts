@@ -275,3 +275,257 @@ export const deleteAnalytics = async (id: string): Promise<boolean> => {
   const deleted = await db.delete(analytics).where(eq(analytics.id, id)).returning();
   return !!deleted.length;
 };
+
+/**
+ * PHASE 4: Live Learning Analytics Tracking
+ * Neue Funktionen für die Echtzeit-Integration zwischen Learning Mode und Analytics
+ */
+
+/**
+ * Tracks a study session and updates analytics incrementally.
+ * This function is called from the learning mode to update analytics in real-time.
+ * 
+ * @param userId - The ID of the user
+ * @param sessionData - Data from the current study session
+ * @returns Updated analytics data
+ * @throws {AppError} With specific error codes and messages
+ */
+export const trackStudySession = async (
+  userId: string, 
+  sessionData: {
+    timeSpent: number;
+    cardsStudied: number;
+    correctAnswers: number;
+    wrongAnswers: number;
+  }
+): Promise<Analytics> => {
+  try {
+    // Validate userId format
+    if (!userId || typeof userId !== 'string') {
+      throw new AppError('Invalid user ID format', 400);
+    }
+
+    // Validate session data
+    if (!sessionData || typeof sessionData !== 'object') {
+      throw new AppError('Invalid session data format', 400);
+    }
+
+    const { timeSpent, cardsStudied, correctAnswers, wrongAnswers } = sessionData;
+
+    // Validate that all values are non-negative
+    if (timeSpent < 0 || cardsStudied < 0 || correctAnswers < 0 || wrongAnswers < 0) {
+      throw new AppError('Session data values cannot be negative', 400);
+    }
+
+    // Validate that correct + wrong answers equals cards studied
+    if (correctAnswers + wrongAnswers !== cardsStudied) {
+      throw new AppError('Correct and wrong answers must sum to cards studied', 400);
+    }
+
+    // Get existing analytics or create if not exists
+    let userAnalytics: Analytics;
+    try {
+      userAnalytics = await getUserAnalytics(userId);
+    } catch (error) {
+      if (error instanceof AppError && error.statusCode === 404) {
+        // Create new analytics if none exist
+        userAnalytics = await createUserAnalytics(userId, {
+          totalLearningTime: 0,
+          totalCardsLearned: 0,
+          totalCorrect: 0,
+          totalWrong: 0,
+          resets: 0
+        });
+      } else {
+        throw error;
+      }
+    }
+
+    // Calculate new values
+    const updatedData = {
+      totalLearningTime: userAnalytics.totalLearningTime + timeSpent,
+      totalCardsLearned: userAnalytics.totalCardsLearned + cardsStudied,
+      totalCorrect: userAnalytics.totalCorrect + correctAnswers,
+      totalWrong: userAnalytics.totalWrong + wrongAnswers,
+    };
+
+    // Update analytics
+    const updated = await updateUserAnalytics(userId, updatedData);
+    
+    if (!updated) {
+      throw new AppError('Failed to update analytics after study session', 500);
+    }
+    
+    console.log(`Successfully tracked study session for user: ${userId}`, {
+      timeSpent,
+      cardsStudied,
+      correctAnswers,
+      wrongAnswers
+    });
+
+    return updated;
+  } catch (error) {
+    // Re-throw AppErrors as-is, wrap others
+    if (error instanceof AppError) {
+      throw error;
+    }
+    
+    console.error('Error in trackStudySession:', error);
+    throw new AppError('Failed to track study session due to database error', 500);
+  }
+};
+
+/**
+ * Tracks a reset action and updates analytics.
+ * This function is called when a user resets their learning progress.
+ * 
+ * @param userId - The ID of the user
+ * @param resetType - The type of reset being performed
+ * @returns Updated analytics data
+ * @throws {AppError} With specific error codes and messages
+ */
+export const trackReset = async (
+  userId: string,
+  resetType: 'folder' | 'learning_session'
+): Promise<Analytics> => {
+  try {
+    // Validate userId format
+    if (!userId || typeof userId !== 'string') {
+      throw new AppError('Invalid user ID format', 400);
+    }
+
+    // Validate reset type
+    if (!resetType || !['folder', 'learning_session'].includes(resetType)) {
+      throw new AppError('Invalid reset type. Must be "folder" or "learning_session"', 400);
+    }
+
+    // Get existing analytics or create if not exists
+    let userAnalytics: Analytics;
+    try {
+      userAnalytics = await getUserAnalytics(userId);
+    } catch (error) {
+      if (error instanceof AppError && error.statusCode === 404) {
+        // Create new analytics if none exist
+        userAnalytics = await createUserAnalytics(userId, {
+          totalLearningTime: 0,
+          totalCardsLearned: 0,
+          totalCorrect: 0,
+          totalWrong: 0,
+          resets: 0
+        });
+      } else {
+        throw error;
+      }
+    }
+
+    // Increment reset counter
+    const updatedData = {
+      resets: userAnalytics.resets + 1,
+    };
+
+    // Update analytics
+    const updated = await updateUserAnalytics(userId, updatedData);
+    
+    if (!updated) {
+      throw new AppError('Failed to update analytics after reset', 500);
+    }
+    
+    console.log(`Successfully tracked reset (${resetType}) for user: ${userId}`);
+
+    return updated;
+  } catch (error) {
+    // Re-throw AppErrors as-is, wrap others
+    if (error instanceof AppError) {
+      throw error;
+    }
+    
+    console.error('Error in trackReset:', error);
+    throw new AppError('Failed to track reset due to database error', 500);
+  }
+};
+
+/**
+ * Incremental update for real-time analytics.
+ * This function allows updating specific analytics fields without fetching first.
+ * 
+ * @param userId - The ID of the user
+ * @param increments - Object with fields to increment
+ * @returns Updated analytics data
+ * @throws {AppError} With specific error codes and messages
+ */
+export const incrementAnalytics = async (
+  userId: string,
+  increments: {
+    totalLearningTime?: number;
+    totalCardsLearned?: number;
+    totalCorrect?: number;
+    totalWrong?: number;
+    resets?: number;
+  }
+): Promise<Analytics> => {
+  try {
+    // Validate userId format
+    if (!userId || typeof userId !== 'string') {
+      throw new AppError('Invalid user ID format', 400);
+    }
+
+    // Validate increments
+    if (!increments || typeof increments !== 'object') {
+      throw new AppError('Invalid increments data format', 400);
+    }
+
+    // Validate that all increment values are non-negative
+    Object.entries(increments).forEach(([key, value]) => {
+      if (typeof value === 'number' && value < 0) {
+        throw new AppError(`${key} increment cannot be negative`, 400);
+      }
+    });
+
+    // Get current analytics
+    let userAnalytics: Analytics;
+    try {
+      userAnalytics = await getUserAnalytics(userId);
+    } catch (error) {
+      if (error instanceof AppError && error.statusCode === 404) {
+        // Create new analytics if none exist
+        userAnalytics = await createUserAnalytics(userId, {
+          totalLearningTime: 0,
+          totalCardsLearned: 0,
+          totalCorrect: 0,
+          totalWrong: 0,
+          resets: 0
+        });
+      } else {
+        throw error;
+      }
+    }
+
+    // Apply increments
+    const updatedData = {
+      totalLearningTime: userAnalytics.totalLearningTime + (increments.totalLearningTime || 0),
+      totalCardsLearned: userAnalytics.totalCardsLearned + (increments.totalCardsLearned || 0),
+      totalCorrect: userAnalytics.totalCorrect + (increments.totalCorrect || 0),
+      totalWrong: userAnalytics.totalWrong + (increments.totalWrong || 0),
+      resets: userAnalytics.resets + (increments.resets || 0),
+    };
+
+    // Update analytics
+    const updated = await updateUserAnalytics(userId, updatedData);
+    
+    if (!updated) {
+      throw new AppError('Failed to increment analytics', 500);
+    }
+    
+    console.log(`Successfully incremented analytics for user: ${userId}`, increments);
+
+    return updated;
+  } catch (error) {
+    // Re-throw AppErrors as-is, wrap others
+    if (error instanceof AppError) {
+      throw error;
+    }
+    
+    console.error('Error in incrementAnalytics:', error);
+    throw new AppError('Failed to increment analytics due to database error', 500);
+  }
+};
