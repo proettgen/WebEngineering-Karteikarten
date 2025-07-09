@@ -10,6 +10,7 @@ import * as SC from "./styles";
 const clampBox = (level: number) => Math.max(0, Math.min(4, level)); // Hilfsfunktion: begrenzt Box-Level auf 0-4 (Box 5 ist unsichtbar)
 const LAST_VISIBLE_BOX = 3; // Box 4 (letzte sichtbare Box)
 const MASTERED_BOX = 4; // Box 5 (unsichtbare "gemeisterte" Box)
+
 /**
  * Organism-Komponente für den eigentlichen Lernvorgang einer Box.
  *
@@ -28,7 +29,7 @@ const MASTERED_BOX = 4; // Box 5 (unsichtbare "gemeisterte" Box)
  * Diese Komponente bindet die Komponente LearningMode ein und gibt ihr die Karten und Callbacks.
  * Sie ist für die gesamte Logik des Lernvorgangs einer Box zuständig.
  */
-const LearningModeManager = ({
+const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
   folder,
   currentLearningLevel,
   elapsedSeconds,
@@ -281,6 +282,8 @@ const LearningModeManager = ({
       currentLearningLevel={currentLearningLevel}
     />
   );
-};
+});
+
+LearningModeManager.displayName = 'LearningModeManager';
 
 export default LearningModeManager;

@@ -17,9 +17,15 @@
  */
 
 import React from 'react';
+
+// Atoms
 import Button from '../../atoms/Button';
+
+// Types
 import type { CreateAnalyticsInput } from '../../../database/analyticsTypes';
 import type { AnalyticsFormProps } from './types';
+
+// Styles
 import * as SC from './styles';
 
 const formFields = [

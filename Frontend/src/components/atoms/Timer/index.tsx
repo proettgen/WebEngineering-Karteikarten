@@ -12,17 +12,39 @@
  */
 
 import React from 'react';
+
+// Atoms
 import Icon from '../Icon';
+
+// Types
 import type { TimerProps } from './types';
+
+// Styles
 import { TimerContainer, TimeDisplay } from './styles';
 
+/**
+ * Formats seconds into MM:SS format
+ * @param seconds - Number of seconds to format
+ * @returns Formatted time string (MM:SS)
+ */
 const formatTime = (seconds: number): string => {
   const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
   const ss = String(seconds % 60).padStart(2, "0");
   return `${mm}:${ss}`;
 };
 
-export const Timer: React.FC<TimerProps> = ({
+/**
+ * Timer Component
+ * 
+ * Displays elapsed time in MM:SS format with optional clock icon.
+ * Used primarily in learning mode to track study session duration.
+ * 
+ * @param seconds - Time in seconds to display
+ * @param size - Size variant (small, medium, large)
+ * @param showIcon - Whether to show the clock icon
+ * @param testId - Test ID for testing purposes
+ */
+export const Timer: React.FC<TimerProps> = React.memo(({
   seconds,
   size = 'medium',
   showIcon = true,
@@ -49,6 +71,8 @@ export const Timer: React.FC<TimerProps> = ({
       </TimeDisplay>
     </TimerContainer>
   );
-};
+});
+
+Timer.displayName = 'Timer';
 
 export default Timer;

@@ -18,12 +18,22 @@
  */
 
 import React, { useCallback } from 'react';
+
+// Atoms
+import ErrorMessage from '../../atoms/ErrorMessage';
 import Headline from '../../atoms/Headline';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
-import ErrorMessage from '../../atoms/ErrorMessage';
-import AnalyticsDisplay from '../../organisms/AnalyticsDisplay';
+
+// Molecules
 import AnalyticsForm from '../../molecules/AnalyticsForm';
+
+// Organisms
+import AnalyticsDisplay from '../../organisms/AnalyticsDisplay';
+
+// Hooks & Utils
 import { useAnalytics } from '../../../hooks/useAnalytics';
+
+// Styles
 import * as SC from './styles';
 
 interface AnalyticsTemplateProps {

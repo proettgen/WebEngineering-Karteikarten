@@ -39,7 +39,7 @@ import { CardType, LearningModeProps } from "./types";
  * - ../LearningModeManager/index.tsx: Übergeordnete Logik für den Lernmodus einer Box
  * - @/components/templates/LearningModeTemplate: Layout-Wrapper für den Lernmodus (Header, Timer, Box-Anzeige)
  */
-const LearningMode = ({ elapsedSeconds: _elapsedSeconds, cards, onEvaluate, onNextCard, onBack, currentLearningLevel: _currentLearningLevel }: LearningModeProps) => {
+const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: _elapsedSeconds, cards, onEvaluate, onNextCard, onBack, currentLearningLevel: _currentLearningLevel }) => {
   // State für die aktuell angezeigte Karte (wird zufällig aus dem Stapel gewählt)
   const [currentCard, setCurrentCard] = useState<CardType | null>(
     cards.length > 0 ? cards[Math.floor(Math.random() * cards.length)] : null
@@ -223,5 +223,8 @@ const LearningMode = ({ elapsedSeconds: _elapsedSeconds, cards, onEvaluate, onNe
         )}
     </SC.Container>
   );
-};
+});
+
+LearningMode.displayName = 'LearningMode';
+
 export default LearningMode;

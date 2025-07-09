@@ -1,8 +1,19 @@
 /**
- * SuspenseWrapper
+ * SuspenseWrapper Molecule Component
  * 
- * Eine wiederverwendbare Wrapper-Komponente für React.Suspense,
- * die ein ansprechendes Loading-Interface bietet.
+ * A reusable wrapper component for React.Suspense that provides a consistent 
+ * loading interface across the application. Used with lazy-loaded components 
+ * to show loading states during code splitting.
+ * 
+ * Features:
+ * - Standardized loading UI using LoadingSpinner
+ * - Customizable fallback text and minimum height
+ * - Consistent with the design system
+ * - Theme-aware styling
+ * 
+ * Cross-references:
+ * - src/utils/lazyImports.ts: Used with lazy-loaded components
+ * - src/components/atoms/LoadingSpinner: Loading UI component
  */
 
 import React, { Suspense } from 'react';
@@ -15,7 +26,7 @@ interface SuspenseWrapperProps {
   minHeight?: string;
 }
 
-const SuspenseWrapper: React.FC<SuspenseWrapperProps> = ({
+const SuspenseWrapper: React.FC<SuspenseWrapperProps> = React.memo(({
   children,
   fallbackText = "Loading...",
   minHeight
@@ -32,6 +43,8 @@ const SuspenseWrapper: React.FC<SuspenseWrapperProps> = ({
   >
     {children}
   </Suspense>
-);
+));
+
+SuspenseWrapper.displayName = 'SuspenseWrapper';
 
 export default SuspenseWrapper;

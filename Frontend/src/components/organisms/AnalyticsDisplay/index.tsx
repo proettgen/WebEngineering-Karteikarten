@@ -17,13 +17,21 @@
  */
 
 import React from 'react';
-import Button from '../../atoms/Button';
+
+// Atoms
 import AnalyticsMetric from '../../atoms/AnalyticsMetric';
+import Button from '../../atoms/Button';
 import Headline from '../../atoms/Headline';
-import Text from '../../atoms/Text';
 import Icon from '../../atoms/Icon';
+import Text from '../../atoms/Text';
+
+// Shared Components
 import { EmptyStateContainer } from '../../shared/StyledComponents';
+
+// Types
 import type { AnalyticsDisplayProps } from './types';
+
+// Styles
 import * as SC from './styles';
 
 export const AnalyticsDisplay: React.FC<AnalyticsDisplayProps> = React.memo(({

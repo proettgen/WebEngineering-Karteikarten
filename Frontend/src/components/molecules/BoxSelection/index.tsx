@@ -12,9 +12,15 @@
  */
 
 import React from 'react';
-import Text from '../../atoms/Text';
+
+// Atoms
 import Icon from '../../atoms/Icon';
+import Text from '../../atoms/Text';
+
+// Types
 import type { BoxSelectionProps } from './types';
+
+// Styles
 import {
   BoxGrid,
   BoxCard,
@@ -75,7 +81,20 @@ const getBoxIcon = (level: number): React.ReactNode => {
   }
 };
 
-export const BoxSelection: React.FC<BoxSelectionProps> = ({
+/**
+ * BoxSelection Component
+ * 
+ * Displays a grid of learning boxes (0-4) with card counts and selection functionality.
+ * Each box represents a different difficulty/mastery level.
+ * 
+ * @param boxes - Array of box counts for each learning level
+ * @param selectedLevel - Currently selected learning level (if any)
+ * @param onSelect - Callback when a box is selected
+ * @param masteredCount - Number of mastered cards (Box 5, not displayed)
+ * @param loading - Loading state for the component
+ * @param testId - Test ID for testing purposes
+ */
+export const BoxSelection: React.FC<BoxSelectionProps> = React.memo(({
   boxes,
   selectedLevel,
   onSelect,
@@ -160,6 +179,8 @@ export const BoxSelection: React.FC<BoxSelectionProps> = ({
       )}
     </div>
   );
-};
+});
+
+BoxSelection.displayName = 'BoxSelection';
 
 export default BoxSelection;

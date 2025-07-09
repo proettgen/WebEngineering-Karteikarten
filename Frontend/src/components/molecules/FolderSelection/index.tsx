@@ -14,9 +14,15 @@
  */
 
 import React from 'react';
-import Text from '../../atoms/Text';
+
+// Atoms
 import LoadingSpinner from '../../atoms/LoadingSpinner';
+import Text from '../../atoms/Text';
+
+// Types
 import type { FolderSelectionProps } from './types';
+
+// Styles
 import {
   SelectionGrid,
   FolderCard,
@@ -27,7 +33,7 @@ import {
   InfoBox
 } from './styles';
 
-export const FolderSelection: React.FC<FolderSelectionProps> = ({
+export const FolderSelection: React.FC<FolderSelectionProps> = React.memo(({
   folders,
   selectedFolderId,
   onSelect,
@@ -114,6 +120,8 @@ export const FolderSelection: React.FC<FolderSelectionProps> = ({
       })}
     </SelectionGrid>
   );
-};
+});
+
+FolderSelection.displayName = 'FolderSelection';
 
 export default FolderSelection;

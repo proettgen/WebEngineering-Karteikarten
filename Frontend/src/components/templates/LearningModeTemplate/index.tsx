@@ -12,23 +12,35 @@
  */
 
 import React, { useCallback } from 'react';
+
+// Atoms
+import Button from '../../atoms/Button';
+import ErrorMessage from '../../atoms/ErrorMessage';
 import Headline from '../../atoms/Headline';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
-import ErrorMessage from '../../atoms/ErrorMessage';
-import Button from '../../atoms/Button';
 import Timer from '../../atoms/Timer';
-import LearningModeManager from '../../organisms/LearningModeManager';
-import FolderSelection from '../../molecules/FolderSelection';
+
+// Molecules
 import BoxSelection from '../../molecules/BoxSelection';
+import FolderSelection from '../../molecules/FolderSelection';
+
+// Organisms
+import LearningModeManager from '../../organisms/LearningModeManager';
+
+// Hooks & Utils
 import { useLearningMode } from '../../../hooks/useLearningMode';
+
+// Types
 import type { FolderWithCardCount } from '../../../hooks/types';
+
+// Styles
 import * as SC from './styles';
 
 interface LearningModeTemplateProps {
   testId?: string;
 }
 
-const LearningModeTemplateComponent: React.FC<LearningModeTemplateProps> = ({
+const LearningModeTemplateComponent: React.FC<LearningModeTemplateProps> = React.memo(({
   testId
 }) => {
   const {
@@ -213,7 +225,9 @@ const LearningModeTemplateComponent: React.FC<LearningModeTemplateProps> = ({
       </SC.Content>
     </SC.Container>
   );
-};
+});
+
+LearningModeTemplateComponent.displayName = 'LearningModeTemplate';
 
 export { LearningModeTemplateComponent as LearningModeTemplate };
 export default LearningModeTemplateComponent;
