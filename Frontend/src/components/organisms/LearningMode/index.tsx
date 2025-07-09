@@ -50,6 +50,8 @@ const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: 
   const [isFlipped, setIsFlipped] = useState(false);
   // State for whether the flip hint should be shown
   const [showFlipHint, setShowFlipHint] = useState(false);
+  // State for whether the "evaluate first" hint should be shown (on Next Card button hover)
+  const [showEvaluateHint, setShowEvaluateHint] = useState(false);
   // State to solve flicker problem - prevents rendering of old card
   const [isEvaluating, setIsEvaluating] = useState(false);
   /**
@@ -85,6 +87,7 @@ const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: 
    */
   useEffect(() => {
     setIsEvaluating(false); // Reset evaluation state
+    setShowEvaluateHint(false); // Reset evaluate hint when cards change
     
     if (cards.length === 0) {
       setCurrentCard(null);
@@ -133,6 +136,7 @@ const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: 
       // Set evaluation state for smooth transition
       setIsEvaluating(true);
       setIsFlipped(false);
+      setShowEvaluateHint(false); // Hide hint when evaluating
       
       // Optimistic update: immediately show next card for smooth UX
       const nextCard = selectDifferentCard(cards, currentCard.id);
@@ -162,6 +166,7 @@ const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: 
       // Set evaluation state for smooth transition
       setIsEvaluating(true);
       setIsFlipped(false);
+      setShowEvaluateHint(false); // Hide hint when evaluating
       
       // Optimistic update: immediately show next card for smooth UX
       const nextCard = selectDifferentCard(cards, currentCard.id);
@@ -187,6 +192,7 @@ const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: 
    */
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
+    setShowEvaluateHint(false); // Hide hint when user flips card
   };
   
   /**
@@ -207,6 +213,7 @@ const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: 
     if (nextCard && nextCard.id !== currentCard?.id) {
       setCurrentCard(nextCard);
       setIsFlipped(false);
+      setShowEvaluateHint(false); // Reset hint when switching cards
     }
     // If no different card is found, do nothing (keep current card)
   };
@@ -260,7 +267,14 @@ const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: 
                   I Got It Wrong
                 </Button>
               </SC.HintWrapper>
-              <SC.HintWrapper>
+              <SC.HintWrapper
+                onMouseEnter={() => {
+                  if (isFlipped || cards.length <= 1) {
+                    setShowEvaluateHint(true);
+                  }
+                }}
+                onMouseLeave={() => setShowEvaluateHint(false)}
+              >
                 <Button 
                   $variant="secondary" 
                   onClick={handleNextCard}
@@ -283,7 +297,7 @@ const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: 
               {showFlipHint && (
                 <Text color="deny">Please flip the card first to see the answer before evaluating!</Text>
               )}
-              {isFlipped && (
+              {showEvaluateHint && isFlipped && (
                 <Text color="deny" size="small">
                   Please evaluate this card before moving to the next one.
                 </Text>

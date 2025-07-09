@@ -81,6 +81,34 @@ export const useLearningMode = (): UseLearningModeReturn => {
   // Router for navigation
   const router = useRouter();
   
+  // Page visibility protection for analytics (handles tab switching, minimizing, etc.)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        // Final analytics update when page becomes hidden (navigation, tab switch, etc.)
+        if (sessionStartTimeRef.current) {
+          const timeNotYetTracked = Math.floor((Date.now() - lastAnalyticsUpdateRef.current) / 1000);
+          
+          if (timeNotYetTracked > 0) {
+            analyticsService.incrementAnalytics({
+              totalLearningTime: timeNotYetTracked,
+            }).catch(() => {
+              // Silent failure during visibility change
+            });
+            
+            lastAnalyticsUpdateRef.current = Date.now();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
   // Load folders when component mounts or when transitioning to folder selection
   const loadFolders = useCallback(async () => {
     setLoadingFolders(true);
@@ -321,12 +349,68 @@ export const useLearningMode = (): UseLearningModeReturn => {
     }
   }, [selectedFolder, router]);
   
+  // Browser navigation/close protection for analytics
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // Final analytics update when user navigates away or closes browser
+      if (sessionStartTimeRef.current) {
+        const timeNotYetTracked = Math.floor((Date.now() - lastAnalyticsUpdateRef.current) / 1000);
+        
+        if (timeNotYetTracked > 0) {
+          // Use sendBeacon for reliable analytics during page unload
+          const data = new FormData();
+          data.append('totalLearningTime', timeNotYetTracked.toString());
+          
+          // Try sendBeacon first (most reliable for page unload)
+          if (navigator.sendBeacon) {
+            navigator.sendBeacon('/api/analytics/increment', data);
+          } else {
+            // Fallback for older browsers
+            try {
+              analyticsService.incrementAnalytics({
+                totalLearningTime: timeNotYetTracked,
+              });
+            } catch {
+              // Silent failure during unload
+            }
+          }
+        }
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
   // Memory Management Best Practice: Cleanup timer to prevent memory leaks
   // Performance Best Practice: Clear intervals on component unmount
   // React Best Practice: Return cleanup function from useEffect
+  // Analytics Best Practice: Ensure final analytics update on any component unmount
   useEffect(() => () => {
+    // Cleanup timer
     if (timerRef.current) {
       clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    
+    // Final analytics update when component unmounts (e.g., navigation to other pages)
+    if (sessionStartTimeRef.current) {
+      const timeNotYetTracked = Math.floor((Date.now() - lastAnalyticsUpdateRef.current) / 1000);
+      
+      if (timeNotYetTracked > 0) {
+        // Use fire-and-forget approach for cleanup analytics to avoid blocking unmount
+        analyticsService.incrementAnalytics({
+          totalLearningTime: timeNotYetTracked,
+        }).catch(() => {
+          // Silent failure on cleanup - don't block unmount process
+        });
+      }
+      
+      sessionStartTimeRef.current = null;
+      lastAnalyticsUpdateRef.current = 0;
     }
   }, []);
   

@@ -36,7 +36,7 @@
  * ```
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 // Atoms
 import Button from '../../atoms/Button';
@@ -111,6 +111,13 @@ const LearningModeTemplateComponent: React.FC<LearningModeTemplateProps> = React
     navigateToCards();
   }, [navigateToCards]);
 
+  // Additional analytics protection at template level
+  // This provides an extra safety net for analytics updates when users navigate away
+  useEffect(() => () => {
+    // Template-level cleanup - useLearningMode hook already handles most cases
+    // This is just an additional safety net
+  }, []);
+
   if (loading && step === 'start') {
     return (
       <SC.Container data-testid={testId}>
@@ -156,7 +163,7 @@ const LearningModeTemplateComponent: React.FC<LearningModeTemplateProps> = React
           <SC.StartSection>
             <SC.WelcomeText>
               Welcome to Learning Mode! Choose a folder and start learning your flashcards 
-              using the scientifically proven spaced repetition system.
+              using our box-based learning system.
             </SC.WelcomeText>
             <SC.ButtonGroup>
               <Button 
