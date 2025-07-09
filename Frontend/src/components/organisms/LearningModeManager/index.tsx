@@ -162,28 +162,11 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
   }, [cards, folder.id, elapsedSeconds, onRefreshCounts, currentLearningLevel]);
 
   /**
-   * Reloads cards for the current box (e.g., after evaluation or navigation).
-   */
-  const handleNextCard = useCallback(async () => {
-    // Only set loading state when we actually need to reload
-    try {
-      const res = await cardAndFolderService.getCardsByFolder(folder.id);
-      const allCards = (res as { data: { cards: any[] } }).data.cards || [];
-      setCards(
-        allCards.filter((card: any) => (card.currentLearningLevel ?? 0) === currentLearningLevel),
-      );
-    } catch {
-      setError("Error reloading cards");
-    }
-  }, [folder.id, currentLearningLevel]);
-  
-  /**
-   * Navigates back to the previous view and reloads cards.
+   * Navigates back to the previous view.
    */
   const handleBack = useCallback(() => {
-    handleNextCard();
     onBack();
-  }, [handleNextCard, onBack]);
+  }, [onBack]);
 
   /**
    * Resets all cards in the current folder to box 0 (restart learning).
@@ -324,7 +307,6 @@ const LearningModeManager: React.FC<LearningModeManagerProps> = React.memo(({
       elapsedSeconds={elapsedSeconds}
       cards={cards}
       onEvaluate={handleEvaluate}
-      onNextCard={handleNextCard}
       onBack={handleBack}
       currentLearningLevel={currentLearningLevel}
     />

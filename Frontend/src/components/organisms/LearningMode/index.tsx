@@ -19,7 +19,10 @@ import { CardType, LearningModeProps } from "./types";
  * - Displays a random card from the current card stack (props.cards)
  * - Allows flipping the card (question <-> answer)
  * - Evaluates the card as correct/wrong (buttons), calls onEvaluate callback
- * - Navigates to the next card (onNextCard)
+ * - Navigates to the next card (Next Card button) with smart logic:
+ *   * Only available before flipping (once flipped, must evaluate)
+ *   * Only available when multiple cards exist (prevents same card loop)
+ *   * Always selects a different card than the current one
  * - Shows a flip hint if the card hasn't been flipped yet
  * - Shows a back button to exit learning mode (onBack)
  *
@@ -27,7 +30,6 @@ import { CardType, LearningModeProps } from "./types";
  * - elapsedSeconds: Time elapsed in learning mode (for timer display)
  * - cards: Array of cards to learn (only cards from current box)
  * - onEvaluate: Callback when a card is evaluated as correct/wrong
- * - onNextCard: Callback when switching to next card
  * - onBack: Callback to exit learning mode
  * - currentLearningLevel: Current learning level/box stage (0-4)
  *
@@ -41,11 +43,9 @@ import { CardType, LearningModeProps } from "./types";
  * - ../LearningModeManager/index.tsx: Parent logic for learning mode
  * - @/components/templates/LearningModeTemplate: Layout wrapper for learning mode
  */
-const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: _elapsedSeconds, cards, onEvaluate, onNextCard, onBack, currentLearningLevel: _currentLearningLevel }) => {
-  // State for the currently displayed card (randomly selected from stack)
-  const [currentCard, setCurrentCard] = useState<CardType | null>(
-    cards.length > 0 ? cards[Math.floor(Math.random() * cards.length)] : null
-  );
+const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: _elapsedSeconds, cards, onEvaluate, onBack, currentLearningLevel: _currentLearningLevel }) => {
+  // State for the currently displayed card (will be set in useEffect)
+  const [currentCard, setCurrentCard] = useState<CardType | null>(null);
   // State for whether the card is flipped (answer visible)
   const [isFlipped, setIsFlipped] = useState(false);
   // State for whether the flip hint should be shown
@@ -53,18 +53,54 @@ const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: 
   // State to solve flicker problem - prevents rendering of old card
   const [isEvaluating, setIsEvaluating] = useState(false);
   /**
-   * Effect: When the card stack changes, select a new random card and reset flip state.
+   * Selects a random card from the available cards, ensuring it's different from the current card.
+   * Returns null if no cards are available or no different card can be found.
+   */
+  const selectDifferentCard = (availableCards: CardType[], currentCardId?: string): CardType | null => {
+    if (availableCards.length === 0) {
+      return null;
+    }
+    
+    if (availableCards.length === 1) {
+      // If only one card exists, return it only if it's not the current card
+      // (This handles the case where we're switching from a different card set)
+      return availableCards[0].id !== currentCardId ? availableCards[0] : null;
+    }
+    
+    // Multiple cards: filter out the current card and select randomly from the rest
+    const otherCards = availableCards.filter(card => card.id !== currentCardId);
+    if (otherCards.length > 0) {
+      return otherCards[Math.floor(Math.random() * otherCards.length)];
+    }
+    
+    // Fallback: should not happen if we have multiple cards, but return null for safety
+    return null;
+  };
+
+  /**
+   * Effect: When the card stack changes, select a new card and reset flip state.
    * If no cards are available, set currentCard to null.
+   * When multiple cards exist, tries to select a different card from the current one.
+   * If only one card exists or no different card is available, uses the available card.
    */
   useEffect(() => {
     setIsEvaluating(false); // Reset evaluation state
+    
     if (cards.length === 0) {
       setCurrentCard(null);
       setIsFlipped(false);
-    } else {
-      setCurrentCard(cards[Math.floor(Math.random() * cards.length)]);
-      setIsFlipped(false);
+      return;
     }
+    
+    // Try to select a different card if possible
+    const newCard = selectDifferentCard(cards, currentCard?.id);
+    
+    // If no different card was found and we have cards, use the first one
+    const finalCard = newCard || (cards.length > 0 ? cards[0] : null);
+    
+    setCurrentCard(finalCard);
+    setIsFlipped(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cards]);
   
   /**
@@ -111,25 +147,24 @@ const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: 
   
   /**
    * Selects the next card from the stack (different from current, if possible)
-   * and resets flip state. Calls the onNextCard callback.
+   * and resets flip state. Only works if there are multiple cards, the current 
+   * card is not flipped, and a different card is actually available.
    */
   const handleNextCard = () => {
-    if (cards.length > 1) {
-      // Draw a different card than the current one
-      let nextCard: CardType | null = null;
-      const otherCards = cards.filter(card => card.id !== currentCard?.id);
-      if (otherCards.length > 0) {
-        nextCard = otherCards[Math.floor(Math.random() * otherCards.length)];
-      } else {
-        nextCard = cards[Math.floor(Math.random() * cards.length)];
-      }
+    // Only allow next card if card is not flipped and there are multiple cards
+    if (isFlipped || cards.length <= 1) {
+      return;
+    }
+    
+    // Use the improved selection logic to ensure a different card
+    const nextCard = selectDifferentCard(cards, currentCard?.id);
+    
+    // Only proceed if we found a genuinely different card
+    if (nextCard && nextCard.id !== currentCard?.id) {
       setCurrentCard(nextCard);
       setIsFlipped(false);
-    } else if (cards.length === 1) {
-      setCurrentCard(cards[0]);
-      setIsFlipped(false);
     }
-    if (onNextCard) onNextCard();
+    // If no different card is found, do nothing (keep current card)
   };
 
   return (
@@ -182,7 +217,11 @@ const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: 
                 </Button>
               </SC.HintWrapper>
               <SC.HintWrapper>
-                <Button $variant="secondary" onClick={handleNextCard}>
+                <Button 
+                  $variant="secondary" 
+                  onClick={handleNextCard}
+                  disabled={isFlipped || cards.length <= 1}
+                >
                   <Icon size="s" color="textPrimary">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -199,6 +238,16 @@ const LearningMode: React.FC<LearningModeProps> = React.memo(({ elapsedSeconds: 
             <SC.HintArea>
               {showFlipHint && (
                 <Text color="deny">Please flip the card first to see the answer before evaluating!</Text>
+              )}
+              {isFlipped && (
+                <Text color="deny" size="small">
+                  Please evaluate this card before moving to the next one.
+                </Text>
+              )}
+              {!isFlipped && cards.length <= 1 && (
+                <Text color="textSecondary" size="small">
+                  Only one card remaining in this box.
+                </Text>
               )}
             </SC.HintArea>
           </SC.LearningContainer>
